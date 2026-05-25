@@ -23,4 +23,5 @@
    (:file "capability")
    (:file "template")
    (:file "anchor")
+   (:file "collector")
    (:file "defaults")))

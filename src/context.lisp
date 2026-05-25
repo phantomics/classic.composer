@@ -58,7 +58,14 @@ theme configuration.")
     :type list
     :documentation "Alist of named values available for template slot
 resolution. Keys are strings (slot names), values are Lexis subtrees
-or strings."))
+or strings.")
+   (collections
+    :accessor context-collections
+    :initform (make-hash-table :test 'equal)
+    :documentation "Hash table of named collections accumulated during
+the collect phase. Keys are collection names (strings), values are
+lists of collected items (newest first, reversed after collection).
+Collectors append data here; anchor handlers read from it."))
   (:documentation
    "Carries all state for a single composition pass. Created per-request,
 threaded through all tier composition functions, and discarded after
@@ -108,11 +115,39 @@ NAME is a string. VALUE is a Lexis subtree or string. Returns CONTEXT
 or NIL if no binding exists."
   (cdr (assoc name (context-bindings context) :test #'equal)))
 
+;;; ============================================================
+;;; Collection helpers (for the collect phase)
+;;; ============================================================
+
+(defun collect-into (context collection-name item)
+  "Append ITEM to the named collection in CONTEXT.
+COLLECTION-NAME is a string. Items are accumulated in push order
+(newest first) during the collect phase; call CONTEXT-COLLECTED to
+retrieve them in document order (reversed)."
+  (push item (gethash collection-name (context-collections context)))
+  item)
+
+(defun context-collected (context collection-name)
+  "Retrieve all items in the named collection, in document order.
+Returns a list of items accumulated by collectors during the collect
+phase, or NIL if the collection is empty or doesn't exist."
+  (reverse (gethash collection-name (context-collections context))))
+
+(defun context-collected-raw (context collection-name)
+  "Retrieve all items in the named collection in accumulation order
+(newest first). Useful when document order is not needed."
+  (gethash collection-name (context-collections context)))
+
+;;; ============================================================
+;;; Print
+;;; ============================================================
+
 (defmethod print-object ((ctx composition-context) stream)
   (print-unreadable-object (ctx stream :type t)
-    (format stream "~@[pub:~A ~]~@[entity:~A ~](~D bindings)"
+    (format stream "~@[pub:~A ~]~@[entity:~A ~](~D bindings, ~D collections)"
             (when (context-publication ctx)
               (classic:label (context-publication ctx)))
             (when (context-entity ctx)
               (classic:label (context-entity ctx)))
-            (length (context-bindings ctx)))))
+            (length (context-bindings ctx))
+            (hash-table-count (context-collections ctx)))))

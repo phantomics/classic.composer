@@ -52,6 +52,17 @@
    #:capability-tier
    #:capability-handler
 
+   ;; ---- Collector Registry (Collect Phase) ----
+   #:define-collector
+   #:register-collector
+   #:find-collector
+   #:list-collectors
+   #:run-collectors
+   #:collect-into
+   #:context-collected
+   #:context-collected-raw
+   #:context-collections
+
    ;; ---- Lexis Tree Utilities ----
    #:tagged-node-p
    #:node-tag

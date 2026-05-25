@@ -21,7 +21,8 @@
 4. Compose aggregate content (if applicable) and bind it
 5. Compose operative specs and bind them
 6. Resolve all template slots in the frame
-7. Evaluate all anchors in the resolved tree
+7. Run collectors (gather structural metadata for anchors)
+8. Evaluate all anchors in the resolved tree
 
 Returns a complete Lexis document s-expression."
   (let ((frame (compose-frame context))
@@ -42,7 +43,9 @@ Returns a complete Lexis document s-expression."
                     (wrap-operative-content operatives)))
     ;; Resolve template slots
     (let ((resolved (resolve-slots frame context)))
-      ;; Evaluate anchors
+      ;; Collect phase: gather structural metadata
+      (run-collectors resolved context)
+      ;; Evaluate anchors (handlers can read collected metadata)
       (evaluate-anchors resolved context))))
 
 ;;; ============================================================
