@@ -1,11 +1,13 @@
 ;;;; defaults.lisp — Default implementations for all composition tiers
 ;;;;
-;;;; These provide functional but minimal behavior for each tier.
-;;;; A publication using only the base classic.composer package (no
-;;;; capability extensions) will still produce working output.
+;;;; These provide functional behavior for each tier, consuming theme
+;;;; configuration when available and falling back to minimal defaults
+;;;; when no theme is active.
 ;;;;
 ;;;; Application models (blog, wiki, forum) specialize these generics
 ;;;; for their content types. Capability extensions augment them.
+;;;;
+;;;; All schema references use the classic.schema nickname.
 
 (in-package #:classic.composer)
 
@@ -15,16 +17,30 @@
 
 (defmethod compose-page ((context composition-context))
   "Default page composition pipeline:
-1. Build the frame (page skeleton)
-2. Compose the feature (primary content) and bind it
-3. Compose adjunct content and bind it
-4. Compose aggregate content (if applicable) and bind it
-5. Compose operative specs and bind them
-6. Resolve all template slots in the frame
-7. Run collectors (gather structural metadata for anchors)
-8. Evaluate all anchors in the resolved tree
+1. Validate theme capabilities (warn or error per *strict-capabilities*)
+2. Apply theme config and slot-fills to context bindings
+3. Build the frame (page skeleton)
+4. Compose the feature (primary content) and bind it
+5. Compose adjunct content and bind it
+6. Compose aggregate content (if applicable) and bind it
+7. Compose operative specs and bind them
+8. Bind theme assets
+9. Resolve all template slots in the frame
+10. Run collectors (gather structural metadata)
+11. Evaluate all anchors in the resolved tree
 
 Returns a complete Lexis document s-expression."
+  ;; Theme integration: validate, bind config and slot-fills
+  (when (context-theme context)
+    (validate-theme-capabilities context)
+    (apply-theme-config-to-context context)
+    (apply-theme-slot-fills-to-context context)
+    ;; Bind assets for template inclusion
+    (let ((assets (theme-asset-list context)))
+      (when assets
+        (context-bind context "theme.assets"
+                      `(section (@ :class "theme-assets") ,@assets)))))
+  ;; Compose tiers
   (let ((frame (compose-frame context))
         (feature (compose-feature context))
         (adjuncts (compose-adjunct context))
@@ -49,84 +65,123 @@ Returns a complete Lexis document s-expression."
       (evaluate-anchors resolved context))))
 
 ;;; ============================================================
-;;; compose-frame — default frame
+;;; compose-frame — theme-aware frame selection
 ;;; ============================================================
 
 (defmethod compose-frame ((context composition-context))
-  "Default frame: a minimal document skeleton with a main-content slot.
+  "Produce the page frame. Cascade:
+1. Theme override for :frame tier -> use its template
+2. Theme tier-templates entry for :frame -> use that
+3. Minimal default frame (document with main-content slot)
+
 Application models and themes override this with richer frames."
-  (let ((title (or (when (context-entity context)
-                     (classic:label (context-entity context)))
-                   (when (context-publication context)
-                     (classic:label (context-publication context)))
-                   "Untitled")))
-    `(document (@ :title ,title)
-       (template.slot (@ :name "main-content"))
-       (template.slot (@ :name "adjunct-content"))
-       (template.slot (@ :name "aggregate-content"))
-       (template.slot (@ :name "operative-content")))))
+  (or
+   ;; Theme-provided frame
+   (theme-tier-template context :frame)
+   ;; Minimal default
+   (let ((title (or (when (context-entity context)
+                      (classic.schema:label (context-entity context)))
+                    (when (context-publication context)
+                      (classic.schema:label (context-publication context)))
+                    "Untitled")))
+     `(document (@ :title ,title)
+        (template.slot (@ :name "main-content"))
+        (template.slot (@ :name "adjunct-content"))
+        (template.slot (@ :name "aggregate-content"))
+        (template.slot (@ :name "operative-content"))))))
 
 ;;; ============================================================
-;;; compose-feature — default feature extraction
+;;; compose-feature — lens-driven or body extraction
 ;;; ============================================================
 
 (defmethod compose-feature ((context composition-context))
-  "Default feature composition: extract the body from the primary entity.
-If the entity has a body slot containing a Lexis s-expression (a list
-starting with a symbol), return it directly. If it's a string, wrap it
-in a paragraph node.
+  "Produce the primary content. If the resolved theme provides a
+lens for the entity's class, use lens-driven composition. Otherwise
+fall back to direct body extraction.
 
 Returns a Lexis subtree or NIL if no entity is set."
   (let ((entity (context-entity context)))
     (when entity
-      (let ((body (when (slot-boundp entity 'classic:body)
-                    (classic:body entity))))
-        (cond
-          ;; Body is already a Lexis s-expression
-          ((and (consp body) (symbolp (car body)))
-           body)
-          ;; Body is a list of Lexis nodes (multiple top-level forms)
-          ((and (consp body) (consp (car body)) (symbolp (caar body)))
-           ;; Wrap in a section
-           (let ((title (or (when (typep entity 'classic:classic-article)
-                              (classic:headline entity))
-                            (classic:label entity))))
-             `(section (@ :title ,title)
-                ,@body)))
-          ;; Body is a plain string -- wrap in paragraph
-          ((stringp body)
-           `(section (@ :title ,(or (when (typep entity 'classic:classic-article)
-                                      (classic:headline entity))
-                                    (classic:label entity)))
-              (paragraph ,body)))
-          ;; No body
-          (t nil))))))
+      (or
+       ;; Lens-driven composition
+       (when (context-theme-lenses context)
+         (let* ((entity-class (class-name (class-of entity)))
+                (lens (classic.schema:find-lens
+                       (context-theme-lenses context)
+                       entity-class :purpose :default)))
+           (when lens
+             (let ((parts (apply-lens context lens entity)))
+               (when parts
+                 (let ((title (entity-title entity)))
+                   `(section (@ :title ,title)
+                      ,@parts)))))))
+       ;; Fallback: direct body extraction
+       (compose-feature-from-body entity)))))
+
+(defun entity-title (entity)
+  "Extract a title from an entity, trying headline then label."
+  (or (when (and (slot-exists-p entity 'classic.schema:headline)
+                 (slot-boundp entity 'classic.schema:headline))
+        (classic.schema:headline entity))
+      (when (slot-boundp entity 'classic.schema:label)
+        (classic.schema:label entity))
+      "Untitled"))
+
+(defun compose-feature-from-body (entity)
+  "Extract body content from an entity without lens guidance.
+If body is a Lexis s-expression, return it directly. If it's a
+string, wrap in a section with paragraph."
+  (let ((body (when (and (slot-exists-p entity 'classic.schema:body)
+                         (slot-boundp entity 'classic.schema:body))
+                (classic.schema:body entity))))
+    (cond
+      ;; Body is already a Lexis s-expression
+      ((and (consp body) (symbolp (car body)))
+       body)
+      ;; Body is a list of Lexis nodes (multiple top-level forms)
+      ((and (consp body) (consp (car body)) (symbolp (caar body)))
+       (let ((title (entity-title entity)))
+         `(section (@ :title ,title) ,@body)))
+      ;; Body is a plain string -- wrap in paragraph
+      ((stringp body)
+       (let ((title (entity-title entity)))
+         `(section (@ :title ,title)
+            (paragraph ,body))))
+      ;; No body
+      (t nil))))
 
 ;;; ============================================================
-;;; compose-adjunct — default adjunct (no-op)
+;;; compose-adjunct — theme-aware with default no-op
 ;;; ============================================================
 
 (defmethod compose-adjunct ((context composition-context))
-  "Default: no adjunct content. Application models override this to
-provide comments, related links, author cards, etc."
-  nil)
+  "Default: check for a theme adjunct template, otherwise NIL.
+Application models override this to provide comments, related links,
+author cards, etc."
+  (let ((tmpl (theme-tier-template context :adjunct)))
+    (when tmpl (list tmpl))))
 
 ;;; ============================================================
-;;; compose-aggregate — default aggregate (no-op)
+;;; compose-aggregate — theme-aware with default no-op
 ;;; ============================================================
 
 (defmethod compose-aggregate ((context composition-context))
-  "Default: no aggregate content. Application models override this
-for index pages, search results, and collection views."
-  nil)
+  "Default: check for a theme aggregate template, otherwise NIL.
+Application models override this for index pages, search results,
+and collection views."
+  (theme-tier-template context :aggregate))
 
 ;;; ============================================================
-;;; compose-operative — default operative (no-op)
+;;; compose-operative — theme-aware with default no-op
 ;;; ============================================================
 
 (defmethod compose-operative ((context composition-context))
-  "Default: no operative controls. Application models override this
-to place comment forms, editors, search dialogs, etc."
+  "Default: check for a theme operative template, otherwise NIL.
+Application models override this to place comment forms, editors,
+search dialogs, etc."
+  ;; Operative tier returns spec plists, not Lexis subtrees.
+  ;; Theme operative templates are not typical here; this is a
+  ;; placeholder for future theme-driven operative placement.
   nil)
 
 ;;; ============================================================

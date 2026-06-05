@@ -1,7 +1,13 @@
 ;;;; packages.lisp — Package definition for Classic Composer
+;;;;
+;;;; The composer uses the classic.schema nickname for schema references,
+;;;; keeping source compatible with any schema that declares the nickname.
+;;;; Foundation symbols (protocols, MOP annotations) are inherited via
+;;;; :use #:classic. Schema symbols are explicitly qualified as
+;;;; classic.schema:symbol-name throughout the source.
 
 (defpackage #:classic.composer
-  (:use #:cl)
+  (:use #:cl #:classic)
   (:export
 
    ;; ---- Composition Context ----
@@ -12,11 +18,21 @@
    #:context-theme
    #:context-capabilities
    #:context-bindings
+   #:context-collections
    #:make-context
    #:context-retrieve
    #:context-query
    #:context-bind
    #:context-binding
+
+   ;; ---- Resolved Theme State (on context) ----
+   #:context-theme-chain
+   #:context-theme-capabilities
+   #:context-theme-overrides
+   #:context-theme-config
+   #:context-theme-slot-fills
+   #:context-theme-lenses
+   #:context-theme-assets
 
    ;; ---- Core Composition Protocol ----
    #:compose-page
@@ -61,7 +77,21 @@
    #:collect-into
    #:context-collected
    #:context-collected-raw
-   #:context-collections
+
+   ;; ---- Theme Integration ----
+   #:resolve-theme-for-context
+   #:theme-tier-template
+   #:apply-theme-config-to-context
+   #:apply-theme-slot-fills-to-context
+   #:theme-asset-list
+   #:validate-theme-capabilities
+   #:*strict-capabilities*
+
+   ;; ---- Lens Evaluation ----
+   #:apply-lens
+   #:apply-sublens
+   #:compute-display-mode
+   #:render-slot-via-display-mode
 
    ;; ---- Lexis Tree Utilities ----
    #:tagged-node-p

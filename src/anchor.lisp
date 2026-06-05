@@ -85,7 +85,7 @@ anchor, or NIL to remove the anchor entirely.
 
 Example:
   (define-anchor-handler \"related-by-tags\" (ctx entity params)
-    (let ((tags (classic:keywords entity))
+    (let ((tags (classic.schema:keywords entity))
           (limit (getf params :limit 5)))
       (when tags
         (let ((related (context-query ctx \"schema:keywords\" (first tags))))

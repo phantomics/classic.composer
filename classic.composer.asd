@@ -8,12 +8,17 @@
 ;;;; The composer is read-only with respect to Classic's data. It consumes
 ;;;; the persistence protocol (retrieve-entity, query-relation, blob access)
 ;;;; but does not write to it.
+;;;;
+;;;; Schema references use the classic.schema nickname so the same source
+;;;; works against any schema variant. The ASDF dependency names the alpha
+;;;; schema explicitly; a future classic.composer.dist.beta would substitute
+;;;; classic.schema.beta here.
 
 (asdf:defsystem "classic.composer"
   :description "Content composition engine for the Classic publishing framework"
-  :version "0.1.0"
+  :version "0.2.0"
   :license "BSD-3"
-  :depends-on ("classic")
+  :depends-on ("classic" "classic.schema.alpha" "closer-mop")
   :pathname "src/"
   :serial t
   :components
@@ -24,4 +29,6 @@
    (:file "template")
    (:file "anchor")
    (:file "collector")
+   (:file "theme")
+   (:file "lens")
    (:file "defaults")))

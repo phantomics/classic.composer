@@ -3,9 +3,10 @@
 The Classic Composer assembles content for display. It sits between
 Classic's persistence layer (where content entities live) and Lexis
 renderers (which produce HTML, PDF, terminal output, etc.). Given a
-content entity and a page template, the composer queries relationships,
-fills template slots, evaluates conditional anchors, and produces a
-complete Lexis s-expression tree ready for rendering.
+content entity, a theme, and a page template, the composer resolves
+the theme's inheritance chain, fills template slots, evaluates
+conditional anchors, applies lens-driven entity rendering, and
+produces a complete Lexis s-expression tree ready for rendering.
 
 The composer is read-only with respect to Classic's data. It does not
 modify entities, create relationships, or trigger workflow transitions.
@@ -21,21 +22,21 @@ set up a blog, write a post, compose a page, and render it.
 Load the systems:
 
 ```lisp
-(ql:quickload '("classic" "classic.composer" "lexis.html"))
+(ql:quickload '("classic.composer.dist.alpha" "lexis.html"))
 ```
 
 Create a blog and write a post:
 
 ```lisp
-(defvar *blog* (classic-blog:make-blog
+(defvar *blog* (classic.models.common:make-blog
                 :name "Demo Blog"
                 :authority "demo.blog"
                 :authority-date "2026"))
 
-(defvar *alice* (classic-blog:create-account *blog*
+(defvar *alice* (classic.models.common:create-account *blog*
                   :name "Alice" :role :writer))
 
-(classic-blog:write-post *blog*
+(classic.models.common:write-post *blog*
   :account *alice*
   :title "Why Lisp Endures"
   :text "placeholder"
@@ -47,9 +48,9 @@ Lexis-aware editor (Seed) would store structured content directly.
 Here we set it manually:
 
 ```lisp
-(defvar *post* (first (classic-blog:get-posts *blog*)))
+(defvar *post* (first (classic.models.common:get-posts *blog*)))
 
-(setf (classic:body *post*)
+(setf (classic.schema:body *post*)
   '(section (@ :title "Why Lisp Endures")
      (section (@ :title "Homoiconicity" :id "homoiconicity")
        (paragraph "Lisp's code-as-data property means the language can
@@ -66,7 +67,7 @@ condition system lets the *caller* decide how to handle errors without
 destroying the context where the error occurred."))))
 ```
 
-The body is now a Lexis s-expression — a list that the composer
+The body is now a Lexis s-expression -- a list that the composer
 handles directly as structured content.
 
 ### Composing the Page
@@ -79,13 +80,13 @@ and footer:
 
 ;; Build the composition context
 (defvar *ctx* (make-context
-               :strategy (classic-blog:blog-strategy *blog*)
-               :publication (classic-blog:blog-publication *blog*)
+               :strategy (classic.models.common:blog-strategy *blog*)
+               :publication (classic.models.common:blog-publication *blog*)
                :entity *post*))
 
 ;; Override the default frame with a richer template
 (defmethod compose-frame ((context composition-context))
-  (let ((title (classic:headline (context-entity context))))
+  (let ((title (classic.schema:headline (context-entity context))))
     `(document (@ :title ,title)
        (navigation
          (web-link (@ :uri "/") "Home")
@@ -134,9 +135,10 @@ This produces a complete HTML page. See
 The pipeline was:
 
 ```
-Classic persistence  →  Composer  →  Lexis renderer  →  HTML
-   (blog-article)      (template     (render-html)
-                        + slots)
+Classic persistence  ->  Composer  ->  Lexis renderer  ->  HTML
+   (blog-article)      (theme +       (render-html)
+                        templates +
+                        lenses)
 ```
 
 Each stage is a pure transformation. The composer produced Lexis
@@ -151,17 +153,20 @@ the other's internals.
 Every page composition follows this sequence:
 
 ```
-1. Compose tiers (frame, feature, adjunct, aggregate, operative)
-2. Bind tier outputs to named slots
-3. Resolve template slots (substitute bindings into frame)
-4. Run collectors (gather structural metadata)
-5. Evaluate anchors (query-driven conditional content)
-        ↓
-   Lexis s-expression tree (ready for rendering)
+ 1. Resolve theme (chain, capabilities, overrides, lenses, slot-fills)
+ 2. Validate theme capabilities against registry
+ 3. Bind theme config and slot-fills to context
+ 4. Compose tiers (frame, feature, adjunct, aggregate, operative)
+ 5. Bind tier outputs to named slots
+ 6. Resolve template slots (substitute bindings into frame)
+ 7. Run collectors (gather structural metadata)
+ 8. Evaluate anchors (query-driven conditional content)
+         |
+    Lexis s-expression tree (ready for rendering)
 ```
 
 Each step is a single O(n) pass over the tree. The full pipeline is
-O(n) with a small constant factor — no recursion between stages, no
+O(n) with a small constant factor -- no recursion between stages, no
 retry loops, no dependency resolution.
 
 ### The Five Content Tiers
@@ -172,15 +177,64 @@ wikis, forums, and any other publication type.
 
 | Tier | Role | Example |
 |------|------|---------|
-| **Frame** | Page skeleton — nav, header, footer, sidebar structure | The HTML `<body>` layout |
+| **Frame** | Page skeleton -- nav, header, footer, sidebar structure | The HTML `<body>` layout |
 | **Feature** | Primary content the page exists to present | A blog article's body |
 | **Adjunct** | Content subordinate to or annotating the feature | Comments, author cards, related posts |
-| **Aggregate** | Collection views — listings, search results, feeds | A blog index page |
+| **Aggregate** | Collection views -- listings, search results, feeds | A blog index page |
 | **Operative** | Interactive control placement | Comment form, search dialog |
 
 Application models specialize `compose-feature`, `compose-adjunct`,
 etc. for their content types. The base package provides working
 defaults for all tiers.
+
+### Theme Integration
+
+The composer consumes Classic core's theme ontology. A theme
+(`classic-theme`) declares capabilities, provides tier templates
+(Lexis fragments), and carries Fresnel-inspired lenses for
+property-level entity rendering.
+
+Child themes inherit from parents via the `parent-theme` slot.
+The composer resolves the full inheritance chain at context creation
+and merges capabilities (with exclusion support), configuration
+bindings, slot-fills, tier templates, and lenses.
+
+**Tier template cascade:** For each tier, the composer checks:
+1. Per-tier override (`classic-theme-override`) -- wins if present
+2. Theme's `tier-templates` entry for the tier
+3. Built-in default
+
+**Slot-fills:** Parent themes designate extension points via
+`template.slot` nodes in their templates. Child themes supply
+Lexis subtrees for those named slots without replacing the entire
+template. This provides fine-grained structural extension.
+
+**Capability activation:** The theme's resolved capability set
+(after exclusion) determines which registered composer capabilities
+participate in dispatch. Unregistered capabilities produce warnings
+(or errors in strict mode via `*strict-capabilities*`).
+
+### Lens-Driven Feature Composition
+
+When a theme provides lenses (Fresnel-inspired property specs),
+the feature tier uses them to determine which entity slots to render
+and how. The display mode cascade:
+
+1. Explicit `:display` from the lens property spec
+2. Slot's MOP `:format` annotation (`:markdown` or `:html`)
+3. Slot's `:persistence :relation` with no sublens -> `:link`
+4. `:text` (universal fallback)
+
+Display modes: `:text`, `:image`, `:link`, `:uri`, `:html`,
+`:markdown` (stubbed), `:date`, `:list`.
+
+Sublens references handle relation slots: the composer retrieves
+the related entity, finds the target lens, and recursively applies
+it. Fallback chain: target purpose -> `:label` purpose for actual
+class -> entity's `label` slot.
+
+Without lenses, the feature tier falls back to direct body
+extraction from the entity.
 
 ### Template Slot Resolution
 
@@ -242,7 +296,7 @@ Anchor handlers then read collected data:
 ```
 
 This is the Scribble-style "collect then render" pattern. No anchor
-depends on another anchor's output — they all depend on the content
+depends on another anchor's output -- they all depend on the content
 structure, which is fully determined before any anchor evaluates.
 Strategic ordering (document order) determines evaluation sequence.
 
@@ -265,15 +319,6 @@ specific content patterns within a tier:
        (image (@ :src ,src :alt ,alt)))))
 ```
 
-A publication loads capabilities as needed:
-
-```lisp
-(ql:quickload '("classic.composer"
-                "classic.composer.frame.hero"
-                "classic.composer.frame.sidebar"
-                "classic.composer.aggregate.tabular"))
-```
-
 No capability is mutually exclusive with another. They compose
 without conflict because each augments a specific content pattern
 rather than replacing a tier wholesale.
@@ -287,7 +332,7 @@ concurrently.
 **Guaranteed O(n) composition.** The pipeline makes a fixed number
 of sequential passes over the tree (compose, resolve, collect,
 evaluate). No pass triggers re-execution of a previous pass. No
-recursion between stages. Tree size is the only variable — doubling
+recursion between stages. Tree size is the only variable -- doubling
 the page's content exactly doubles composition time.
 
 **No exponential template expansion.** Slot resolution is single-pass.
@@ -307,7 +352,7 @@ into already-resolved content. Each tier composes independently,
 producing its output in bounded time.
 
 **Embarrassingly parallel at the page level.** Each page's composition
-is independent — no shared mutable state between pages. A rendering
+is independent -- no shared mutable state between pages. A rendering
 cluster can process pages concurrently with no coordination beyond
 the persistence layer's read path.
 
@@ -321,28 +366,42 @@ the handler's own logic and the persistence layer's read performance.
 ## System Structure
 
 ```
-classic.composer.asd
+classic.composer.asd              -- composer system (depends on classic + schema)
+classic.composer.dist.alpha.asd   -- distribution shim (composer + alpha dist + models)
 src/
-  packages.lisp     — package definition + Lexis tag symbol exports
-  context.lisp      — composition-context class, query helpers, collections
-  protocol.lisp     — tier generic functions, Lexis tree utilities
-  capability.lisp   — capability registry, dispatch, define-capability
-  template.lisp     — template.slot resolution
-  anchor.lisp       — compose.anchor registry, handler dispatch
-  collector.lisp    — collect phase: metadata gathering
-  defaults.lisp     — default compose-page + tier method implementations
+  packages.lisp     -- package definition + Lexis tag symbol exports
+  context.lisp      -- composition-context class, query helpers, collections
+  protocol.lisp     -- tier generic functions, Lexis tree utilities
+  capability.lisp   -- capability registry, dispatch, define-capability
+  template.lisp     -- template.slot resolution
+  anchor.lisp       -- compose.anchor registry, handler dispatch
+  collector.lisp    -- collect phase: metadata gathering
+  theme.lisp        -- theme resolution glue, tier template cascade, asset collection
+  lens.lisp         -- Fresnel-style lens evaluation, display modes, sublens recursion
+  defaults.lisp     -- default compose-page + tier method implementations
 doc/
-  Composer.md       — detailed architecture document
-  demo-output.html  — sample rendered output from the demo above
+  Composer.md       -- detailed architecture document
+  demo-output.html  -- sample rendered output from the demo above
 ```
 
 ## Dependencies
 
-- `classic` — the Classic core (ontology, persistence protocol, workflow)
+- `classic` -- the Classic foundation (MOP, persistence protocol, URI scheme)
+- `classic.schema.alpha` -- the alpha schema (ontological classes, theme resolution)
+- `closer-mop` -- MOP access for lens display mode cascade
+
+For the complete user experience, load `classic.composer.dist.alpha`:
+
+```lisp
+(ql:quickload "classic.composer.dist.alpha")
+```
+
+This pulls in the full alpha distribution (foundation, schema, engine,
+common content models) plus the composer.
 
 The composer produces Lexis s-expressions as output. To render them,
 load a Lexis renderer (`lexis.html` for HTML, others for PDF,
-terminal, etc.). The composer itself has no dependency on Lexis — it
+terminal, etc.). The composer itself has no dependency on Lexis -- it
 produces the s-expression format directly.
 
 ## License
