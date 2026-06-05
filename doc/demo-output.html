@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Why Lisp Endures</title>
+ <meta charset=utf-8>
+ <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+<body>
+ <article>
+  <header>
+   <h1>Why Lisp Endures</h1>
+  </header>
+  <nav>
+   <a href="/">Home</a>
+   <a href="/posts">Posts</a>
+   <a href="/about">About</a>
+  </nav>
+  <section>
+   <h2>Why Lisp Endures</h2>
+   <section id=homoiconicity>
+    <h3>Homoiconicity</h3>
+    <p>Lisp's code-as-data property means the language can <em>transform itself</em>.
+Macros are not text substitution — they are programs that write programs,
+operating on the same data structures the runtime uses.</p>
+   </section>
+   <section id=clos>
+    <h3>CLOS</h3>
+    <p>The Common Lisp Object System provides <strong>multiple dispatch</strong>,
+method combination, and a metaobject protocol that lets you redefine
+the rules of object orientation itself.</p>
+   </section>
+   <section id=conditions>
+    <h3>The Condition System</h3>
+    <p>Unlike exception systems that unwind the stack, CL's condition system
+lets the <em>caller</em> decide how to handle errors without destroying the
+context where the error occurred.</p>
+   </section>
+  </section>
+  <footer>
+   <p>&copy; 2026 Classic Demo Blog. Powered by Classic.</p>
+  </footer>
+ </article>
+</body>
+</html>
