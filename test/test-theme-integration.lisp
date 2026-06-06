@@ -200,8 +200,9 @@
           (is (equal "/parent/base.css" (getf (first assets) :uri)))
           (is (equal "/child/override.css" (getf (second assets) :uri))))))))
 
-(def-test theme-asset-list-produces-lexis-nodes ()
-  "theme-asset-list converts asset plists into Lexis stylesheet/script nodes."
+(def-test theme-asset-list-produces-passthrough-nodes ()
+  "theme-asset-list converts asset plists into Lexis passthrough nodes
+carrying Spinneret-style HTML link and script forms."
   (with-clean-strategy ()
     (let* ((theme (make-test-theme :name "Assets"
                     :asset-base-uri "/static/"
@@ -210,7 +211,13 @@
            (ctx (make-themed-context :theme-uri (uri-string theme)))
            (nodes (theme-asset-list ctx)))
       (is (= 2 (length nodes)))
-      (is (string= "STYLESHEET"
+      ;; Each node is a passthrough
+      (is (string= "PASSTHROUGH"
                    (symbol-name (node-tag (first nodes)))))
-      (is (string= "SCRIPT"
-                   (symbol-name (node-tag (second nodes))))))))
+      (is (string= "PASSTHROUGH"
+                   (symbol-name (node-tag (second nodes)))))
+      ;; The :medium attribute targets HTML
+      (is (eq :html (get-attr (first nodes) :medium)))
+      ;; The :kind attribute distinguishes stylesheet vs script
+      (is (eq :stylesheet (get-attr (first nodes) :kind)))
+      (is (eq :script (get-attr (second nodes) :kind))))))

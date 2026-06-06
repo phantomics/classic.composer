@@ -12,137 +12,108 @@ The composer is read-only with respect to Classic's data. It does not
 modify entities, create relationships, or trigger workflow transitions.
 It only reads.
 
-## A Blog Post, End to End
+## A Blog, End to End
 
-Here is the composer producing an HTML page for a blog post. We will
-set up a blog, write a post, compose a page, and render it.
+A complete, runnable demo lives at [examples/blog-demo.lisp]
+(examples/blog-demo.lisp). It builds a blog with three sample posts,
+defines a single theme covering both an individual post page and an
+index page, and renders both as HTML files in `doc/demos/`.
 
-### Setup
-
-Load the systems:
-
-```lisp
-(ql:quickload '("classic.composer.dist.alpha" "lexis.html"))
-```
-
-Create a blog and write a post:
+To run from a fresh REPL:
 
 ```lisp
-(defvar *blog* (classic.models.common:make-blog
-                :name "Demo Blog"
-                :authority "demo.blog"
-                :authority-date "2026"))
-
-(defvar *alice* (classic.models.common:create-account *blog*
-                  :name "Alice" :role :writer))
-
-(classic.models.common:write-post *blog*
-  :account *alice*
-  :title "Why Lisp Endures"
-  :text "placeholder"
-  :categories '("lisp" "programming"))
+(ql:quickload "classic.composer.dist.alpha")
+(ql:quickload "lexis.html")
+(load "examples/blog-demo.lisp")
+(classic.composer.demo:run-demo)
 ```
 
-Now set the post body to a Lexis s-expression. In production, a
-Lexis-aware editor (Seed) would store structured content directly.
-Here we set it manually:
+This writes:
 
-```lisp
-(defvar *post* (first (classic.models.common:get-posts *blog*)))
+- [doc/demos/blog-post-output.html](doc/demos/blog-post-output.html)
+  -- a single blog post page with header, full article body, author
+  byline, date, and tag list
+- [doc/demos/blog-list-output.html](doc/demos/blog-list-output.html)
+  -- an index page listing all posts with title and date
 
-(setf (classic.schema:body *post*)
-  '(section (@ :title "Why Lisp Endures")
-     (section (@ :title "Homoiconicity" :id "homoiconicity")
-       (paragraph "Lisp's code-as-data property means the language can
-*transform itself*. Macros are not text substitution — they are
-programs that write programs, operating on the same data structures
-the runtime uses."))
-     (section (@ :title "CLOS" :id "clos")
-       (paragraph "The Common Lisp Object System provides **multiple
-dispatch**, method combination, and a metaobject protocol that lets
-you redefine the rules of object orientation itself."))
-     (section (@ :title "The Condition System" :id "conditions")
-       (paragraph "Unlike exception systems that unwind the stack, CL's
-condition system lets the *caller* decide how to handle errors without
-destroying the context where the error occurred."))))
-```
+The reference stylesheet at [examples/static/blog.css]
+(examples/static/blog.css) provides minimal visual styling.
 
-The body is now a Lexis s-expression -- a list that the composer
-handles directly as structured content.
+### What the Demo Shows
 
-### Composing the Page
-
-Create a composition context and a custom frame template with header
-and footer:
-
-```lisp
-(use-package :classic.composer)
-
-;; Build the composition context
-(defvar *ctx* (make-context
-               :strategy (classic.models.common:blog-strategy *blog*)
-               :publication (classic.models.common:blog-publication *blog*)
-               :entity *post*))
-
-;; Override the default frame with a richer template
-(defmethod compose-frame ((context composition-context))
-  (let ((title (classic.schema:headline (context-entity context))))
-    `(document (@ :title ,title)
-       (navigation
-         (web-link (@ :uri "/") "Home")
-         (web-link (@ :uri "/posts") "Posts")
-         (web-link (@ :uri "/about") "About"))
-       (template.slot (@ :name "main-content"))
-       (footer
-         (paragraph "\u00A9 2026 Classic Demo Blog. Powered by Classic.")))))
-
-;; Compose the page
-(defvar *page* (compose-page *ctx*))
-```
-
-The result in `*page*` is a Lexis s-expression:
-
-```lisp
-(document (@ :title "Why Lisp Endures")
-  (navigation
-    (web-link (@ :uri "/") "Home")
-    (web-link (@ :uri "/posts") "Posts")
-    (web-link (@ :uri "/about") "About"))
-  (section (@ :title "Why Lisp Endures")
-    (section (@ :title "Homoiconicity" :id "homoiconicity")
-      (paragraph "Lisp's code-as-data property means the language can
-*transform itself*. Macros are not text substitution ..."))
-    (section (@ :title "CLOS" :id "clos")
-      (paragraph "The Common Lisp Object System provides **multiple
-dispatch**, method combination ..."))
-    (section (@ :title "The Condition System" :id "conditions")
-      (paragraph "Unlike exception systems that unwind the stack ...")))
-  (footer
-    (paragraph "\u00A9 2026 Classic Demo Blog. Powered by Classic.")))
-```
-
-### Rendering to HTML
-
-Pass the composed tree to Lexis for rendering:
-
-```lisp
-(defvar *html* (lexis.html:render-html *page* :standalone t))
-```
-
-This produces a complete HTML page. See
-[doc/demo-output.html](doc/demo-output.html) for the rendered result.
-
-The pipeline was:
+The demo exercises every layer of the pipeline:
 
 ```
 Classic persistence  ->  Composer  ->  Lexis renderer  ->  HTML
-   (blog-article)      (theme +       (render-html)
-                        templates +
-                        lenses)
+  (blog model,           (theme         (render-html)        ^
+   classic-theme)        chain +                             |
+                         lenses +                            |
+                         tier templates +                    |
+                         slot-fills +                        |
+                         capabilities)                       |
+                                                             |
+                       passthrough nodes carry stylesheet ---+
+                       and script references through to
+                       the HTML <head>
 ```
 
-Each stage is a pure transformation. The composer produced Lexis
-s-expressions; the renderer produced HTML. Neither stage knows about
+Specifically:
+
+- **Theme resolution.** The publication's `ui-theme` slot points to a
+  `classic-theme` resource. The composer walks the chain, merges
+  capabilities, applies bindings and slot-fills, and resolves lenses
+  before composition begins.
+- **Frame template.** A single `:frame` tier-template includes named
+  `template.slot` placeholders for the page title, brand area, main
+  content, aggregate content, theme assets, and footer.
+- **Slot-fills.** The brand and footer subtrees are theme-supplied
+  slot-fills bound at composition time.
+- **Asset surface.** The theme's `asset-manifest` lists `blog.css`;
+  the composer emits a `(passthrough (@ :medium :html ...) ...)`
+  node that the Lexis HTML renderer transcribes verbatim into a
+  `<link rel="stylesheet">` tag.
+- **Lens-driven feature composition.** The post page's article body
+  is rendered through a `:default` lens that selects headline,
+  author (via a `:label` sublens on `classic-person`), date, body,
+  and keywords -- in that order, with display modes chosen per-slot.
+- **Default container walk.** The index page sets the entity to the
+  blog's post container; the default `compose-aggregate` walks the
+  container's contents and applies the `:summary` lens to each
+  entry, producing a `(section ...)` of compact post references.
+
+The demo is self-contained -- no shell scripts, no fixture files,
+no extra configuration. Everything runs from one Lisp file.
+
+### Snapshot of the Composed Tree
+
+The post page's composed Lexis tree (before HTML rendering) looks
+roughly like this:
+
+```lisp
+(document (@ :title "Notes on Reading Old Code")
+  (passthrough (@ :medium :html :kind :stylesheet)
+    (:link :rel "stylesheet" :href "/static/blog.css"))
+  (section (@ :class "site-header")
+    (paragraph (strong "Demo Blog"))
+    (paragraph "A Classic Composer demonstration."))
+  (section (@ :class "feature")
+    "Notes on Reading Old Code"
+    "Alice"
+    "2026-06-05"
+    (section (@ :class "body")
+      (section (@ :title "Patience" :id "patience")
+        (paragraph "Old code carries decisions ..."))
+      (section (@ :title "Active Reading" :id "reading")
+        (paragraph "Trace what calls what ...")))
+    (unordered-list (item "learning") (item "code-review")))
+  (section (@ :class "site-footer")
+    (paragraph "(c) 2026 Demo Blog. Powered by "
+               (web-link (@ :uri "https://example.com/classic")
+                         "Classic") ".")))
+```
+
+Each stage is a pure transformation. The composer produced this Lexis
+tree; the Lexis renderer produced the HTML. Neither stage knows about
 the other's internals.
 
 
@@ -379,9 +350,18 @@ src/
   theme.lisp        -- theme resolution glue, tier template cascade, asset collection
   lens.lisp         -- Fresnel-style lens evaluation, display modes, sublens recursion
   defaults.lisp     -- default compose-page + tier method implementations
+test/
+  package.lisp + 9 test files  -- 100+ tests across all subsystems
+examples/
+  blog-demo.lisp    -- self-contained end-to-end demo
+  static/blog.css   -- reference stylesheet for the demo
 doc/
-  Composer.md       -- detailed architecture document
-  demo-output.html  -- sample rendered output from the demo above
+  Composer.md             -- detailed architecture document
+  DevLog.ThemeResolution.md -- theme resolution development log
+  DevLog.FullRenderDemo.md  -- full render pipeline development log
+  demos/
+    blog-post-output.html -- demo: single-post page output
+    blog-list-output.html -- demo: index page output
 ```
 
 ## Dependencies

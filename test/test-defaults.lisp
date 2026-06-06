@@ -85,6 +85,66 @@
         (is (>= (length (node-children feature)) 1))))))
 
 ;;; ============================================================
+;;; compose-aggregate
+;;; ============================================================
+
+(def-test compose-aggregate-walks-container ()
+  "Default compose-aggregate walks a classic-container's contents."
+  (with-clean-strategy ()
+    (let* ((a1 (make-test-article :headline "First Post"))
+           (a2 (make-test-article :headline "Second Post"))
+           (container (make-instance 'classic.schema:classic-container
+                        :uri (mint-uri 'classic.schema:classic-container
+                                       "test.example" "2026"
+                                       :slug "posts")
+                        :label "Posts"
+                        :contains (list (uri-string a1)
+                                        (uri-string a2)))))
+      (persist-entity *test-strategy* container)
+      (let* ((ctx (make-minimal-context :entity container))
+             (result (compose-aggregate ctx)))
+        ;; Should produce a section wrapping the entries
+        (is (tagged-node-p result))
+        (is (string= "SECTION" (symbol-name (node-tag result))))
+        ;; Two entries -- each wrapped in a section
+        (let ((children (node-children result)))
+          (is (= 2 (length children))))))))
+
+(def-test compose-aggregate-uses-summary-lens ()
+  "Default compose-aggregate uses :summary lens when available."
+  (with-clean-strategy ()
+    (let* ((a1 (make-test-article :headline "Lensed Post"))
+           (container (make-instance 'classic.schema:classic-container
+                        :uri (mint-uri 'classic.schema:classic-container
+                                       "test.example" "2026"
+                                       :slug "lens-posts")
+                        :label "Lens Posts"
+                        :contains (list (uri-string a1))))
+           (theme (make-test-theme
+                   :name "Summary Theme"
+                   :lenses `((:class classic.schema:classic-article
+                              :purpose :summary
+                              :properties (classic.schema:headline))))))
+      (persist-entity *test-strategy* container)
+      (let* ((ctx (make-themed-context
+                   :entity container
+                   :theme-uri (uri-string theme)))
+             (result (compose-aggregate ctx)))
+        (is (tagged-node-p result))
+        ;; The entry should contain something rendered from the lens
+        (let* ((entry (first (node-children result)))
+               (entry-content (node-children entry)))
+          (is (not (null entry-content))))))))
+
+(def-test compose-aggregate-nil-without-container ()
+  "compose-aggregate returns NIL when entity is not a container
+and no theme template is provided."
+  (with-clean-strategy ()
+    (let* ((article (make-test-article :headline "Just an article"))
+           (ctx (make-minimal-context :entity article)))
+      (is (null (compose-aggregate ctx))))))
+
+;;; ============================================================
 ;;; compose-page pipeline
 ;;; ============================================================
 

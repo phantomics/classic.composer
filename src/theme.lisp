@@ -194,9 +194,19 @@ appear last (child CSS loads after parent CSS for override semantics)."
     (t type-keyword)))
 
 (defun theme-asset-list (context)
-  "Return the collected assets from the context as a Lexis subtree
-suitable for binding to a template.slot. Produces stylesheet and
-script reference nodes."
+  "Return the collected assets from the context as a list of Lexis
+passthrough subtrees suitable for binding to a template.slot.
+
+Each asset becomes a (passthrough (@ :medium :html) ...) node carrying
+a Spinneret-style native HTML form for the renderer to emit verbatim.
+Stylesheets become <link rel=stylesheet> tags, scripts become <script>
+tags. Asset types that have no direct HTML representation (fonts,
+images) are skipped at this layer; they are referenced indirectly via
+CSS or content nodes.
+
+The HTML renderer recognizes the passthrough mechanism (Lexis spec
+Section 5.4) and emits the verbatim content when its medium matches.
+Renderers for other media omit these nodes silently."
   (let ((assets (context-theme-assets context)))
     (when assets
       (let ((nodes nil))
@@ -205,10 +215,15 @@ script reference nodes."
                 (uri (getf asset :uri)))
             (case type
               (:stylesheet
-               (push `(stylesheet (@ :uri ,uri)) nodes))
+               (push `(passthrough (@ :medium :html :kind :stylesheet)
+                       (:link :rel "stylesheet" :href ,uri))
+                     nodes))
               (:script
-               (push `(script (@ :uri ,uri)) nodes))
-              ;; Other asset types don't produce Lexis nodes
-              ;; (fonts and images are referenced from CSS/content)
+               (push `(passthrough (@ :medium :html :kind :script)
+                       (:script :src ,uri))
+                     nodes))
+              ;; Other asset types (fonts, images) don't produce
+              ;; standalone Lexis nodes -- they are referenced indirectly
+              ;; from CSS or content.
               (t nil))))
         (nreverse nodes)))))

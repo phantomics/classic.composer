@@ -30,16 +30,27 @@
 11. Evaluate all anchors in the resolved tree
 
 Returns a complete Lexis document s-expression."
+  ;; Standard entity-derived bindings. When an entity is present,
+  ;; provide its headline-or-label as "page-title" so generic frame
+  ;; templates can use (template.slot (@ :name "page-title")) without
+  ;; per-page boilerplate.
+  (let ((entity (context-entity context)))
+    (when entity
+      (let ((title (entity-title entity)))
+        (when (and title (null (context-binding context "page-title")))
+          (context-bind context "page-title" title)))))
   ;; Theme integration: validate, bind config and slot-fills
   (when (context-theme context)
     (validate-theme-capabilities context)
     (apply-theme-config-to-context context)
     (apply-theme-slot-fills-to-context context)
-    ;; Bind assets for template inclusion
+    ;; Bind assets for template inclusion. The asset list is a list
+    ;; of passthrough nodes; binding the list directly lets the slot
+    ;; resolver splice the entries at the slot's position rather than
+    ;; wrapping them in a single container element.
     (let ((assets (theme-asset-list context)))
       (when assets
-        (context-bind context "theme.assets"
-                      `(section (@ :class "theme-assets") ,@assets)))))
+        (context-bind context "theme.assets" assets))))
   ;; Compose tiers
   (let ((frame (compose-frame context))
         (feature (compose-feature context))
@@ -103,7 +114,12 @@ Returns a Lexis subtree or NIL if no entity is set."
   (let ((entity (context-entity context)))
     (when entity
       (or
-       ;; Lens-driven composition
+       ;; Lens-driven composition. The lens controls what properties
+       ;; appear and in what order; we wrap the result in a class-
+       ;; tagged section without a title attribute, leaving title
+       ;; placement entirely to the lens (typically via a headline
+       ;; property at the start). This avoids duplicating the title
+       ;; when the lens already includes it.
        (when (context-theme-lenses context)
          (let* ((entity-class (class-name (class-of entity)))
                 (lens (classic.schema:find-lens
@@ -112,9 +128,7 @@ Returns a Lexis subtree or NIL if no entity is set."
            (when lens
              (let ((parts (apply-lens context lens entity)))
                (when parts
-                 (let ((title (entity-title entity)))
-                   `(section (@ :title ,title)
-                      ,@parts)))))))
+                 `(section (@ :class "feature") ,@parts))))))
        ;; Fallback: direct body extraction
        (compose-feature-from-body entity)))))
 
@@ -162,14 +176,64 @@ author cards, etc."
     (when tmpl (list tmpl))))
 
 ;;; ============================================================
-;;; compose-aggregate — theme-aware with default no-op
+;;; compose-aggregate — theme template, then container walk, then NIL
 ;;; ============================================================
 
 (defmethod compose-aggregate ((context composition-context))
-  "Default: check for a theme aggregate template, otherwise NIL.
-Application models override this for index pages, search results,
-and collection views."
-  (theme-tier-template context :aggregate))
+  "Default aggregate composition. Cascade:
+1. If the theme provides an :aggregate tier-template, return it.
+2. If the context entity is a classic-container, walk its contents
+   and produce a section of entries rendered with a per-entry lens.
+3. Otherwise NIL.
+
+For container walk: each item in the container's `contains' list is
+retrieved, then a lens is applied. The lens lookup prefers `:summary'
+purpose for richer index entries, falling back to `:label' for terse
+references. If neither lens is defined, the entry's label slot is
+used as plain text. Each entry is wrapped in its own (section ...)."
+  (or
+   (theme-tier-template context :aggregate)
+   (let ((entity (context-entity context)))
+     (when (typep entity 'classic.schema:classic-container)
+       (compose-container-entries context entity)))))
+
+(defun compose-container-entries (context container)
+  "Walk CONTAINER's contents and produce a Lexis section listing each
+entry. Returns a (section ...) form, or NIL if the container is empty."
+  (let ((uris (classic.schema:contains container)))
+    (when uris
+      (let ((entries (loop for uri in uris
+                           for entry = (compose-container-entry context uri)
+                           when entry collect entry)))
+        (when entries
+          `(section (@ :class "aggregate")
+             ,@entries))))))
+
+(defun compose-container-entry (context uri)
+  "Render a single container entry identified by URI as a Lexis
+subtree. Tries the :summary lens, then :label, then falls back to
+the entity's label slot. Returns a (section ...) wrapping the
+rendered entry, or NIL if the entity cannot be retrieved."
+  (let ((entity (context-retrieve context uri)))
+    (when entity
+      (let* ((entity-class (class-name (class-of entity)))
+             (lenses (context-theme-lenses context))
+             (lens (or (and lenses
+                            (classic.schema:find-lens
+                             lenses entity-class :purpose :summary))
+                       (and lenses
+                            (classic.schema:find-lens
+                             lenses entity-class :purpose :label)))))
+        (cond
+          (lens
+           (let ((parts (apply-lens context lens entity)))
+             (when parts
+               `(section (@ :class "aggregate-entry") ,@parts))))
+          ;; Fallback: bare label
+          ((slot-boundp entity 'classic.schema:label)
+           `(section (@ :class "aggregate-entry")
+              (paragraph ,(classic.schema:label entity))))
+          (t nil))))))
 
 ;;; ============================================================
 ;;; compose-operative — theme-aware with default no-op

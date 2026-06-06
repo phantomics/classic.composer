@@ -106,11 +106,23 @@ are coerced to string via PRINC-TO-STRING."
   (princ-to-string value))
 
 (defun render-html-passthrough (value)
-  "Pass through a value that is already a Lexis s-expression."
-  (if (and (consp value) (symbolp (car value)))
-      value
-      ;; If it's a string, wrap it
-      `(paragraph ,(princ-to-string value))))
+  "Pass through a value that is already a Lexis s-expression.
+
+Handles three shapes:
+  - A single tagged node (cons whose car is a symbol): returned as-is.
+  - A list of tagged nodes (cons whose car is itself a cons): wrapped
+    in a (section (@ :class \"body\") ...) so multiple top-level
+    forms remain a single subtree usable by the caller.
+  - Anything else: coerced to a string and wrapped in a paragraph."
+  (cond
+    ;; Single tagged node
+    ((and (consp value) (symbolp (car value)))
+     value)
+    ;; List of tagged nodes -- wrap in a containing section
+    ((and (consp value) (consp (car value)) (symbolp (caar value)))
+     `(section (@ :class "body") ,@value))
+    ;; Fallback: coerce to string and wrap
+    (t `(paragraph ,(princ-to-string value)))))
 
 (defun render-markdown-stub (value)
   "Stub for :markdown display mode. Wraps the string in a paragraph
