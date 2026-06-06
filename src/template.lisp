@@ -70,7 +70,7 @@ Returns the transformed tree."
     ((tagged-node-p tree)
      (let ((tag (node-tag tree))
            (has-attrs (and (consp (cadr tree))
-                           (eq '@ (caadr tree))))
+                           (string= "@" (symbol-name (caadr tree)))))
            (children (node-children tree)))
        (let ((new-children
                (loop for child in children

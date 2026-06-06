@@ -126,14 +126,14 @@ Returns NIL if no operative controls apply to this page."))
 Attributes are signalled by (@ ...) as the first child."
   (let ((first-child (cadr node)))
     (when (and (consp first-child)
-               (eq '@ (car first-child)))
+               (string= "@" (symbol-name (car first-child))))
       (cdr first-child))))
 
 (defun node-children (node)
   "Return the children of a tagged node (excluding the @ attr list)."
   (let ((rest (cdr node)))
     (if (and (consp (car rest))
-             (eq '@ (caar rest)))
+             (string= "@" (symbol-name (caar rest))))
         (cdr rest)
         rest)))
 

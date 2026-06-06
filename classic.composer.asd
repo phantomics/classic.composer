@@ -31,4 +31,25 @@
    (:file "collector")
    (:file "theme")
    (:file "lens")
-   (:file "defaults")))
+    (:file "defaults")))
+
+(asdf:defsystem "classic.composer/tests"
+  :description "Test suite for Classic Composer"
+  :depends-on ("classic.composer"
+               "classic.composer.dist.alpha"
+               "fiveam"
+               "hamcrest/fiveam")
+  :pathname "test/"
+  :serial t
+  :components
+  ((:file "package")
+   (:file "helpers")
+   (:file "test-tree-utils")
+   (:file "test-context")
+   (:file "test-template")
+   (:file "test-anchor")
+   (:file "test-collector")
+   (:file "test-capability")
+   (:file "test-theme-integration")
+   (:file "test-lens")
+   (:file "test-defaults")))
