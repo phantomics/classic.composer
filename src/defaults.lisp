@@ -199,10 +199,19 @@ used as plain text. Each entry is wrapped in its own (section ...)."
 
 (defun compose-container-entries (context container)
   "Walk CONTAINER's contents and produce a Lexis section listing each
-entry. Returns a (section ...) form, or NIL if the container is empty."
-  (let ((uris (classic.schema:contains container)))
-    (when uris
-      (let ((entries (loop for uri in uris
+entry. Returns a (section ...) form, or NIL if the container is empty.
+
+The iteration order is determined by CONTAINER-READING-ORDER:
+  :AS-STORED -- iterate the contains list as-is (newest-first for
+                containers built with push)
+  :REVERSE   -- reverse the list for oldest-first reading (forum
+                threads, chronological feeds)"
+  (let* ((uris (classic.schema:contains container))
+         (ordered (case (container-reading-order container)
+                    (:reverse (reverse uris))
+                    (t uris))))
+    (when ordered
+      (let ((entries (loop for uri in ordered
                            for entry = (compose-container-entry context uri)
                            when entry collect entry)))
         (when entries

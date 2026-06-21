@@ -41,6 +41,7 @@
    #:compose-adjunct
    #:compose-aggregate
    #:compose-operative
+   #:container-reading-order
 
    ;; ---- Template Resolution ----
    #:resolve-slots

@@ -125,11 +125,102 @@ Handles three shapes:
     (t `(paragraph ,(princ-to-string value)))))
 
 (defun render-markdown-stub (value)
-  "Stub for :markdown display mode. Wraps the string in a paragraph
-until a Markdown parser dependency is added."
-  (if (stringp value)
-      `(paragraph ,value)
-      `(paragraph ,(princ-to-string value))))
+  "Lightweight markdown rendering for the :markdown display mode.
+
+Not a full Markdown parser. Handles two features that are essential
+for readable output without a parser dependency:
+
+  1. Paragraph breaks on double-newlines.
+  2. Blockquotes: lines prefixed with '> ' are wrapped in
+     (blockquote (paragraph ...)).
+
+Bold (**text**) and italic (*text*) are left to Lexis's inline text
+processing pass, which expands them if the renderer runs process-text.
+
+A full Markdown parser can be substituted by replacing this function
+or registering a capability that intercepts :markdown display mode."
+  (let ((text (if (stringp value) value (princ-to-string value))))
+    (let ((blocks (split-markdown-blocks text)))
+      (if (= 1 (length blocks))
+          (first blocks)
+          `(section (@ :class "body") ,@blocks)))))
+
+(defun split-markdown-blocks (text)
+  "Split TEXT on double-newlines into a list of Lexis block nodes.
+Lines prefixed with '> ' become (blockquote (paragraph ...));
+other blocks become (paragraph ...)."
+  (let ((chunks (split-on-blank-lines text))
+        (blocks nil))
+    (dolist (chunk chunks)
+      (let ((trimmed (string-trim '(#\Space #\Tab #\Newline) chunk)))
+        (unless (zerop (length trimmed))
+          (push (if (blockquote-chunk-p trimmed)
+                    (parse-blockquote-chunk trimmed)
+                    `(paragraph ,trimmed))
+                blocks))))
+    (nreverse blocks)))
+
+(defun split-on-blank-lines (text)
+  "Split TEXT into chunks separated by one or more blank lines.
+Returns a list of strings."
+  (let ((chunks nil)
+        (current (make-string-output-stream))
+        (prev-blank nil))
+    (with-input-from-string (in text)
+      (loop for line = (read-line in nil nil)
+            while line
+            do (let ((blank (every (lambda (c) (member c '(#\Space #\Tab)))
+                                   line)))
+                 (cond
+                   ((and blank (not prev-blank))
+                    ;; First blank line: emit current chunk
+                    (let ((s (get-output-stream-string current)))
+                      (when (plusp (length s))
+                        (push s chunks)))
+                    (setf current (make-string-output-stream))
+                    (setf prev-blank t))
+                   (blank
+                    ;; Additional blank lines: skip
+                    (setf prev-blank t))
+                   (t
+                    ;; Content line
+                    (when prev-blank
+                      (setf prev-blank nil))
+                    (write-string line current)
+                    (write-char #\Newline current))))))
+    ;; Flush remaining
+    (let ((s (get-output-stream-string current)))
+      (when (plusp (length s))
+        (push s chunks)))
+    (nreverse chunks)))
+
+(defun blockquote-chunk-p (chunk)
+  "Return T if every non-empty line in CHUNK starts with '> '."
+  (with-input-from-string (in chunk)
+    (loop for line = (read-line in nil nil)
+          while line
+          for trimmed = (string-trim '(#\Space #\Tab) line)
+          always (or (zerop (length trimmed))
+                     (and (>= (length trimmed) 2)
+                          (char= #\> (char trimmed 0))
+                          (char= #\Space (char trimmed 1)))))))
+
+(defun parse-blockquote-chunk (chunk)
+  "Convert a blockquote chunk (lines prefixed with '> ') into a
+(blockquote (paragraph ...)) Lexis node. Strips the '> ' prefix."
+  (let ((lines nil))
+    (with-input-from-string (in chunk)
+      (loop for line = (read-line in nil nil)
+            while line
+            do (let ((trimmed (string-trim '(#\Space #\Tab) line)))
+                 (push (if (and (>= (length trimmed) 2)
+                                (char= #\> (char trimmed 0)))
+                           (subseq trimmed 2)
+                           trimmed)
+                       lines))))
+    (let ((text (string-trim '(#\Space #\Tab #\Newline)
+                             (format nil "~{~A~^ ~}" (nreverse lines)))))
+      `(blockquote (paragraph ,text)))))
 
 (defun render-date (value)
   "Render a timestamp value as a formatted date string.

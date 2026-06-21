@@ -103,6 +103,33 @@ Returns a list of operative specifications. Each spec is a plist:
 Returns NIL if no operative controls apply to this page."))
 
 ;;; ============================================================
+;;; Container reading order
+;;; ============================================================
+
+(defgeneric container-reading-order (entity)
+  (:documentation
+   "Return the natural reading order for ENTITY's contents when
+rendered as an aggregate view.
+
+Returns one of:
+  :AS-STORED  -- use the contains list as-is (default)
+  :REVERSE    -- reverse the contains list for oldest-first reading
+  :ALPHABETICAL -- sort entries alphabetically by label (future)
+
+Application models specialize this for content types with specific
+ordering semantics. For example, a forum thread stores posts
+newest-first (via push) but reads oldest-first, so it returns
+:REVERSE.
+
+The default method returns :AS-STORED, which is newest-first for
+containers built with push."))
+
+(defmethod container-reading-order (entity)
+  "Default: use the contains list as stored."
+  (declare (ignore entity))
+  :as-stored)
+
+;;; ============================================================
 ;;; Lexis tree utilities
 ;;; ============================================================
 ;;; These operate on raw s-expression Lexis trees (lists and strings),

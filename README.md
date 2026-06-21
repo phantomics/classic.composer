@@ -12,6 +12,18 @@ The composer is read-only with respect to Classic's data. It does not
 modify entities, create relationships, or trigger workflow transitions.
 It only reads.
 
+## Demos
+
+Two self-contained demos exercise the full pipeline. Each builds a
+publication, defines a theme, composes pages, and renders HTML:
+
+| Demo | Pages | Run |
+|------|-------|-----|
+| [Blog demo](examples/blog-demo.lisp) | Single post + index | `(classic.composer.demo:run-demo)` |
+| [Forum demo](examples/forum-demo.lisp) | Thread view + thread list | `(classic.composer.forum-demo:run-demo)` |
+
+Rendered output is written to [doc/demos/](doc/demos/).
+
 ## A Blog, End to End
 
 A complete, runnable demo lives at [examples/blog-demo.lisp]
@@ -353,15 +365,19 @@ src/
 test/
   package.lisp + 9 test files  -- 100+ tests across all subsystems
 examples/
-  blog-demo.lisp    -- self-contained end-to-end demo
-  static/blog.css   -- reference stylesheet for the demo
+  blog-demo.lisp    -- self-contained blog end-to-end demo
+  forum-demo.lisp   -- self-contained forum end-to-end demo
+  static/blog.css   -- reference stylesheet for the blog demo
+  static/forum.css  -- reference stylesheet for the forum demo
 doc/
   Composer.md             -- detailed architecture document
   DevLog.ThemeResolution.md -- theme resolution development log
   DevLog.FullRenderDemo.md  -- full render pipeline development log
   demos/
-    blog-post-output.html -- demo: single-post page output
-    blog-list-output.html -- demo: index page output
+    blog-post-output.html   -- blog demo: single-post page
+    blog-list-output.html   -- blog demo: index page
+    forum-thread-output.html -- forum demo: thread view
+    forum-index-output.html  -- forum demo: thread listing
 ```
 
 ## Dependencies

@@ -128,14 +128,14 @@ in *BLOG*. Returns the blog struct."
                ;; The body assoc entry is (:body section1 section2 ...);
                ;; we want the list of sections after the keyword.
                (body-sections (cdr (assoc :body data))))
-          ;; write-post stores the post; it accepts a string text
+          ;; write-article stores the post; it accepts a string text
           ;; argument, so we pass a placeholder and overwrite the body.
-          (write-post blog
-                      :account alice
-                      :title title
-                      :text "(placeholder)"
-                      :categories keywords)
-          (let ((post (first (get-posts blog))))
+          (write-article blog
+                         :account alice
+                         :title title
+                         :text "(placeholder)"
+                         :categories keywords)
+          (let ((post (first (get-articles blog))))
             ;; Replace the body with the structured Lexis form. In a
             ;; production system this happens at write time; the demo
             ;; does it explicitly so the data flow is visible.
@@ -143,7 +143,7 @@ in *BLOG*. Returns the blog struct."
             ;; the lens body property with :display :html knows how
             ;; to render a list of nodes.
             (setf (classic.schema:body post) body-sections)
-            (persist-entity (blog-strategy blog) post)))))
+            (persist-entity (imprint-strategy blog) post)))))
     (setf *blog* blog)
     blog))
 
@@ -167,7 +167,7 @@ in *BLOG*. Returns the blog struct."
 (defun setup-theme (blog)
   "Create the demo theme, attach it to the blog's publication, and
 return the theme entity. Stores in *THEME*."
-  (let* ((strategy (blog-strategy blog))
+  (let* ((strategy (imprint-strategy blog))
          (frame-template
            '(document (@ :title (template.slot (@ :name "page-title")))
               (template.slot (@ :name "theme.assets"))
@@ -227,9 +227,9 @@ return the theme entity. Stores in *THEME*."
                       :properties (classic.schema:agent-name))))))
       (persist-entity strategy theme)
       ;; Attach to publication
-      (setf (classic.schema:ui-theme (blog-publication blog))
+      (setf (classic.schema:ui-theme (imprint-publication blog))
             (uri-string theme))
-      (persist-entity strategy (blog-publication blog))
+      (persist-entity strategy (imprint-publication blog))
       (setf *theme* theme)
       theme)))
 
@@ -241,11 +241,11 @@ return the theme entity. Stores in *THEME*."
   "Compose and render a single blog post page. POST-INDEX is the
 1-based position of the post in the blog's container (newest first).
 Returns the rendered HTML string."
-  (let* ((posts (get-posts blog))
+  (let* ((posts (get-articles blog))
          (post (nth (1- post-index) posts))
          (ctx (make-context
-               :strategy (blog-strategy blog)
-               :publication (blog-publication blog)
+               :strategy (imprint-strategy blog)
+               :publication (imprint-publication blog)
                :entity post)))
     (let ((page (compose-page ctx)))
       (lexis.html:render-html page :standalone t))))
@@ -254,10 +254,10 @@ Returns the rendered HTML string."
   "Compose and render the blog's index page. The entity is the blog's
 post container; the default compose-aggregate walks its contents and
 renders each entry with the :summary lens."
-  (let* ((container (blog-container blog))
+  (let* ((container (imprint-container blog))
          (ctx (make-context
-               :strategy (blog-strategy blog)
-               :publication (blog-publication blog)
+               :strategy (imprint-strategy blog)
+               :publication (imprint-publication blog)
                :entity container)))
     (let ((page (compose-page ctx)))
       (lexis.html:render-html page :standalone t))))

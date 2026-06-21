@@ -1,0 +1,101 @@
+/* forum.css -- reference stylesheet for the Composer forum demo.
+ *
+ * Minimal styling for two pages: a thread listing and a thread
+ * post view. Uses the same CSS variable scheme as blog.css. */
+
+:root {
+    --text: #1c1c20;
+    --muted: #5c5c66;
+    --accent: #2a5db0;
+    --rule: #e3e3e8;
+    --bg: #fafafc;
+    --measure: 42rem;
+    --quote-bg: #f0f0f5;
+}
+
+html { background: var(--bg); }
+
+body {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text);
+    margin: 0;
+    padding: 2rem 1.5rem 4rem;
+}
+
+article {
+    max-width: var(--measure);
+    margin: 0 auto;
+}
+
+article > header h1 {
+    font-size: 1.8rem;
+    line-height: 1.2;
+    margin: 0 0 0.5em;
+}
+
+.forum-header {
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.forum-header p:first-child {
+    font-size: 1.3rem;
+    color: var(--text);
+    margin: 0;
+}
+
+.forum-header p { margin: 0.15em 0; color: var(--muted); }
+
+.forum-footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h2 { font-size: 1.3rem; margin-top: 1.5rem; }
+
+/* Thread listing entries */
+.aggregate { padding: 0; }
+
+.aggregate-entry {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.75rem 0;
+}
+
+.aggregate-entry h2 {
+    margin: 0 0 0.15em;
+    font-size: 1.15rem;
+}
+
+.aggregate-entry p {
+    margin: 0.1em 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* Thread post view */
+.feature { padding: 0; }
+
+section.feature > section {
+    border-bottom: 1px solid var(--rule);
+    padding: 1rem 0;
+}
+
+blockquote {
+    background: var(--quote-bg);
+    border-left: 3px solid var(--accent);
+    margin: 0.5em 0;
+    padding: 0.5em 1em;
+    font-size: 0.95em;
+}
+
+ul { padding-left: 1.2em; }
+li { margin: 0.2em 0; }
