@@ -1,0 +1,127 @@
+/* wiki.css -- reference stylesheet for the Composer wiki demo.
+ *
+ * Styles for two pages: a single wiki article (with infobox sidebar,
+ * body with wiki links, and metadata sections) and an alphabetical
+ * page index. */
+
+:root {
+    --text: #1c1c20;
+    --muted: #5c5c66;
+    --accent: #0645ad;
+    --broken: #ba0000;
+    --rule: #d8d8dd;
+    --bg: #fafafc;
+    --infobox-bg: #f3f3f8;
+    --measure: 44rem;
+}
+
+html { background: var(--bg); }
+
+body {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0;
+    padding: 2rem 1.5rem 4rem;
+}
+
+article {
+    max-width: var(--measure);
+    margin: 0 auto;
+}
+
+article > header h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin: 0 0 0.25em;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.3em;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Broken wiki links (red links) */
+.broken-link {
+    color: var(--broken);
+    font-style: normal;
+}
+
+/* Wiki header/footer */
+.wiki-header {
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--muted);
+}
+
+.wiki-header p:first-child {
+    font-size: 1.3rem;
+    color: var(--text);
+    margin: 0;
+}
+
+.wiki-header p { margin: 0.15em 0; }
+
+.wiki-footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* Infobox (definition list) */
+.infobox {
+    background: var(--infobox-bg);
+    border: 1px solid var(--rule);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.infobox dt {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-top: 0.75em;
+}
+
+.infobox dt:first-child { margin-top: 0; }
+
+.infobox dd {
+    margin: 0.15em 0 0 0;
+    font-size: 0.95rem;
+}
+
+/* Body content */
+h2, h3, h4 { line-height: 1.3; }
+h2 { font-size: 1.4rem; margin-top: 1.5rem; }
+p { margin: 0.8em 0; }
+
+/* Page metadata sections */
+.page-metadata {
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.page-metadata ul {
+    margin: 0.3em 0;
+    padding-left: 1.5em;
+}
+
+/* Aggregate (index) entries */
+.aggregate-entry {
+    border-bottom: 1px dotted var(--rule);
+    padding: 0.6rem 0;
+}
+
+.aggregate-entry p {
+    margin: 0.1em 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}

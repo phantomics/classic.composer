@@ -21,6 +21,7 @@ publication, defines a theme, composes pages, and renders HTML:
 |------|-------|-----|
 | [Blog demo](examples/blog-demo.lisp) | Single post + index | `(classic.composer.demo:run-demo)` |
 | [Forum demo](examples/forum-demo.lisp) | Thread view + thread list | `(classic.composer.forum-demo:run-demo)` |
+| [Wiki demo](examples/wiki-demo.lisp) | Article with typed infobox + alphabetical index | `(classic.composer.wiki-demo:run-demo)` |
 
 Rendered output is written to [doc/demos/](doc/demos/).
 
@@ -367,17 +368,21 @@ test/
 examples/
   blog-demo.lisp    -- self-contained blog end-to-end demo
   forum-demo.lisp   -- self-contained forum end-to-end demo
+  wiki-demo.lisp    -- self-contained wiki demo with typed pages + child theme
   static/blog.css   -- reference stylesheet for the blog demo
   static/forum.css  -- reference stylesheet for the forum demo
+  static/wiki.css   -- reference stylesheet for the wiki demo
 doc/
   Composer.md             -- detailed architecture document
   DevLog.ThemeResolution.md -- theme resolution development log
   DevLog.FullRenderDemo.md  -- full render pipeline development log
   demos/
-    blog-post-output.html   -- blog demo: single-post page
-    blog-list-output.html   -- blog demo: index page
+    blog-post-output.html    -- blog demo: single-post page
+    blog-list-output.html    -- blog demo: index page
     forum-thread-output.html -- forum demo: thread view
     forum-index-output.html  -- forum demo: thread listing
+    wiki-page-output.html    -- wiki demo: article with typed infobox
+    wiki-index-output.html   -- wiki demo: alphabetical page index
 ```
 
 ## Dependencies
