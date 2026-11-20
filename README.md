@@ -14,23 +14,28 @@ It only reads.
 
 ## Demos
 
-Two self-contained demos exercise the full pipeline. Each builds a
-publication, defines a theme, composes pages, and renders HTML:
+Three self-contained demos exercise the full pipeline. Each builds a
+publication, defines a theme, composes pages, and renders a small
+static site of linked HTML pages:
 
 | Demo | Pages | Run |
 |------|-------|-----|
-| [Blog demo](examples/blog-demo.lisp) | Single post + index | `(classic.composer.demo:run-demo)` |
-| [Forum demo](examples/forum-demo.lisp) | Thread view + thread list | `(classic.composer.forum-demo:run-demo)` |
-| [Wiki demo](examples/wiki-demo.lisp) | Article with typed infobox + alphabetical index | `(classic.composer.wiki-demo:run-demo)` |
+| [Blog demo](examples/blog-demo.lisp) | Index + a page per post | `(classic.composer.demo:run-demo)` |
+| [Forum demo](examples/forum-demo.lisp) | Thread list + a page per thread + a profile per member | `(classic.composer.forum-demo:run-demo)` |
+| [Wiki demo](examples/wiki-demo.lisp) | Alphabetical index + a page per article, with typed infoboxes | `(classic.composer.wiki-demo:run-demo)` |
 
-Rendered output is written to [doc/demos/](doc/demos/).
+Rendered output is written to [doc/demos/](doc/demos/), one directory
+per demo, each starting at its `index.html`. The demos only read
+their publications: thread order, member nicknames, page references
+and index order are all computed while the pages are composed.
 
 ## A Blog, End to End
 
 A complete, runnable demo lives at [examples/blog-demo.lisp]
 (examples/blog-demo.lisp). It builds a blog with three sample posts,
 defines a single theme covering both an individual post page and an
-index page, and renders both as HTML files in `doc/demos/`.
+index page, and renders the index and every post as HTML files in
+`doc/demos/blog/`.
 
 To run from a fresh REPL:
 
@@ -43,11 +48,12 @@ To run from a fresh REPL:
 
 This writes:
 
-- [doc/demos/blog-post-output.html](doc/demos/blog-post-output.html)
-  -- a single blog post page with header, full article body, author
-  byline, date, and tag list
-- [doc/demos/blog-list-output.html](doc/demos/blog-list-output.html)
-  -- an index page listing all posts with title and date
+- [doc/demos/blog/index.html](doc/demos/blog/index.html)
+  -- an index page listing all posts with title and date, each title
+  linked to the post's page
+- a page per post, such as
+  [doc/demos/blog/why-lisp-endures.html](doc/demos/blog/why-lisp-endures.html)
+  -- header, full article body, author byline, date, and tag list
 
 The reference stylesheet at [examples/static/blog.css]
 (examples/static/blog.css) provides minimal visual styling.
@@ -93,6 +99,9 @@ Specifically:
   blog's post container; the default `compose-aggregate` walks the
   container's contents and applies the `:summary` lens to each
   entry, producing a `(section ...)` of compact post references.
+- **Page links.** An `entity-href` method names each post's page,
+  and the `:summary` lens marks the headline `:link :self`, so each
+  index entry links to its post.
 
 The demo is self-contained -- no shell scripts, no fixture files,
 no extra configuration. Everything runs from one Lisp file.
@@ -232,13 +241,43 @@ named page:
   (list :wiki-link-resolver #'resolve-wiki-link))
 ```
 
-Sublens references handle relation slots: the composer retrieves
+Sublens references handle relation slots: the composer resolves
 the related entity, finds the target lens, and recursively applies
 it. Fallback chain: target purpose -> `:label` purpose for actual
 class -> entity's `label` slot.
 
+Besides `:display`, `:sublens` and `:purpose`, a property spec takes
+two options:
+
+- `:link :self` links the rendered value to the page of the entity
+  it belongs to, such as an index entry's title.
+- `:label "Joined"` captions the value: `Joined: 2026-11-20`.
+
+An `:aggregate` lens on a container class orders the container's
+entries in aggregate views: `:sort-by` names the property to sort by,
+and `:sort-order :descending` reverses it. Like every lens, it belongs
+to a theme, so it orders only the publications that use the theme.
+
 Without lenses, the feature tier falls back to direct body
 extraction from the entity.
+
+### Extension Generics
+
+Applications adapt the composer to their content by specializing
+generic functions, not by changing their data before composing. Each
+generic's default keeps the behavior described above:
+
+| Generic | Returns | Default | Example use |
+|---------|---------|---------|-------------|
+| `lens-property-value (context entity property)` | The value a lens reads for `property` | The slot's value | A computed property: a forum post's author account, found through the reverse `sioc:account_of` relation |
+| `resolve-reference (context entity property value)` | The entity a reference names | Retrieve `value` as a URI | A wiki page's typed slots naming pages by anchor |
+| `entity-href (context entity)` | The URL of the entity's page | `nil` (no link) | A static site's file names |
+| `container-entries (context container)` | The entities an aggregate view lists, in order | `contains` in `container-reading-order`, sorted by an `:aggregate` lens | A forum listing pinned threads first |
+| `container-reading-order (container)` | `:as-stored` or `:reverse` | `:as-stored` | A forum thread reading oldest-first |
+| `markdown-options (context entity slot-name)` | Options for the Markdown reader | None | A wiki link resolver |
+
+These are read paths: a method computes what a page shows and must
+not modify the publication.
 
 ### Template Slot Resolution
 
@@ -375,13 +414,13 @@ classic.composer.dist.alpha.asd   -- distribution shim (composer + alpha dist + 
 src/
   packages.lisp     -- package definition + Lexis tag symbol exports
   context.lisp      -- composition-context class, query helpers, collections
-  protocol.lisp     -- tier generic functions, Lexis tree utilities
+  protocol.lisp     -- tier and extension generic functions, Lexis tree utilities
   capability.lisp   -- capability registry, dispatch, define-capability
   template.lisp     -- template.slot resolution
   anchor.lisp       -- compose.anchor registry, handler dispatch
   collector.lisp    -- collect phase: metadata gathering
   theme.lisp        -- theme resolution glue, tier template cascade, asset collection
-  lens.lisp         -- Fresnel-style lens evaluation, display modes, sublens recursion
+  lens.lisp         -- Fresnel-style lens evaluation, display modes, references, sublens recursion
   defaults.lisp     -- default compose-page + tier method implementations
 test/
   package.lisp + 9 test files  -- 100+ tests across all subsystems
@@ -399,13 +438,11 @@ doc/
   DevLog.ForumRenderDemo.md -- forum demo development log
   DevLog.WikiRenderDemo.md  -- wiki demo development log
   DevLog.MarkdownReader.md  -- Markdown reader adoption log
+  DevLog.ReadOnlyDemos.md   -- extension generics and page links log
   demos/
-    blog-post-output.html    -- blog demo: single-post page
-    blog-list-output.html    -- blog demo: index page
-    forum-thread-output.html -- forum demo: thread view
-    forum-index-output.html  -- forum demo: thread listing
-    wiki-page-output.html    -- wiki demo: article with typed infobox
-    wiki-index-output.html   -- wiki demo: alphabetical page index
+    blog/    -- blog demo: index.html + a page per post
+    forum/   -- forum demo: index.html + thread-*.html + member-*.html
+    wiki/    -- wiki demo: index.html + a page per article
 ```
 
 ## Dependencies

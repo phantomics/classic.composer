@@ -1,9 +1,10 @@
 ;;;; blog-demo.lisp -- Self-contained Classic Composer demo
 ;;;;
-;;;; Renders two HTML pages from blog content using a single theme:
+;;;; Renders a small static site from blog content using a single theme:
 ;;;;
-;;;;   1. An individual blog post page
-;;;;   2. A blog post index page (list of recent posts)
+;;;;   1. A blog post index page (list of recent posts), whose entries
+;;;;      link to the posts
+;;;;   2. A page for each post
 ;;;;
 ;;;; To run from a fresh REPL:
 ;;;;
@@ -12,9 +13,9 @@
 ;;;;   (load "examples/blog-demo.lisp")
 ;;;;   (classic.composer.demo:run-demo)
 ;;;;
-;;;; The demo writes two HTML files under doc/demos/:
-;;;;   blog-post-output.html  -- single-post page
-;;;;   blog-list-output.html  -- index page
+;;;; The demo writes its pages under doc/demos/blog/:
+;;;;   index.html   -- index page
+;;;;   <post>.html  -- one page per post, named from its headline
 ;;;;
 ;;;; A reference stylesheet is shipped at examples/static/blog.css.
 
@@ -151,7 +152,7 @@ in *BLOG*. Returns the blog struct."
 ;;; Step 2: Define the demo theme
 ;;; ============================================================
 ;;;
-;;; A single theme handles both pages. It provides:
+;;; A single theme handles every page. It provides:
 ;;;
 ;;;   - A frame template with header + main-content slot + footer.
 ;;;     The frame includes a (template.slot :name "theme.assets")
@@ -178,7 +179,8 @@ return the theme entity. Stores in *THEME*."
          (slot-fills
            '(("theme.brand"
               . (section (@ :class "site-header")
-                  (paragraph (strong "Demo Blog"))
+                  (paragraph (strong (web-link (@ :uri "index.html")
+                                               "Demo Blog")))
                   (paragraph "A Classic Composer demonstration.")))
              ("theme.footer"
               . (section (@ :class "site-footer")
@@ -195,7 +197,7 @@ return the theme entity. Stores in *THEME*."
                    :theme-version "1.0"
                    :tier-templates `((:frame . ,frame-template))
                    :slot-fills slot-fills
-                   :asset-base-uri "../../examples/static/"
+                   :asset-base-uri "../../../examples/static/"
                    :asset-manifest '((:stylesheets ("blog.css")))
                    :lenses
                    '(;; Full article view for the single-post page.
@@ -215,10 +217,12 @@ return the theme entity. Stores in *THEME*."
                                     :display :html)
                                    (classic.schema:keywords
                                     :display :list)))
-                     ;; Compact entry for the index page
+                     ;; Compact entry for the index page; the
+                     ;; headline links to the post's page.
                      (:class classic.schema:classic-article
                       :purpose :summary
-                      :properties (classic.schema:headline
+                      :properties ((classic.schema:headline
+                                    :link :self)
                                    (classic.schema:date-created
                                     :display :date)))
                      ;; Inline author reference
@@ -234,16 +238,44 @@ return the theme entity. Stores in *THEME*."
       theme)))
 
 ;;; ============================================================
-;;; Step 3: Render the two pages
+;;; Step 3: Page links
+;;; ============================================================
+;;;
+;;; The demo writes a static site: the index is index.html and each
+;;; post is a page named from its headline. ENTITY-HREF tells the
+;;; composer where a post's page is, so the index's :link :self
+;;; headlines link to it.
+
+(defun slugify (string)
+  "Return STRING in lower case with each run of characters other than
+letters and digits made a single hyphen, as a file name."
+  (let ((words nil) (word (make-string-output-stream)))
+    (flet ((flush ()
+             (let ((w (get-output-stream-string word)))
+               (when (plusp (length w)) (push w words)))))
+      (loop for ch across string
+            do (if (alphanumericp ch)
+                   (write-char (char-downcase ch) word)
+                   (flush)))
+      (flush))
+    (format nil "~{~A~^-~}" (nreverse words))))
+
+(defun post-filename (post)
+  "The file name of POST's page."
+  (format nil "~A.html" (slugify (classic.schema:headline post))))
+
+(defmethod entity-href (context (entity publication-article))
+  (declare (ignore context))
+  (post-filename entity))
+
+;;; ============================================================
+;;; Step 4: Render the pages
 ;;; ============================================================
 
-(defun render-post-page (blog post-index)
-  "Compose and render a single blog post page. POST-INDEX is the
-1-based position of the post in the blog's container (newest first).
+(defun render-post-page (blog post)
+  "Compose and render the page of POST, one of BLOG's articles.
 Returns the rendered HTML string."
-  (let* ((posts (get-articles blog))
-         (post (nth (1- post-index) posts))
-         (ctx (make-context
+  (let* ((ctx (make-context
                :strategy (imprint-strategy blog)
                :publication (imprint-publication blog)
                :entity post)))
@@ -263,38 +295,38 @@ renders each entry with the :summary lens."
       (lexis.html:render-html page :standalone t))))
 
 ;;; ============================================================
-;;; Step 4: End-to-end demo
+;;; Step 5: End-to-end demo
 ;;; ============================================================
 
 (defun output-pathname (filename)
-  "Return the absolute pathname for an output file under doc/demos/.
+  "Return the absolute pathname for an output file under doc/demos/blog/.
 Resolved relative to the captured demo source directory."
   (merge-pathnames
-   (make-pathname :directory '(:relative :up "doc" "demos")
+   (make-pathname :directory '(:relative :up "doc" "demos" "blog")
                   :name (pathname-name filename)
                   :type (pathname-type filename))
    *demo-source-directory*))
 
+(defun write-page (filename html)
+  "Write HTML to FILENAME under doc/demos/blog/. Returns the pathname."
+  (let ((path (output-pathname filename)))
+    (ensure-directories-exist path)
+    (with-open-file (out path
+                         :direction :output
+                         :if-exists :supersede
+                         :if-does-not-exist :create)
+      (write-string html out))
+    (format t "~&Wrote ~A~%" path)
+    path))
+
 (defun run-demo ()
-  "End-to-end demo. Builds a blog, creates a theme, composes two
-pages, and writes them to doc/demos/. Returns the list of output
-file paths."
+  "End-to-end demo. Builds a blog, creates a theme, composes the index
+page and a page for each post, and writes them to doc/demos/blog/.
+Returns the list of output file paths."
   (setup-blog)
   (setup-theme *blog*)
-  (let ((post-html (render-post-page *blog* 1))
-        (list-html (render-list-page *blog*))
-        (post-path (output-pathname "blog-post-output.html"))
-        (list-path (output-pathname "blog-list-output.html")))
-    (with-open-file (out post-path
-                         :direction :output
-                         :if-exists :supersede
-                         :if-does-not-exist :create)
-      (write-string post-html out))
-    (with-open-file (out list-path
-                         :direction :output
-                         :if-exists :supersede
-                         :if-does-not-exist :create)
-      (write-string list-html out))
-    (format t "~&Wrote post page to ~A~%" post-path)
-    (format t "~&Wrote list page to ~A~%" list-path)
-    (list post-path list-path)))
+  (cons (write-page "index.html" (render-list-page *blog*))
+        (mapcar (lambda (post)
+                  (write-page (post-filename post)
+                              (render-post-page *blog* post)))
+                (get-articles *blog*))))

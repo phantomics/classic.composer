@@ -42,7 +42,11 @@
    #:compose-aggregate
    #:compose-operative
    #:container-reading-order
+   #:container-entries
    #:markdown-options
+   #:lens-property-value
+   #:resolve-reference
+   #:entity-href
 
    ;; ---- Template Resolution ----
    #:resolve-slots
@@ -91,6 +95,7 @@
 
    ;; ---- Lens Evaluation ----
    #:apply-lens
+   #:render-lens-property
    #:apply-sublens
    #:compute-display-mode
    #:render-slot-via-display-mode

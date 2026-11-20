@@ -200,8 +200,8 @@ author cards, etc."
    and produce a section of entries rendered with a per-entry lens.
 3. Otherwise NIL.
 
-For container walk: each item in the container's `contains' list is
-retrieved, then a lens is applied. The lens lookup prefers `:summary'
+For container walk: CONTAINER-ENTRIES gives the entities to list, in
+display order, then a lens is applied to each. The lens lookup prefers `:summary'
 purpose for richer index entries, falling back to `:label' for terse
 references. If neither lens is defined, the entry's label slot is
 used as plain text. Each entry is wrapped in its own (section ...)."
@@ -212,51 +212,96 @@ used as plain text. Each entry is wrapped in its own (section ...)."
        (compose-container-entries context entity)))))
 
 (defun compose-container-entries (context container)
-  "Walk CONTAINER's contents and produce a Lexis section listing each
-entry. Returns a (section ...) form, or NIL if the container is empty.
+  "Produce a Lexis section listing the entries CONTAINER-ENTRIES gives
+for CONTAINER, in its order. Returns a (section ...) form, or NIL if
+there are none."
+  (let ((entries (loop for entity in (container-entries context container)
+                       for entry = (compose-container-entry context entity)
+                       when entry collect entry)))
+    (when entries
+      `(section (@ :class "aggregate")
+         ,@entries))))
 
-The iteration order is determined by CONTAINER-READING-ORDER:
-  :AS-STORED -- iterate the contains list as-is (newest-first for
-                containers built with push)
-  :REVERSE   -- reverse the list for oldest-first reading (forum
-                threads, chronological feeds)"
+(defun compose-container-entry (context entity)
+  "Render ENTITY as a container entry. Tries the :summary lens, then
+:label, then falls back to the entity's label slot, linked to the
+entity's page when ENTITY-HREF gives one. Returns a (section ...)
+wrapping the rendered entry, or NIL if there is nothing to show."
+  (let* ((entity-class (class-name (class-of entity)))
+         (lenses (context-theme-lenses context))
+         (lens (or (and lenses
+                        (classic.schema:find-lens
+                         lenses entity-class :purpose :summary))
+                   (and lenses
+                        (classic.schema:find-lens
+                         lenses entity-class :purpose :label)))))
+    (cond
+      (lens
+       (let ((parts (apply-lens context lens entity)))
+         (when parts
+           `(section (@ :class "aggregate-entry") ,@parts))))
+      ;; Fallback: bare label, linked to the entity's page if it has one
+      ((slot-boundp entity 'classic.schema:label)
+       (let ((label (classic.schema:label entity))
+             (href (entity-href context entity)))
+         `(section (@ :class "aggregate-entry")
+            (paragraph ,(if href
+                            `(web-link (@ :uri ,href) ,label)
+                            label)))))
+      (t nil))))
+
+;;; ============================================================
+;;; container-entries -- default display order
+;;; ============================================================
+
+(defmethod container-entries (context container)
+  "Default: the retrievable entities of CONTAINER's contains list, in
+CONTAINER-READING-ORDER, sorted as the theme's :aggregate lens for
+CONTAINER's class says, if it says."
   (let* ((uris (classic.schema:contains container))
          (ordered (case (container-reading-order container)
                     (:reverse (reverse uris))
-                    (t uris))))
-    (when ordered
-      (let ((entries (loop for uri in ordered
-                           for entry = (compose-container-entry context uri)
-                           when entry collect entry)))
-        (when entries
-          `(section (@ :class "aggregate")
-             ,@entries))))))
+                    (t uris)))
+         (entities (loop for uri in ordered
+                         for entity = (context-retrieve context uri)
+                         when entity collect entity))
+         (lens (and (context-theme-lenses context)
+                    (classic.schema:find-lens
+                     (context-theme-lenses context)
+                     (class-name (class-of container))
+                     :purpose :aggregate)))
+         (sort-by (and lens (getf lens :sort-by))))
+    (if sort-by
+        (sort-entities context entities sort-by
+                       :descending (eq :descending (getf lens :sort-order)))
+        entities)))
 
-(defun compose-container-entry (context uri)
-  "Render a single container entry identified by URI as a Lexis
-subtree. Tries the :summary lens, then :label, then falls back to
-the entity's label slot. Returns a (section ...) wrapping the
-rendered entry, or NIL if the entity cannot be retrieved."
-  (let ((entity (context-retrieve context uri)))
-    (when entity
-      (let* ((entity-class (class-name (class-of entity)))
-             (lenses (context-theme-lenses context))
-             (lens (or (and lenses
-                            (classic.schema:find-lens
-                             lenses entity-class :purpose :summary))
-                       (and lenses
-                            (classic.schema:find-lens
-                             lenses entity-class :purpose :label)))))
-        (cond
-          (lens
-           (let ((parts (apply-lens context lens entity)))
-             (when parts
-               `(section (@ :class "aggregate-entry") ,@parts))))
-          ;; Fallback: bare label
-          ((slot-boundp entity 'classic.schema:label)
-           `(section (@ :class "aggregate-entry")
-              (paragraph ,(classic.schema:label entity))))
-          (t nil))))))
+(defun sort-entities (context entities property &key descending)
+  "Return ENTITIES stably sorted by the value of PROPERTY, read with
+LENS-PROPERTY-VALUE. Numbers compare numerically; other values compare
+by their printed forms, without regard to case. Entities without a
+value go last, in their original order. DESCENDING reverses the order
+of the entities that have values."
+  (let* ((keyed (mapcar (lambda (entity)
+                          (cons (lens-property-value context entity property)
+                                entity))
+                        entities))
+         (with-value (remove nil keyed :key #'car))
+         (without-value (remove-if-not #'null keyed :key #'car))
+         (sorted (stable-sort (copy-list with-value)
+                              (lambda (a b)
+                                (if descending
+                                    (sort-key< b a)
+                                    (sort-key< a b)))
+                              :key #'car)))
+    (mapcar #'cdr (append sorted without-value))))
+
+(defun sort-key< (a b)
+  "Order two sort keys: numerically when both are real numbers,
+otherwise by printed form without regard to case."
+  (if (and (realp a) (realp b))
+      (< a b)
+      (string-lessp (princ-to-string a) (princ-to-string b))))
 
 ;;; ============================================================
 ;;; compose-operative — theme-aware with default no-op

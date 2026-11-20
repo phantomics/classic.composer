@@ -199,62 +199,155 @@ package or symbol doesn't exist."
 ;;; ============================================================
 
 (defun apply-lens (context lens entity)
-  "Walk LENS's property specs, rendering each slot of ENTITY
-according to its display mode. Returns a list of Lexis subtrees,
-in property order. A property usually gives one subtree; one whose
-rendering is a list of blocks (a multi-block Markdown or Lexis body)
-gives each block in turn.
-
-Skips properties whose slot is unbound or NIL on the entity.
-Handles sublens references for relation slots."
-  (let ((property-specs (classic.schema:lens-properties lens))
-        (entity-class (class-of entity))
-        (results nil))
-    (dolist (prop property-specs)
-      (let* ((slot-name (getf prop :slot))
-             (explicit-display (getf prop :display))
-             (sublens-class (getf prop :sublens))
-             (sublens-purpose (or (getf prop :purpose) :default)))
-        ;; Skip if slot doesn't exist or isn't bound
-        (when (and (slot-exists-p entity slot-name)
-                   (slot-boundp entity slot-name))
-          (let ((value (slot-value entity slot-name)))
-            (when value
-              (let ((rendered
-                      (if sublens-class
-                          ;; Relation slot with sublens
-                          (apply-sublens context
-                                         sublens-class sublens-purpose
-                                         value)
-                          ;; Regular slot
-                          (let ((mode (compute-display-mode
-                                       slot-name entity-class
-                                       :explicit-mode explicit-display)))
-                            (render-slot-via-display-mode
-                             mode value
-                             :label (when (eq mode :link)
-                                      (classic.schema:label entity))
-                             :context context
-                             :entity entity
-                             :slot-name slot-name)))))
-                (cond
-                  ((block-list-p rendered)
-                   (dolist (block rendered)
-                     (push block results)))
-                  (rendered
-                   (push rendered results)))))))))
+  "Walk LENS's property specs, rendering each property of ENTITY with
+RENDER-LENS-PROPERTY. Returns a list of Lexis subtrees, in property
+order. A property usually gives one subtree; one whose rendering is a
+list of blocks (a multi-block Markdown or Lexis body) gives each block
+in turn. Properties with no value are skipped."
+  (let ((results nil))
+    (dolist (prop (classic.schema:lens-properties lens))
+      (let ((rendered (render-lens-property context entity prop)))
+        (cond
+          ((block-list-p rendered)
+           (dolist (block rendered)
+             (push block results)))
+          (rendered
+           (push rendered results)))))
     (nreverse results)))
+
+(defun render-lens-property (context entity prop)
+  "Render one property of ENTITY as a Lexis subtree, or a list of
+blocks, or return NIL when the property has no value.
+
+PROP is a normalized property spec, as CLASSIC.SCHEMA:LENS-PROPERTIES
+returns: (:slot NAME &key display sublens purpose link label). The
+value is read with LENS-PROPERTY-VALUE, so NAME may be a slot or a
+computed property. Then:
+
+  - With :SUBLENS, the value is a reference (or a list of them),
+    rendered by APPLY-SUBLENS through the target entity's lens.
+  - In the :LINK display mode, the value is a reference rendered by
+    RENDER-REFERENCE-LINK.
+  - Otherwise the value is rendered in its display mode.
+
+:LINK :SELF links the rendered value to ENTITY's page, when
+ENTITY-HREF gives one; use it on inline values such as a title.
+:LABEL, a string, captions the value: an inline value becomes
+(paragraph (strong \"Label:\") \" \" value), and a block value is
+preceded by a paragraph holding the caption."
+  (let* ((property (getf prop :slot))
+         (value (lens-property-value context entity property)))
+    (when value
+      (let* ((sublens-class (getf prop :sublens))
+             (mode (unless sublens-class
+                     (compute-display-mode property (class-of entity)
+                                           :explicit-mode (getf prop :display))))
+             (rendered
+               (cond
+                 (sublens-class
+                  (apply-sublens context sublens-class
+                                 (or (getf prop :purpose) :default)
+                                 value
+                                 :entity entity :property property))
+                 ((eq mode :link)
+                  (render-reference-link context entity property value))
+                 (t
+                  (render-slot-via-display-mode mode value
+                                                :context context
+                                                :entity entity
+                                                :slot-name property)))))
+        (when rendered
+          (label-rendered-value (getf prop :label)
+                                (link-rendered-value context entity
+                                                     (getf prop :link)
+                                                     rendered)))))))
+
+(defun link-rendered-value (context entity link rendered)
+  "Wrap RENDERED in a web-link to ENTITY's page when LINK is :SELF and
+ENTITY-HREF gives one. Blocks, which a link cannot hold, are not
+linked."
+  (let ((href (when (and (eq link :self)
+                         (not (block-list-p rendered))
+                         (not (block-node-p rendered)))
+                (entity-href context entity))))
+    (if href
+        `(web-link (@ :uri ,href) ,rendered)
+        rendered)))
+
+(defun label-rendered-value (label rendered)
+  "Caption RENDERED with LABEL, a string, when LABEL is given."
+  (cond
+    ((null label) rendered)
+    ((block-list-p rendered)
+     `((paragraph (strong ,label)) ,@rendered))
+    ((block-node-p rendered)
+     `((paragraph (strong ,label)) ,rendered))
+    (t
+     `(paragraph (strong ,(format nil "~A:" label)) " " ,rendered))))
+
+(defparameter *block-tag-names*
+  '("PARAGRAPH" "SECTION" "BLOCKQUOTE" "CODE-BLOCK" "UNORDERED-LIST"
+    "ORDERED-LIST" "DEFINITION-LIST" "TABLE" "FIGURE" "PASSTHROUGH")
+  "Names of the Lexis tags that are blocks rather than inline content.")
+
+(defun block-node-p (value)
+  "Return T if VALUE is a single Lexis node with a block-level tag."
+  (and (tagged-node-p value)
+       (member (symbol-name (node-tag value)) *block-tag-names*
+               :test #'string=)
+       t))
+
+;;; ============================================================
+;;; References
+;;; ============================================================
+
+(defun render-reference-link (context entity property value)
+  "Render VALUE, a reference held by PROPERTY of ENTITY, as a link.
+
+The reference is resolved with RESOLVE-REFERENCE. A resolved target
+is linked to its page (ENTITY-HREF) or, when it has none, to VALUE if
+VALUE is a URI, and shown by its title. An unresolved VALUE that is a
+URI is linked to directly, shown by ENTITY's label; anything else,
+such as the name of a page that does not exist, is rendered as text."
+  (let ((target (resolve-reference context entity property value)))
+    (cond
+      (target
+       (let ((href (or (entity-href context target)
+                       (when (uri-like-p value) value))))
+         (if href
+             (render-link href (entity-title target))
+             (render-text (entity-title target)))))
+      ((uri-like-p value)
+       (render-link value (when (slot-boundp entity 'classic.schema:label)
+                            (classic.schema:label entity))))
+      (t (render-text value)))))
+
+(defun uri-like-p (value)
+  "Return T if VALUE is a string that reads as a URI or URI reference:
+it holds no whitespace, and has a scheme or begins with /, #, ./ or
+../."
+  (and (stringp value)
+       (plusp (length value))
+       (notany (lambda (c) (member c '(#\Space #\Tab #\Newline))) value)
+       (or (find #\: value)
+           (member (char value 0) '(#\/ #\#))
+           (eql 0 (search "./" value))
+           (eql 0 (search "../" value)))
+       t))
 
 ;;; ============================================================
 ;;; Sublens resolution
 ;;; ============================================================
 
-(defun apply-sublens (context sublens-class sublens-purpose value)
-  "Handle a relation slot: retrieve the related entity and apply
+(defun apply-sublens (context sublens-class sublens-purpose value
+                      &key entity property)
+  "Handle a reference property: resolve the related entity and apply
 the target lens.
 
-VALUE is a URI string (or list of URI strings for multi-valued
-relations).
+VALUE is a reference, or a list of references for multi-valued
+relations. A reference is usually a URI string; RESOLVE-REFERENCE,
+called with ENTITY and PROPERTY (the referring entity and property),
+turns it into an entity.
 
 Fallback chain:
   1. Lens for (sublens-class, sublens-purpose) in resolved theme
@@ -264,44 +357,38 @@ Fallback chain:
 Returns a Lexis subtree or NIL."
   (if (listp value)
       ;; Multi-valued relation: render each
-      (let ((items (loop for uri in value
+      (let ((items (loop for reference in value
                          for result = (apply-sublens-single
                                        context sublens-class
-                                       sublens-purpose uri)
+                                       sublens-purpose reference
+                                       :entity entity :property property)
                          when result collect result)))
         (when items
           `(unordered-list ,@(mapcar (lambda (item) `(item ,item))
                                      items))))
       ;; Single-valued relation
-      (apply-sublens-single context sublens-class sublens-purpose value)))
+      (apply-sublens-single context sublens-class sublens-purpose value
+                            :entity entity :property property)))
 
-(defun apply-sublens-single (context sublens-class sublens-purpose uri)
-  "Apply a sublens to a single related entity identified by URI.
+(defun apply-sublens-single (context sublens-class sublens-purpose reference
+                             &key entity property)
+  "Apply a sublens to the single entity REFERENCE refers to.
+ENTITY and PROPERTY are passed to RESOLVE-REFERENCE.
 Returns a Lexis subtree or NIL."
-  (let ((entity (context-retrieve context uri)))
-    (when entity
+  (let ((target (resolve-reference context entity property reference)))
+    (when target
       (let* ((lenses (context-theme-lenses context))
-             (actual-class (class-name (class-of entity)))
-             ;; Try the declared sublens class/purpose
-             (lens (classic.schema:find-lens
-                    lenses sublens-class :purpose sublens-purpose)))
-        (cond
-          ;; Found target lens
-          (lens
-           (let ((parts (apply-lens context lens entity)))
-             (when parts
-               (if (= 1 (length parts))
-                   (first parts)
-                   `(section ,@parts)))))
-          ;; Fallback: :label purpose for actual class
-          ((setf lens (classic.schema:find-lens
-                       lenses actual-class :purpose :label))
-           (let ((parts (apply-lens context lens entity)))
-             (when parts
-               (if (= 1 (length parts))
-                   (first parts)
-                   `(section ,@parts)))))
-          ;; Final fallback: entity's label slot
-          (t
-           (when (slot-boundp entity 'classic.schema:label)
-             (classic.schema:label entity))))))))
+             (lens (or (classic.schema:find-lens
+                        lenses sublens-class :purpose sublens-purpose)
+                       (classic.schema:find-lens
+                        lenses (class-name (class-of target))
+                        :purpose :label))))
+        (if lens
+            (let ((parts (apply-lens context lens target)))
+              (when parts
+                (if (= 1 (length parts))
+                    (first parts)
+                    `(section ,@parts))))
+            ;; Final fallback: the target's label slot
+            (when (slot-boundp target 'classic.schema:label)
+              (classic.schema:label target)))))))

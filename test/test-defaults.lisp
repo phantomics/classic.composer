@@ -153,6 +153,112 @@ sections, not literal text."
                (entry-content (node-children entry)))
           (is (not (null entry-content))))))))
 
+(defun entry-headlines (context container)
+  "The headlines of CONTAINER-ENTRIES' entities, in order."
+  (mapcar #'classic.schema:headline (container-entries context container)))
+
+(def-test container-entries-keep-stored-order ()
+  "Without an :aggregate lens, container entries follow the contains
+list in CONTAINER-READING-ORDER, skipping URIs that do not resolve."
+  (with-clean-strategy ()
+    (let* ((b (make-test-article :headline "Bravo"))
+           (a (make-test-article :headline "Alpha"))
+           (container (make-test-container :entries (list b a))))
+      (push "classic:test.example,2026:articles/missing"
+            (classic.schema:contains container))
+      (is (equal '("Bravo" "Alpha")
+                 (entry-headlines (make-minimal-context) container))))))
+
+(def-test container-entries-sorted-by-aggregate-lens ()
+  "An :aggregate lens on the container's class sorts its entries by its
+:sort-by property, ascending or, with :sort-order :descending,
+descending; the container itself is not changed."
+  (with-clean-strategy ()
+    (let* ((c (make-test-article :headline "Charlie"))
+           (a (make-test-article :headline "alpha"))
+           (b (make-test-article :headline "Bravo"))
+           (container (make-test-container :entries (list c a b)))
+           (stored (copy-list (classic.schema:contains container)))
+           (ascending (make-test-theme
+                       :name "Ascending"
+                       :lenses '((:class classic.schema:classic-container
+                                  :purpose :aggregate
+                                  :sort-by classic.schema:headline))))
+           (descending (make-test-theme
+                        :name "Descending"
+                        :lenses '((:class classic.schema:classic-container
+                                   :purpose :aggregate
+                                   :sort-by classic.schema:headline
+                                   :sort-order :descending)))))
+      (is (equal '("alpha" "Bravo" "Charlie")
+                 (entry-headlines (make-themed-context
+                                   :theme-uri (uri-string ascending))
+                                  container)))
+      (is (equal '("Charlie" "Bravo" "alpha")
+                 (entry-headlines (make-themed-context
+                                   :theme-uri (uri-string descending))
+                                  container)))
+      (is (equal stored (classic.schema:contains container))))))
+
+(def-test sort-entities-numbers-and-missing-values ()
+  "Sort keys that are numbers compare numerically, and entities with no
+value go last in their original order."
+  (with-clean-strategy ()
+    (let* ((ten (make-test-article :headline "Ten"))
+           (none-1 (make-test-article :headline "None One"))
+           (two (make-test-article :headline "Two"))
+           (none-2 (make-test-article :headline "None Two"))
+           (ctx (make-hooks-context
+                 :computed `((rank . ,(lambda (entity)
+                                        (cdr (assoc (classic.schema:headline entity)
+                                                    '(("Ten" . 10) ("Two" . 2))
+                                                    :test #'equal))))))))
+      (is (equal '("Two" "Ten" "None One" "None Two")
+                 (mapcar #'classic.schema:headline
+                         (classic.composer::sort-entities
+                          ctx (list ten none-1 two none-2) 'rank)))))))
+
+(def-test compose-aggregate-uses-container-entries ()
+  "compose-aggregate lists the entities a CONTAINER-ENTRIES method
+gives, in its order."
+  (with-clean-strategy ()
+    (let* ((a (make-test-article :headline "Alpha"))
+           (b (make-test-article :headline "Bravo"))
+           (container (make-test-container :entries (list a b)))
+           (ctx (make-hooks-context
+                 :entity container
+                 :entries (lambda (c) (declare (ignore c)) (list b))))
+           (result (compose-aggregate ctx)))
+      (is (= 1 (length (node-children result))))
+      (is (equal '("Bravo")
+                 (node-children (first (find-nodes "PARAGRAPH" result))))))))
+
+(def-test compose-aggregate-links-entries ()
+  "Container entries link to their pages: through :link :self in a
+:summary lens, and in the label fallback when there is no lens."
+  (with-clean-strategy ()
+    (let* ((a (make-test-article :headline "Alpha"))
+           (container (make-test-container :entries (list a)))
+           (hrefs `((,(uri-string a) . "alpha.html")))
+           (theme (make-test-theme
+                   :name "Linking Summary"
+                   :lenses '((:class classic.schema:classic-article
+                              :purpose :summary
+                              :properties ((classic.schema:headline
+                                            :link :self))))))
+           (with-lens (compose-aggregate
+                       (make-hooks-context :entity container
+                                           :theme-uri (uri-string theme)
+                                           :hrefs hrefs)))
+           (without-lens (compose-aggregate
+                          (make-hooks-context :entity container
+                                              :hrefs hrefs))))
+      (dolist (result (list with-lens without-lens))
+        (let ((links (find-nodes "WEB-LINK" result)))
+          (is (= 1 (length links)))
+          (is (equal "alpha.html" (get-attr (first links) :uri)))
+          (is (equal '("Alpha") (node-children (first links)))))))))
+
 (def-test compose-aggregate-nil-without-container ()
   "compose-aggregate returns NIL when entity is not a container
 and no theme template is provided."

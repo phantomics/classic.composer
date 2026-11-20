@@ -159,6 +159,97 @@ blocks into its own tree."))
   nil)
 
 ;;; ============================================================
+;;; Lens property values and references
+;;; ============================================================
+
+(defgeneric lens-property-value (context entity property)
+  (:documentation
+   "Return the value of PROPERTY of ENTITY as a lens sees it, or NIL
+when it has none, in which case the lens skips the property.
+
+The default method returns the value of the slot named PROPERTY when
+ENTITY has that slot and it is bound. Application models specialize
+this, usually with an EQL specializer on PROPERTY, to give lenses
+computed properties: values derived from other slots or found through
+the persistence layer, which a lens names exactly as it names a slot.
+A computed property has no slot definition, so its display mode is
+:TEXT unless the lens declares one.
+
+This is the composer's read path for property values: a computed
+property must not modify ENTITY or anything else in persistence."))
+
+(defmethod lens-property-value (context entity property)
+  "Default: the bound value of the slot named PROPERTY, or NIL."
+  (declare (ignore context))
+  (when (and (slot-exists-p entity property)
+             (slot-boundp entity property))
+    (slot-value entity property)))
+
+(defgeneric resolve-reference (context entity property value)
+  (:documentation
+   "Return the entity that VALUE, the value of PROPERTY of ENTITY,
+refers to, or NIL when it refers to none that can be found.
+
+Sublenses and the :LINK display mode call this to follow a
+reference. The default method retrieves VALUE as a URI when it is a
+string, and returns VALUE itself when it is already an entity.
+Application models whose references are not URIs specialize it on
+the referring ENTITY's class: a wiki whose typed slots name pages by
+anchor looks the anchor up."))
+
+(defmethod resolve-reference (context entity property value)
+  "Default: retrieve a URI string; pass an entity through."
+  (declare (ignore entity property))
+  (typecase value
+    (string (context-retrieve context value))
+    (classic.schema:classic-resource value)
+    (t nil)))
+
+;;; ============================================================
+;;; Page links
+;;; ============================================================
+
+(defgeneric entity-href (context entity)
+  (:documentation
+   "Return the URL of the page that presents ENTITY, as a string, or
+NIL when no page does.
+
+The composer links to an entity's page wherever a lens property says
+:LINK :SELF, where a :LINK property refers to the entity, and in
+container entries rendered without a lens. The default method returns
+NIL, so nothing is linked. A site specializes this on the classes it
+publishes pages for; the URL scheme -- relative file names for a
+static site, routes for a server -- is the site's choice. CONTEXT
+lets a method build URLs relative to the page being composed."))
+
+(defmethod entity-href (context entity)
+  "Default: no page, so no link."
+  (declare (ignore context entity))
+  nil)
+
+;;; ============================================================
+;;; Container entries
+;;; ============================================================
+
+(defgeneric container-entries (context container)
+  (:documentation
+   "Return the entities an aggregate view of CONTAINER lists, in
+display order.
+
+The default method retrieves the URIs in CONTAINER's contains list,
+in the order CONTAINER-READING-ORDER gives, skipping any that cannot
+be retrieved. When the theme has an :AGGREGATE lens for CONTAINER's
+class with a :SORT-BY property, the entries are then sorted by that
+property's value (read with LENS-PROPERTY-VALUE): ascending, or
+descending when the lens says :SORT-ORDER :DESCENDING. The sort is
+stable, and entries without a value go last.
+
+Application models specialize this for containers whose order is a
+rule of the content type, such as a forum listing pinned threads
+first. The order is computed for display; the container is not
+changed."))
+
+;;; ============================================================
 ;;; Lexis tree utilities
 ;;; ============================================================
 ;;; These operate on raw s-expression Lexis trees (lists and strings),

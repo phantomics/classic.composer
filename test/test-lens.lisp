@@ -311,3 +311,154 @@ result, after the properties before it, with no wrapper section."
                      'classic.schema:classic-person :default
                      (uri-string person))))
         (is (equal "Bob" result))))))
+
+(def-test sublens-follows-resolve-reference ()
+  "A sublens follows a reference through RESOLVE-REFERENCE, so a value
+that is not a URI, such as a name, reaches its entity when a method
+resolves it."
+  (with-clean-strategy ()
+    (let* ((person (make-test-person :name "Alice"))
+           (article (make-test-article :headline "Post"
+                                       :author-uri "alice-by-name"))
+           (theme (make-test-theme
+                   :name "Reference Theme"
+                   :lenses `((:class classic.schema:classic-person
+                              :purpose :label
+                              :properties (classic.schema:agent-name)))))
+           (ctx (make-hooks-context
+                 :entity article
+                 :theme-uri (uri-string theme)
+                 :references `(("alice-by-name" . ,person))))
+           (prop '(:slot classic.schema:author
+                   :sublens classic.schema:classic-person :purpose :label)))
+      (is (equal "Alice" (render-lens-property ctx article prop))))))
+
+;;; ============================================================
+;;; Lens property values
+;;; ============================================================
+
+(def-test lens-property-value-reads-slots ()
+  "The default LENS-PROPERTY-VALUE reads a bound slot, and gives NIL
+for a property that is not a slot."
+  (with-clean-strategy ()
+    (let ((article (make-test-article :headline "Slots"))
+          (ctx (make-minimal-context)))
+      (is (equal "Slots" (lens-property-value ctx article
+                                              'classic.schema:headline)))
+      (is (null (lens-property-value ctx article 'no-such-property))))))
+
+(def-test computed-property-in-lens ()
+  "A lens names a computed property as it names a slot; a
+LENS-PROPERTY-VALUE method supplies its value, rendered as text."
+  (with-clean-strategy ()
+    (let* ((article (make-test-article :headline "Counted"
+                                       :body-text "three short words"))
+           (lens '(:class classic.schema:classic-article
+                   :properties (classic.schema:headline word-count)))
+           (ctx (make-hooks-context
+                 :computed `((word-count
+                              . ,(lambda (entity)
+                                   (1+ (count #\Space
+                                              (classic.schema:body entity)))))))))
+      (is (equal '("Counted" "3") (apply-lens ctx lens article))))))
+
+;;; ============================================================
+;;; Property options: :link :self and :label
+;;; ============================================================
+
+(def-test link-self-links-to-entity-page ()
+  ":LINK :SELF links a property's value to the page ENTITY-HREF gives
+for its entity."
+  (with-clean-strategy ()
+    (let* ((article (make-test-article :headline "Linked"))
+           (ctx (make-hooks-context
+                 :hrefs `((,(uri-string article) . "linked.html"))))
+           (result (render-lens-property
+                    ctx article '(:slot classic.schema:headline :link :self))))
+      (is (string= "WEB-LINK" (symbol-name (node-tag result))))
+      (is (equal "linked.html" (get-attr result :uri)))
+      (is (equal '("Linked") (node-children result))))))
+
+(def-test link-self-without-page-is-plain ()
+  ":LINK :SELF leaves the value unlinked when the entity has no page."
+  (with-clean-strategy ()
+    (let ((article (make-test-article :headline "Unlinked"))
+          (ctx (make-minimal-context)))
+      (is (equal "Unlinked"
+                 (render-lens-property
+                  ctx article '(:slot classic.schema:headline :link :self)))))))
+
+(def-test label-captions-inline-and-block-values ()
+  ":LABEL captions an inline value in one paragraph, and puts the
+caption in a paragraph before a block value."
+  (with-clean-strategy ()
+    (let ((article (make-test-article :headline "Captioned"
+                                      :keywords '("a" "b")))
+          (ctx (make-minimal-context)))
+      (let ((inline (render-lens-property
+                     ctx article '(:slot classic.schema:headline :label "Title"))))
+        (is (string= "PARAGRAPH" (symbol-name (node-tag inline))))
+        (is (equal '("Title:") (node-children (first (node-children inline)))))
+        (is (equal '(" " "Captioned") (rest (node-children inline)))))
+      (let ((block (render-lens-property
+                    ctx article '(:slot classic.schema:keywords
+                                  :display :list :label "Keywords"))))
+        (is-true (classic.composer::block-list-p block))
+        (is (string= "PARAGRAPH" (symbol-name (node-tag (first block)))))
+        (is (equal '("Keywords")
+                   (node-children (first (find-nodes "STRONG" (first block))))))
+        (is (string= "UNORDERED-LIST"
+                     (symbol-name (node-tag (second block)))))))))
+
+;;; ============================================================
+;;; The :link display mode follows references
+;;; ============================================================
+
+(def-test link-mode-links-to-referenced-page ()
+  "In the :link mode a resolved reference links to the target's page,
+shown by the target's title."
+  (with-clean-strategy ()
+    (let* ((person (make-test-person :name "Alice"))
+           (article (make-test-article :headline "Post"
+                                       :author-uri (uri-string person)))
+           (ctx (make-hooks-context
+                 :hrefs `((,(uri-string person) . "alice.html"))))
+           (result (render-lens-property
+                    ctx article '(:slot classic.schema:author :display :link))))
+      (is (equal "alice.html" (get-attr result :uri)))
+      (is (equal '("Alice") (node-children result))))))
+
+(def-test link-mode-without-page-links-to-uri ()
+  "In the :link mode a resolved reference with no page links to the
+reference's URI, still shown by the target's title."
+  (with-clean-strategy ()
+    (let* ((person (make-test-person :name "Alice"))
+           (article (make-test-article :headline "Post"
+                                       :author-uri (uri-string person)))
+           (ctx (make-minimal-context))
+           (result (render-lens-property
+                    ctx article '(:slot classic.schema:author :display :link))))
+      (is (equal (uri-string person) (get-attr result :uri)))
+      (is (equal '("Alice") (node-children result))))))
+
+(def-test link-mode-unresolved-name-is-text ()
+  "In the :link mode a reference that resolves to nothing and is not a
+URI, such as the name of a missing page, renders as text."
+  (with-clean-strategy ()
+    (let ((article (make-test-article :headline "Post"
+                                      :author-uri "Nobody Here"))
+          (ctx (make-minimal-context)))
+      (is (equal "Nobody Here"
+                 (render-lens-property
+                  ctx article '(:slot classic.schema:author :display :link)))))))
+
+(def-test uri-like-values ()
+  "URIs and URI references read as URIs; names with spaces do not."
+  (is-true (classic.composer::uri-like-p "classic:x,2026:pages/a"))
+  (is-true (classic.composer::uri-like-p "https://example.com/"))
+  (is-true (classic.composer::uri-like-p "/wiki/a"))
+  (is-true (classic.composer::uri-like-p "#top"))
+  (is-true (classic.composer::uri-like-p "../a.html"))
+  (is-false (classic.composer::uri-like-p "Jay Miner"))
+  (is-false (classic.composer::uri-like-p "page.html"))
+  (is-false (classic.composer::uri-like-p "")))

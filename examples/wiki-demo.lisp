@@ -1,11 +1,17 @@
 ;;;; wiki-demo.lisp -- Self-contained Classic Composer wiki demo
 ;;;;
-;;;; Renders two HTML pages from a wiki with typed page classes and
+;;;; Renders a small static site from a wiki with typed page classes and
 ;;;; lens-driven infobox rendering:
 ;;;;
-;;;;   1. A wiki article page (Amiga 1000) with typed infobox sidebar,
+;;;;   1. An alphabetical wiki index page, whose entries link to the
+;;;;      pages
+;;;;   2. A page for each wiki article, with typed infobox sidebar,
 ;;;;      body with resolved/broken wiki links, and metadata sections
-;;;;   2. An alphabetical wiki index page
+;;;;
+;;;; The demo does not modify the wiki to render it: page anchors in
+;;;; typed slots and wiki links are resolved while the pages are
+;;;; composed, through RESOLVE-REFERENCE and MARKDOWN-OPTIONS, and the
+;;;; index order comes from the theme.
 ;;;;
 ;;;; This is the first demo to exercise:
 ;;;;   - Child theme inheritance (child adds :default/:summary lenses
@@ -22,6 +28,10 @@
 ;;;;   (ql:quickload "lexis.html")
 ;;;;   (load "examples/wiki-demo.lisp")
 ;;;;   (classic.composer.wiki-demo:run-demo)
+;;;;
+;;;; The demo writes its pages under doc/demos/wiki/:
+;;;;   index.html    -- page index
+;;;;   <page>.html   -- one page per wiki article, named from its anchor
 
 (defpackage #:classic.composer.wiki-demo
   (:use #:cl
@@ -118,7 +128,10 @@ and 1 generic (AmigaOS). Returns the wiki imprint."
 ;;; The child theme adds:
 ;;;   - A frame template with slots for infobox, content, adjunct
 ;;;   - :default lenses for wiki-page (headline + Markdown body)
-;;;   - :summary lenses for the index page
+;;;   - :summary lenses for the index page, with headlines linked to
+;;;     the pages
+;;;   - An :aggregate lens on the page container, listing the index
+;;;     alphabetically
 ;;;   - Slot fills for brand header and footer
 ;;;   - Asset manifest for wiki.css
 
@@ -139,7 +152,8 @@ Attaches it to the publication. Returns the child theme."
          (slot-fills
            '(("theme.brand"
               . (section (@ :class "wiki-header")
-                  (paragraph (strong "Classic Computers Wiki"))
+                  (paragraph (strong (web-link (@ :uri "index.html")
+                                               "Classic Computers Wiki")))
                   (paragraph "A Classic-powered knowledge base.")))
              ("theme.footer"
               . (section (@ :class "wiki-footer")
@@ -157,7 +171,7 @@ Attaches it to the publication. Returns the child theme."
                    :theme-version "1.0"
                    :tier-templates `((:frame . ,frame-template))
                    :slot-fills slot-fills
-                   :asset-base-uri "../../examples/static/"
+                   :asset-base-uri "../../../examples/static/"
                    :asset-manifest '((:stylesheets ("wiki.css")))
                    :lenses
                    `(;; Full page view: headline + body. The body
@@ -168,12 +182,19 @@ Attaches it to the publication. Returns the child theme."
                       :purpose :default
                       :properties (classic.schema:headline
                                    classic.schema:body))
-                     ;; Index page entries
+                     ;; Index page entries, linked to the pages
                      (:class wiki-page
                       :purpose :summary
-                      :properties (classic.schema:headline
+                      :properties ((classic.schema:headline
+                                    :link :self)
                                    (classic.schema:created-at
-                                    :display :date)))))))
+                                    :display :date)))
+                     ;; The index lists pages alphabetically. The
+                     ;; order belongs to this theme, so it applies to
+                     ;; this wiki's container only.
+                     (:class classic.schema:classic-container
+                      :purpose :aggregate
+                      :sort-by classic.schema:headline)))))
       (persist-entity strategy theme)
       ;; Attach child theme to publication (replaces parent)
       (setf (classic.schema:ui-theme (imprint-publication wiki))
@@ -183,7 +204,49 @@ Attaches it to the publication. Returns the child theme."
       theme)))
 
 ;;; ============================================================
-;;; Step 3: Wiki links in Markdown bodies
+;;; Step 3: Page links and page references
+;;; ============================================================
+;;;
+;;; The demo writes a static site: the index is index.html and each
+;;; page is a file named from its anchor. ENTITY-HREF tells the
+;;; composer where a page is.
+;;;
+;;; Typed slots such as computer-designer name pages by anchor, not
+;;; by URI. RESOLVE-REFERENCE looks an anchor up, so the infobox's
+;;; links and sublenses reach the pages without the slots being
+;;; rewritten. The composition context carries no wiki imprint, so
+;;; the lookups use *WIKI*.
+
+(defun slugify (string)
+  "Return STRING in lower case with each run of characters other than
+letters and digits made a single hyphen, as a file name."
+  (let ((words nil) (word (make-string-output-stream)))
+    (flet ((flush ()
+             (let ((w (get-output-stream-string word)))
+               (when (plusp (length w)) (push w words)))))
+      (loop for ch across string
+            do (if (alphanumericp ch)
+                   (write-char (char-downcase ch) word)
+                   (flush)))
+      (flush))
+    (format nil "~{~A~^-~}" (nreverse words))))
+
+(defun page-filename (page)
+  "The file name of PAGE's page."
+  (format nil "~A.html" (slugify (classic.models.common:page-anchor page))))
+
+(defmethod entity-href (context (entity wiki-page))
+  (declare (ignore context))
+  (page-filename entity))
+
+(defmethod resolve-reference (context (entity wiki-page) property value)
+  "A wiki page's references are URIs or page anchors."
+  (or (call-next-method)
+      (when (stringp value)
+        (classic.models.common::find-page-by-anchor *wiki* value))))
+
+;;; ============================================================
+;;; Step 4: Wiki links in Markdown bodies
 ;;; ============================================================
 ;;;
 ;;; Page bodies stay Markdown strings. The composer reads them with
@@ -192,131 +255,77 @@ Attaches it to the publication. Returns the child theme."
 ;;; resolver that turns [[Anchor]] and [[Anchor|Display]] into links
 ;;; to the named pages.
 
-(defun resolve-wiki-link (wiki target display)
+(defun resolve-wiki-link (context target display)
   "Return the Lexis form for a wiki link to TARGET shown as DISPLAY:
-a web-link to the page when WIKI has one with that anchor, otherwise
-an emphasis marking the link as broken. The form is built from LEXIS
-symbols, which the reader's passes recognise."
-  (let ((page (classic.models.common::find-page-by-anchor wiki target)))
+a web-link to the page's file when the wiki has a page with that
+anchor, otherwise an emphasis marking the link as broken. The form is
+built from LEXIS symbols, which the reader's passes recognise."
+  (let ((page (classic.models.common::find-page-by-anchor *wiki* target)))
     (if page
-        `(lexis::web-link
-          (lexis::@ :uri ,(format nil "/wiki/~A"
-                                  (classic.models.common:page-anchor page)))
-          ,display)
+        `(lexis::web-link (lexis::@ :uri ,(entity-href context page))
+                          ,display)
         `(lexis::emphasis (lexis::@ :class "broken-link") ,display))))
 
 (defmethod markdown-options (context (entity wiki-page) slot-name)
-  "Resolve the wiki links in a page's body against the demo wiki.
-The composition context carries no wiki imprint, so the resolver uses
-*WIKI*."
-  (declare (ignore context slot-name))
+  "Resolve the wiki links in a page's body against the demo wiki."
+  (declare (ignore slot-name))
   (list :wiki-link-resolver
         (lambda (target display)
-          (resolve-wiki-link *wiki* target display))))
+          (resolve-wiki-link context target display))))
 
 ;;; ============================================================
-;;; Typed slots, infobox and page metadata
+;;; Step 5: Infobox and page metadata
 ;;; ============================================================
 
-(defun resolve-typed-slots-to-uris (wiki page)
-  "For typed-slot values that are anchor strings, resolve to page URIs
-so the composer's apply-sublens can retrieve the entities."
-  (let ((strategy (imprint-strategy wiki)))
-    (flet ((resolve-anchor-slot (accessor)
-             (when (and (slot-exists-p page accessor)
-                        (slot-boundp page accessor))
-               (let* ((anchor (funcall accessor page))
-                      (target (when (stringp anchor)
-                                (classic.models.common::find-page-by-anchor
-                                 wiki anchor))))
-                 (when target
-                   (setf (slot-value page accessor) (uri-string target)))))))
-      ;; Computer slots
-      (when (typep page 'wiki-computer)
-        (resolve-anchor-slot 'classic.models.common:computer-designer)
-        (resolve-anchor-slot 'classic.models.common:computer-cpu))
-      ;; CPU slots
-      (when (typep page 'wiki-cpu)
-        (resolve-anchor-slot 'classic.models.common:cpu-designer)))
-    (persist-entity strategy page)))
+(defun render-infobox (context page)
+  "Render PAGE's infobox as an HTML passthrough holding a definition
+list, or return NIL if it has none.
 
-(defun render-infobox-to-lexis (wiki page resolved-lenses)
-  "Render the page's infobox as a Lexis (definition-list ...) subtree.
-For typed pages: walks the :infobox lens, reads each slot, renders
-with display modes, and assembles label/value pairs.
-For generic pages: renders the alist infobox.
-Returns the Lexis subtree or NIL."
-  (let* ((entity-class (class-name (class-of page)))
-         (lens (classic.schema:find-lens resolved-lenses entity-class
-                                         :purpose :infobox)))
+For typed pages, each property of the :infobox lens is rendered with
+the composer's RENDER-LENS-PROPERTY, so :link properties and sublenses
+follow page anchors through RESOLVE-REFERENCE; list properties are
+shown as comma-separated text. For generic pages, the alist infobox
+is shown as it is.
+
+The infobox is a passthrough because wiki.css styles it by its class,
+which the Lexis HTML renderer does not give a Lexis definition list."
+  (let ((lens (classic.schema:find-lens (context-theme-lenses context)
+                                        (class-name (class-of page))
+                                        :purpose :infobox)))
     (cond
       ;; Typed page with an :infobox lens
       (lens
-       (let ((props (classic.schema:lens-properties lens))
-             (entries nil))
-         (dolist (prop props)
-           (let* ((slot-name (getf prop :slot))
-                  (display (getf prop :display))
-                  (sublens-class (getf prop :sublens))
-                  (sublens-purpose (or (getf prop :purpose) :label)))
-             (when (and (slot-exists-p page slot-name)
-                        (slot-boundp page slot-name))
-               (let ((value (slot-value page slot-name)))
-                 (when value
-                   (let ((label (classic.models.common::slot-display-label
-                                 slot-name))
-                         (rendered
-                           (cond
-                             ;; Sublens reference
-                             (sublens-class
-                              (let ((result (apply-sublens
-                                            (make-minimal-sublens-context wiki)
-                                            sublens-class sublens-purpose
-                                            value)))
-                                (or result (princ-to-string value))))
-                             ;; Display :link -> web-link
-                             ((eq display :link)
-                              (let ((target (retrieve-entity
-                                            (imprint-strategy wiki) value nil)))
-                                (if target
-                                    `(web-link
-                                      (@ :uri ,(format nil "/wiki/~A"
-                                                       (classic.models.common:page-anchor target)))
-                                      ,(classic.schema:label target))
-                                    (princ-to-string value))))
-                             ;; Display :list
-                             ((eq display :list)
-                              (if (listp value)
-                                  (format nil "~{~A~^, ~}" value)
-                                  (princ-to-string value)))
-                             ;; Default :text
-                             (t (princ-to-string value)))))
-                     (push `(definition (@ :term ,label) ,rendered)
-                           entries)))))))
+       (let ((entries
+               (loop for prop in (classic.schema:lens-properties lens)
+                     for slot-name = (getf prop :slot)
+                     for value = (lens-property-value context page slot-name)
+                     when value
+                       collect (cons (classic.models.common::slot-display-label
+                                      slot-name)
+                                     (if (eq (getf prop :display) :list)
+                                         (format nil "~{~A~^, ~}"
+                                                 (if (listp value)
+                                                     value
+                                                     (list value)))
+                                         (or (render-lens-property
+                                              context page prop)
+                                             (princ-to-string value)))))))
          (when entries
-           ;; Use passthrough with Spinneret HTML forms since Lexis
-           ;; doesn't have definition-list tags implemented yet.
-           `(passthrough (@ :medium :html)
-             (:dl :class "infobox"
-               ,@(loop for entry in (nreverse entries)
-                       for term = (get-attr entry :term)
-                       for value = (first (node-children entry))
-                       collect `(:dt ,term)
-                       collect `(:dd ,@(if (tagged-node-p value)
-                                           (list (render-infobox-value-to-html value))
-                                           (list (or value ""))))))))))
+           (infobox-passthrough entries))))
       ;; Generic page with alist infobox
       ((and (slot-boundp page 'classic.models.common:page-infobox)
             (classic.models.common:page-infobox page))
-       (let ((entries nil))
-         (dolist (pair (classic.models.common:page-infobox page))
-           (push (list (car pair) (cdr pair)) entries))
-         `(passthrough (@ :medium :html)
-           (:dl :class "infobox"
-             ,@(loop for (term value) in (nreverse entries)
-                     collect `(:dt ,term)
-                     collect `(:dd ,value))))))
+       (infobox-passthrough (classic.models.common:page-infobox page)))
       (t nil))))
+
+(defun infobox-passthrough (entries)
+  "Return an HTML passthrough holding ENTRIES, an alist of
+(term . value), as the infobox's definition list."
+  `(passthrough (@ :medium :html)
+     (:dl :class "infobox"
+       ,@(loop for (term . value) in entries
+               collect `(:dt ,term)
+               collect `(:dd ,(render-infobox-value-to-html value))))))
 
 (defun render-infobox-value-to-html (node)
   "Convert a Lexis node from the infobox to a Spinneret HTML form
@@ -329,16 +338,10 @@ for use inside a passthrough. Handles web-link and section (sublens)."
     ((and (tagged-node-p node)
           (string= "SECTION" (symbol-name (node-tag node))))
      ;; Sublens output is a section of text items
-     `(:span ,@(node-children node)))
+     `(:span ,@(mapcar #'render-infobox-value-to-html (node-children node))))
     (t (if (stringp node) node (princ-to-string node)))))
 
-(defun make-minimal-sublens-context (wiki)
-  "Create a composition context for sublens resolution in the
-infobox renderer."
-  (make-context :strategy (imprint-strategy wiki)
-                :publication (imprint-publication wiki)))
-
-(defun assemble-page-metadata (wiki page)
+(defun assemble-page-metadata (context page)
   "Build a (section (@ :class \"page-metadata\") ...) Lexis subtree
 from backlinks, broken links, and influenced-by data."
   (let ((sections nil))
@@ -346,13 +349,11 @@ from backlinks, broken links, and influenced-by data."
     (let ((backlinks (classic.models.common:page-linked-from page)))
       (when backlinks
         (let ((names (loop for uri in backlinks
-                           for entity = (retrieve-entity
-                                         (imprint-strategy wiki) uri nil)
+                           for entity = (context-retrieve context uri)
                            when (typep entity 'wiki-page)
                              collect `(item
                                        (web-link
-                                        (@ :uri ,(format nil "/wiki/~A"
-                                                         (classic.models.common:page-anchor entity)))
+                                        (@ :uri ,(entity-href context entity))
                                         ,(classic.models.common:page-anchor entity))))))
           (when names
             (push `(section (@ :class "backlinks")
@@ -377,87 +378,68 @@ from backlinks, broken links, and influenced-by data."
       `(section (@ :class "page-metadata")
          ,@(nreverse sections)))))
 
-(defun pre-process-all-pages (wiki)
-  "Pre-process all wiki pages for HTML rendering: resolve typed-slot
-anchors to URIs for sublens. Runs after all pages are created and
-published. Bodies need no pre-processing: their wiki links are
-resolved as they are read (see MARKDOWN-OPTIONS above)."
-  (dolist (page (classic.models.common::all-wiki-pages wiki))
-    (resolve-typed-slots-to-uris wiki page)))
-
 ;;; ============================================================
-;;; Step 4: Render pages
+;;; Step 6: Render pages
 ;;; ============================================================
 
 (defun render-page-view (wiki anchor)
-  "Compose and render a single wiki page. Returns the HTML string."
+  "Compose and render the wiki page with ANCHOR. Returns the HTML string."
   (let* ((page (classic.models.common:find-page wiki anchor))
-         (strategy (imprint-strategy wiki))
-         (ctx (make-context :strategy strategy
+         (ctx (make-context :strategy (imprint-strategy wiki)
                             :publication (imprint-publication wiki)
                             :entity page)))
-    ;; Render infobox via :infobox lens and bind to slot
-    (let ((resolved-lenses (context-theme-lenses ctx)))
-      (let ((infobox (render-infobox-to-lexis wiki page resolved-lenses)))
-        (when infobox
-          (context-bind ctx "page.infobox" infobox))))
+    ;; Render the infobox and bind it to its slot
+    (let ((infobox (render-infobox ctx page)))
+      (when infobox
+        (context-bind ctx "page.infobox" infobox)))
     ;; Assemble metadata as adjunct content
-    (let ((metadata (assemble-page-metadata wiki page)))
+    (let ((metadata (assemble-page-metadata ctx page)))
       (when metadata
         (context-bind ctx "adjunct-content" metadata)))
-    ;; Compose and render
-    (let ((page-tree (compose-page ctx)))
-      (lexis.html:render-html page-tree :standalone t))))
+    (lexis.html:render-html (compose-page ctx) :standalone t)))
 
 (defun render-index-page (wiki)
-  "Compose and render the wiki's alphabetical page index."
-  ;; Sort the container alphabetically by anchor
-  (let* ((strategy (imprint-strategy wiki))
-         (container (imprint-container wiki))
-         (pages (classic.models.common::all-wiki-pages wiki))
-         (sorted (sort (copy-list pages) #'string-lessp
-                       :key #'classic.models.common:page-anchor))
-         (sorted-uris (mapcar #'uri-string sorted)))
-    (setf (classic.schema:contains container) sorted-uris)
-    (persist-entity strategy container)
-    (let ((ctx (make-context :strategy strategy
-                             :publication (imprint-publication wiki)
-                             :entity container)))
-      (let ((page-tree (compose-page ctx)))
-        (lexis.html:render-html page-tree :standalone t)))))
+  "Compose and render the wiki's page index. The theme's :aggregate
+lens for the container lists the pages alphabetically."
+  (let ((ctx (make-context :strategy (imprint-strategy wiki)
+                           :publication (imprint-publication wiki)
+                           :entity (imprint-container wiki))))
+    (lexis.html:render-html (compose-page ctx) :standalone t)))
 
 ;;; ============================================================
-;;; Step 5: End-to-end demo
+;;; Step 7: End-to-end demo
 ;;; ============================================================
 
 (defun output-pathname (filename)
-  "Return the absolute pathname for an output file under doc/demos/."
+  "Return the absolute pathname for an output file under doc/demos/wiki/."
   (merge-pathnames
-   (make-pathname :directory '(:relative :up "doc" "demos")
+   (make-pathname :directory '(:relative :up "doc" "demos" "wiki")
                   :name (pathname-name filename)
                   :type (pathname-type filename))
    *demo-source-directory*))
 
+(defun write-page (filename html)
+  "Write HTML to FILENAME under doc/demos/wiki/. Returns the pathname."
+  (let ((path (output-pathname filename)))
+    (ensure-directories-exist path)
+    (with-open-file (out path
+                         :direction :output
+                         :if-exists :supersede
+                         :if-does-not-exist :create)
+      (write-string html out))
+    (format t "~&Wrote ~A~%" path)
+    path))
+
 (defun run-demo ()
   "End-to-end demo. Builds a wiki with typed pages, creates a child
-theme, pre-processes content, and renders two HTML pages."
+theme, and writes the index page and a page for each wiki page to
+doc/demos/wiki/. Returns the list of output file paths."
   (setup-wiki)
   (setup-child-theme *wiki*)
-  (pre-process-all-pages *wiki*)
-  (let ((page-html (render-page-view *wiki* "Amiga 1000"))
-        (index-html (render-index-page *wiki*))
-        (page-path (output-pathname "wiki-page-output.html"))
-        (index-path (output-pathname "wiki-index-output.html")))
-    (with-open-file (out page-path
-                         :direction :output
-                         :if-exists :supersede
-                         :if-does-not-exist :create)
-      (write-string page-html out))
-    (with-open-file (out index-path
-                         :direction :output
-                         :if-exists :supersede
-                         :if-does-not-exist :create)
-      (write-string index-html out))
-    (format t "~&Wrote page view to ~A~%" page-path)
-    (format t "~&Wrote index page to ~A~%" index-path)
-    (list page-path index-path)))
+  (cons (write-page "index.html" (render-index-page *wiki*))
+        (mapcar (lambda (uri)
+                  (let ((page (retrieve-entity (imprint-strategy *wiki*) uri nil)))
+                    (write-page (page-filename page)
+                                (render-page-view
+                                 *wiki* (classic.models.common:page-anchor page)))))
+                (classic.schema:contains (imprint-container *wiki*)))))

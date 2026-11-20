@@ -225,6 +225,76 @@ after BODY completes (even on non-local exit)."
                 :theme-uri theme-uri
                 :theme theme))
 
+(defun make-test-container (&key (strategy *test-strategy*)
+                                  (name "Test Container")
+                                  entries)
+  "Create and persist a classic-container holding ENTRIES (entities),
+in the order given."
+  (let ((container (make-instance 'classic.schema:classic-container
+                     :uri (mint-uri 'classic.schema:classic-container
+                                    "test.example" "2026" :slug name)
+                     :label name
+                     :contains (mapcar #'uri-string entries))))
+    (when strategy
+      (persist-entity strategy container))
+    container))
+
+;;; ============================================================
+;;; Hook-driven context
+;;; ============================================================
+;;; The composer's extension generics (ENTITY-HREF, LENS-PROPERTY-VALUE,
+;;; RESOLVE-REFERENCE, CONTAINER-ENTRIES) are specialized here on a
+;;; context subclass, so a test drives them through the context's slots
+;;; and no method affects any other context.
+
+(defclass hooks-test-context (composition-context)
+  ((hrefs :initform nil :accessor test-hrefs
+          :documentation "Alist of (entity-uri . href).")
+   (computed :initform nil :accessor test-computed
+             :documentation "Alist of (property . function of the entity).")
+   (references :initform nil :accessor test-references
+               :documentation "Alist of (reference-value . entity).")
+   (entries :initform nil :accessor test-entries
+            :documentation "Function of the container giving its entries,
+or NIL for the default."))
+  (:documentation "A composition context whose hook methods read its slots."))
+
+(defun make-hooks-context (&key (strategy *test-strategy*)
+                                entity theme-uri
+                                hrefs computed references entries)
+  "Create a hooks-test-context, with theme resolution when THEME-URI
+is given. HREFS, COMPUTED, REFERENCES and ENTRIES fill its slots."
+  (let ((ctx (make-themed-context :strategy strategy
+                                  :entity entity
+                                  :theme-uri theme-uri)))
+    (change-class ctx 'hooks-test-context)
+    (setf (test-hrefs ctx) hrefs
+          (test-computed ctx) computed
+          (test-references ctx) references
+          (test-entries ctx) entries)
+    ctx))
+
+(defmethod entity-href ((context hooks-test-context) entity)
+  (cdr (assoc (uri-string entity) (test-hrefs context) :test #'equal)))
+
+(defmethod lens-property-value ((context hooks-test-context) entity property)
+  (let ((function (cdr (assoc property (test-computed context)))))
+    (if function
+        (funcall function entity)
+        (call-next-method))))
+
+(defmethod resolve-reference ((context hooks-test-context) entity property value)
+  (let ((hit (assoc value (test-references context) :test #'equal)))
+    (if hit
+        (cdr hit)
+        (call-next-method))))
+
+(defmethod container-entries ((context hooks-test-context) container)
+  (let ((function (test-entries context)))
+    (if function
+        (funcall function container)
+        (call-next-method))))
+
 ;;; ============================================================
 ;;; Tree search
 ;;; ============================================================

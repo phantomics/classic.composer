@@ -213,7 +213,75 @@ the target lens, and recursively applies it. Fallback chain:
 2. Lens for (actual-class, :label)
 3. Entity's `label` slot as plain text
 
+The related entity is found with `resolve-reference`, so a reference
+need not be a URI (see [Extension Generics](#extension-generics)).
+The `:link` mode follows references the same way. A resolved target
+is linked to its page, or to the reference when that is a URI, and
+shown by its title. An unresolved reference that is not a URI, such
+as the name of a missing wiki page, is shown as text.
+
+### Property Options
+
+| Option | Effect |
+|--------|--------|
+| `:link :self` | Link the rendered value to the page of the entity it belongs to (`entity-href`); for inline values such as titles |
+| `:label "Text"` | Caption the value: an inline value becomes `(paragraph (strong "Text:") " " value)`; a block value is preceded by a paragraph holding the caption |
+
+### Aggregate Lenses
+
+A lens with purpose `:aggregate` on a container class orders that
+container's entries in aggregate views. `:sort-by` names the property
+to sort by, read like any lens property. `:sort-order :descending`
+reverses the order. The sort is stable, numbers compare numerically,
+other values compare by printed form without regard to case, and
+entries without a value go last. Like every lens, an aggregate lens
+belongs to a theme. It orders only the publications that use the
+theme, and it changes the view, not the container.
+
+```lisp
+(:class classic-container :purpose :aggregate :sort-by headline)
+```
+
 Without lenses, the feature tier falls back to direct body extraction.
+
+
+## Extension Generics
+
+Applications adapt composition to their content by specializing
+generic functions on their content classes. The composer is
+read-only, so these are read paths: a method computes what a page
+shows and must not change the publication. Each default keeps the
+composer's base behavior.
+
+| Generic | Returns | Default |
+|---------|---------|---------|
+| `lens-property-value (context entity property)` | The value a lens reads for `property` | The slot's bound value |
+| `resolve-reference (context entity property value)` | The entity a reference names | Retrieve `value` as a URI |
+| `entity-href (context entity)` | The URL of the entity's page | `nil`: no link |
+| `container-entries (context container)` | The entities an aggregate view lists, in order | `contains`, in `container-reading-order`, sorted by an aggregate lens |
+| `container-reading-order (container)` | `:as-stored` or `:reverse` | `:as-stored` |
+| `markdown-options (context entity slot-name)` | Options for the Markdown reader | None |
+
+- **Computed properties.** A lens names a property that is not a slot,
+  and a `lens-property-value` method (usually with an `eql`
+  specializer on the property) supplies its value. The forum demo's
+  `post-author-account` finds a post's author account through the
+  reverse relation `sioc:account_of`, with `context-query`.
+- **References.** A wiki's typed slots name pages by anchor. A
+  `resolve-reference` method on the wiki page class looks the anchor
+  up, so sublenses and `:link` properties reach the pages.
+- **Page links.** `entity-href` gives the URL scheme, which is the
+  site's choice: file names for a static site, routes for a server.
+  The composer links through `:link :self`, through `:link`
+  references, and in container entries rendered without a lens.
+- **Ordering.** An order that is a rule of the content type, such as
+  a forum listing pinned threads first, is a `container-entries`
+  method on the container class. An order that is a presentation
+  choice, such as an alphabetical index, is an aggregate lens in the
+  theme.
+
+`render-lens-property` renders a single property spec the way a lens
+does, for code that lays out properties itself, such as an infobox.
 
 
 ## Capability-Addition Model
