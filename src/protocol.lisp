@@ -130,6 +130,35 @@ containers built with push."))
   :as-stored)
 
 ;;; ============================================================
+;;; Markdown reader options
+;;; ============================================================
+
+(defgeneric markdown-options (context entity slot-name)
+  (:documentation
+   "Return the keyword arguments passed to LEXIS.MARKDOWN:MARKDOWN->LEXIS
+when SLOT-NAME of ENTITY is rendered in the :markdown display mode.
+CONTEXT is the composition context, or NIL when the renderer is called
+without one.
+
+The default method returns NIL, which keeps the reader's defaults: raw
+HTML is escaped, links keep only the http, https, mailto and classic
+URI schemes, and wiki links become cross-references to sections of the
+same document.
+
+Application models specialize this for their content types. A wiki
+supplies :WIKI-LINK-RESOLVER, a function of a wiki link's target and
+display text that returns a Lexis form built from LEXIS symbols. Only
+content from a trusted source should get :RAW-HTML :PASSTHROUGH,
+since HTML passed through is not checked by the URI filter. The
+options must not include :DOCUMENT: the composer splices the reader's
+blocks into its own tree."))
+
+(defmethod markdown-options (context entity slot-name)
+  "Default: no options, so the reader's safe defaults apply."
+  (declare (ignore context entity slot-name))
+  nil)
+
+;;; ============================================================
 ;;; Lexis tree utilities
 ;;; ============================================================
 ;;; These operate on raw s-expression Lexis trees (lists and strings),

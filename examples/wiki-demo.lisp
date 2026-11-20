@@ -117,7 +117,7 @@ and 1 generic (AmigaOS). Returns the wiki imprint."
 ;;; :infobox and :label lenses for the typed page classes.
 ;;; The child theme adds:
 ;;;   - A frame template with slots for infobox, content, adjunct
-;;;   - :default lenses for wiki-page (headline + body as :html)
+;;;   - :default lenses for wiki-page (headline + Markdown body)
 ;;;   - :summary lenses for the index page
 ;;;   - Slot fills for brand header and footer
 ;;;   - Asset manifest for wiki.css
@@ -160,11 +160,14 @@ Attaches it to the publication. Returns the child theme."
                    :asset-base-uri "../../examples/static/"
                    :asset-manifest '((:stylesheets ("wiki.css")))
                    :lenses
-                   `(;; Full page view: headline + body as Lexis
+                   `(;; Full page view: headline + body. The body
+                     ;; slot's :format :markdown selects the
+                     ;; :markdown display mode; MARKDOWN-OPTIONS below
+                     ;; supplies the wiki link resolver.
                      (:class wiki-page
                       :purpose :default
                       :properties (classic.schema:headline
-                                   (classic.schema:body :display :html)))
+                                   classic.schema:body))
                      ;; Index page entries
                      (:class wiki-page
                       :purpose :summary
@@ -180,86 +183,40 @@ Attaches it to the publication. Returns the child theme."
       theme)))
 
 ;;; ============================================================
-;;; Step 3: Pre-process wiki content for HTML rendering
+;;; Step 3: Wiki links in Markdown bodies
 ;;; ============================================================
+;;;
+;;; Page bodies stay Markdown strings. The composer reads them with
+;;; the Lexis Markdown reader when the page is rendered, and asks
+;;; MARKDOWN-OPTIONS for the reader's options; this method supplies a
+;;; resolver that turns [[Anchor]] and [[Anchor|Display]] into links
+;;; to the named pages.
 
-(defun convert-wiki-body-to-lexis (wiki page)
-  "Parse [[refs]] in PAGE's body and produce a Lexis subtree.
-Resolved refs become (web-link ...) nodes; broken refs become
-(emphasis (@ :class \"broken-link\") \"Name\") nodes.
-Paragraph breaks on double-newlines are preserved."
-  (let* ((text (classic.schema:body page))
-         (result (when text (wikify-text wiki text))))
-    (when result
-      (setf (classic.schema:body page) result)
-      (persist-entity (imprint-strategy wiki) page))))
+(defun resolve-wiki-link (wiki target display)
+  "Return the Lexis form for a wiki link to TARGET shown as DISPLAY:
+a web-link to the page when WIKI has one with that anchor, otherwise
+an emphasis marking the link as broken. The form is built from LEXIS
+symbols, which the reader's passes recognise."
+  (let ((page (classic.models.common::find-page-by-anchor wiki target)))
+    (if page
+        `(lexis::web-link
+          (lexis::@ :uri ,(format nil "/wiki/~A"
+                                  (classic.models.common:page-anchor page)))
+          ,display)
+        `(lexis::emphasis (lexis::@ :class "broken-link") ,display))))
 
-(defun wikify-text (wiki text)
-  "Convert wiki-markup text to a Lexis subtree. Handles [[refs]]
-and paragraph breaks."
-  (let ((paragraphs (split-on-double-newlines text)))
-    (if (= 1 (length paragraphs))
-        `(paragraph ,@(wikify-inline wiki (first paragraphs)))
-        `(section (@ :class "body")
-           ,@(mapcar (lambda (p)
-                       `(paragraph ,@(wikify-inline wiki p)))
-                     paragraphs)))))
+(defmethod markdown-options (context (entity wiki-page) slot-name)
+  "Resolve the wiki links in a page's body against the demo wiki.
+The composition context carries no wiki imprint, so the resolver uses
+*WIKI*."
+  (declare (ignore context slot-name))
+  (list :wiki-link-resolver
+        (lambda (target display)
+          (resolve-wiki-link *wiki* target display))))
 
-(defun split-on-double-newlines (text)
-  "Split TEXT into paragraph chunks on double-newline boundaries."
-  (let ((chunks nil) (current (make-string-output-stream)))
-    (with-input-from-string (in text)
-      (let ((prev-blank nil))
-        (loop for line = (read-line in nil nil)
-              while line
-              do (let ((blank (every (lambda (c) (member c '(#\Space #\Tab)))
-                                     line)))
-                   (cond
-                     ((and blank (not prev-blank))
-                      (let ((s (string-trim '(#\Space #\Tab #\Newline)
-                                            (get-output-stream-string current))))
-                        (when (plusp (length s)) (push s chunks)))
-                      (setf current (make-string-output-stream)
-                            prev-blank t))
-                     (blank (setf prev-blank t))
-                     (t (when prev-blank (setf prev-blank nil))
-                        (write-string (string-trim '(#\Space #\Tab) line) current)
-                        (write-char #\Space current)))))))
-    (let ((s (string-trim '(#\Space #\Tab #\Newline)
-                          (get-output-stream-string current))))
-      (when (plusp (length s)) (push s chunks)))
-    (nreverse chunks)))
-
-(defun wikify-inline (wiki text)
-  "Process a paragraph string, replacing [[refs]] with Lexis nodes.
-Returns a list of strings and Lexis inline nodes."
-  (let ((result nil) (pos 0) (len (length text)))
-    (declare (ignore len))
-    (loop
-      (let ((open (search "[[" text :start2 pos)))
-        (unless open
-          (let ((rest (subseq text pos)))
-            (when (plusp (length rest)) (push rest result)))
-          (return (nreverse result)))
-        ;; Text before the ref
-        (when (> open pos)
-          (push (subseq text pos open) result))
-        (let ((close (search "]]" text :start2 (+ open 2))))
-          (unless close
-            (push (subseq text open) result)
-            (return (nreverse result)))
-          (let* ((inner (subseq text (+ open 2) close))
-                 (pipe (position #\| inner))
-                 (anchor (string-trim " " (if pipe (subseq inner 0 pipe) inner)))
-                 (display (if pipe (string-trim " " (subseq inner (1+ pipe))) anchor))
-                 (target (classic.models.common::find-page-by-anchor wiki anchor)))
-            (push (if target
-                      `(web-link (@ :uri ,(format nil "/wiki/~A"
-                                                  (classic.models.common:page-anchor target)))
-                                 ,display)
-                      `(emphasis (@ :class "broken-link") ,display))
-                  result)
-            (setf pos (+ close 2))))))))
+;;; ============================================================
+;;; Typed slots, infobox and page metadata
+;;; ============================================================
 
 (defun resolve-typed-slots-to-uris (wiki page)
   "For typed-slot values that are anchor strings, resolve to page URIs
@@ -421,13 +378,12 @@ from backlinks, broken links, and influenced-by data."
          ,@(nreverse sections)))))
 
 (defun pre-process-all-pages (wiki)
-  "Pre-process all wiki pages for HTML rendering:
-1. Resolve typed-slot anchors to URIs for sublens
-2. Convert body [[refs]] to Lexis nodes
-Runs after all pages are created and published."
+  "Pre-process all wiki pages for HTML rendering: resolve typed-slot
+anchors to URIs for sublens. Runs after all pages are created and
+published. Bodies need no pre-processing: their wiki links are
+resolved as they are read (see MARKDOWN-OPTIONS above)."
   (dolist (page (classic.models.common::all-wiki-pages wiki))
-    (resolve-typed-slots-to-uris wiki page)
-    (convert-wiki-body-to-lexis wiki page)))
+    (resolve-typed-slots-to-uris wiki page)))
 
 ;;; ============================================================
 ;;; Step 4: Render pages

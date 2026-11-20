@@ -42,6 +42,7 @@
    #:compose-aggregate
    #:compose-operative
    #:container-reading-order
+   #:markdown-options
 
    ;; ---- Template Resolution ----
    #:resolve-slots

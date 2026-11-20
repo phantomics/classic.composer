@@ -224,3 +224,21 @@ after BODY completes (even on non-local exit)."
                 :publication publication
                 :theme-uri theme-uri
                 :theme theme))
+
+;;; ============================================================
+;;; Tree search
+;;; ============================================================
+
+(defun find-nodes (tag-name forms)
+  "Return every node in FORMS whose tag's symbol name is TAG-NAME, in
+document order. FORMS is a Lexis tree or a list of them. Tags compare
+by name, so nodes built from the LEXIS package's symbols are found
+too."
+  (let ((found nil))
+    (dolist (form (if (classic.composer::block-list-p forms) forms (list forms)))
+      (walk-tree (lambda (node)
+                   (when (and (tagged-node-p node)
+                              (string= tag-name (symbol-name (node-tag node))))
+                     (push node found)))
+                 form))
+    (nreverse found)))

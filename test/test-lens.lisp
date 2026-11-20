@@ -101,11 +101,128 @@ This test verifies the cascade logic."
          (result (render-slot-via-display-mode :html tree)))
     (is (equal tree result))))
 
+(def-test render-html-passthrough-list ()
+  ":html returns a list of Lexis nodes unchanged, for the caller to
+splice, rather than wrapping it in an untitled section."
+  (let* ((forms '((section (@ :title "One") (paragraph "a"))
+                  (section (@ :title "Two") (paragraph "b"))))
+         (result (render-slot-via-display-mode :html forms)))
+    (is (equal forms result))))
+
 (def-test render-nil-returns-nil ()
   "All modes return NIL for NIL values."
   (is (null (render-slot-via-display-mode :text nil)))
   (is (null (render-slot-via-display-mode :image nil)))
-  (is (null (render-slot-via-display-mode :link nil))))
+  (is (null (render-slot-via-display-mode :link nil)))
+  (is (null (render-slot-via-display-mode :markdown nil))))
+
+;;; ============================================================
+;;; :markdown display mode
+;;; ============================================================
+
+(def-test render-markdown-single-block ()
+  "Markdown text that yields one block renders as that block, with its
+inline markup read by the Markdown reader."
+  (let ((result (render-slot-via-display-mode :markdown "Some *text*.")))
+    (is (tagged-node-p result))
+    (is (string= "PARAGRAPH" (symbol-name (node-tag result))))
+    (is (= 1 (length (find-nodes "EMPHASIS" result))))))
+
+(def-test render-markdown-blocks-are-spliceable ()
+  "Markdown text that yields several blocks renders as a list of them,
+with headings as titled sections, and no untitled wrapper section."
+  (let ((result (render-slot-via-display-mode
+                 :markdown
+                 (format nil "Intro.~%~%## Details~%~%More text."))))
+    (is-true (classic.composer::block-list-p result))
+    (is (= 2 (length result)))
+    (is (string= "PARAGRAPH" (symbol-name (node-tag (first result)))))
+    (let ((section (second result)))
+      (is (string= "SECTION" (symbol-name (node-tag section))))
+      (is (equal "Details" (get-attr section :title)))
+      (is (equal "details" (get-attr section :id))))
+    (is (null (remove-if-not (lambda (s) (get-attr s :class))
+                             (find-nodes "SECTION" result))))))
+
+(def-test render-markdown-block-constructs ()
+  "Lists, fenced code blocks and block quotes become their Lexis tags."
+  (let ((result (render-slot-via-display-mode
+                 :markdown
+                 (format nil "- one~%- two~%~%```lisp~%(car x)~%```~%~%> quoted"))))
+    (is (= 1 (length (find-nodes "UNORDERED-LIST" result))))
+    (is (= 2 (length (find-nodes "ITEM" result))))
+    (let ((code (find-nodes "CODE-BLOCK" result)))
+      (is (= 1 (length code)))
+      (is (equal "lisp" (get-attr (first code) :language))))
+    (is (= 1 (length (find-nodes "BLOCKQUOTE" result))))))
+
+(def-test render-markdown-forum-quote ()
+  "A forum quote body -- a quoted attribution and text, then a reply --
+gives a block quote holding the attribution in strong, then a paragraph."
+  (let ((result (render-slot-via-display-mode
+                 :markdown
+                 (format nil "> **bobcat wrote:**~%> DEFCLASS.~%~%Agreed."))))
+    (is (= 2 (length result)))
+    (is (string= "BLOCKQUOTE" (symbol-name (node-tag (first result)))))
+    (is (equal '("bobcat wrote:")
+               (node-children (first (find-nodes "STRONG" (first result))))))
+    (is (string= "PARAGRAPH" (symbol-name (node-tag (second result)))))))
+
+(def-test render-markdown-escapes-raw-html ()
+  "Raw HTML in Markdown is kept as text by default, never passed through."
+  (let ((result (render-slot-via-display-mode
+                 :markdown "Hello <script>alert(1)</script> world.")))
+    (is (null (find-nodes "PASSTHROUGH" result)))
+    (let ((text (with-output-to-string (s)
+                  (walk-tree (lambda (n) (when (stringp n) (write-string n s)))
+                             result))))
+      (is-true (search "<script>" text)))))
+
+(def-test render-markdown-removes-unsafe-links ()
+  "A link with a javascript: URI is replaced by its text; an https
+link is kept."
+  (let ((unsafe (render-slot-via-display-mode
+                 :markdown "Click [here](javascript:alert(1)) now."))
+        (safe (render-slot-via-display-mode
+               :markdown "See [docs](https://example.com).")))
+    (is (null (find-nodes "WEB-LINK" unsafe)))
+    (is (equal '("Click here now.") (node-children unsafe)))
+    (let ((links (find-nodes "WEB-LINK" safe)))
+      (is (= 1 (length links)))
+      (is (equal "https://example.com" (get-attr (first links) :uri))))))
+
+(def-test render-markdown-empty-text ()
+  "Markdown text holding no blocks renders as NIL."
+  (is (null (render-slot-via-display-mode :markdown ""))))
+
+(def-test markdown-options-default ()
+  "The default MARKDOWN-OPTIONS method supplies no options, so wiki
+links get the reader's default resolver, a cross-ref."
+  (is (null (markdown-options nil nil 'classic.schema:body)))
+  (let ((result (render-slot-via-display-mode :markdown "See [[Home]].")))
+    (is (= 1 (length (find-nodes "CROSS-REF" result))))
+    (is (null (find-nodes "WEB-LINK" result)))))
+
+(defmethod markdown-options (context entity
+                             (slot-name (eql 'markdown-options-test-slot)))
+  (declare (ignore context entity))
+  (list :wiki-link-resolver
+        (lambda (target display)
+          `(lexis::web-link
+            (lexis::@ :uri ,(format nil "/wiki/~(~A~)" target))
+            ,display))))
+
+(def-test markdown-options-specialized ()
+  "A MARKDOWN-OPTIONS method's options reach the reader: its wiki link
+resolver replaces the default."
+  (let ((result (render-slot-via-display-mode
+                 :markdown "See [[Home|the home page]]."
+                 :slot-name 'markdown-options-test-slot)))
+    (is (null (find-nodes "CROSS-REF" result)))
+    (let ((links (find-nodes "WEB-LINK" result)))
+      (is (= 1 (length links)))
+      (is (equal "/wiki/home" (get-attr (first links) :uri)))
+      (is (equal '("the home page") (node-children (first links)))))))
 
 ;;; ============================================================
 ;;; apply-lens
@@ -139,6 +256,25 @@ This test verifies the cascade logic."
       ;; keywords is nil, headline is set
       (let ((result (apply-lens ctx lens article)))
         (is (= 1 (length result)))))))
+
+(def-test apply-lens-splices-markdown-blocks ()
+  "apply-lens splices the blocks of a multi-block Markdown body into its
+result, after the properties before it, with no wrapper section."
+  (with-clean-strategy ()
+    (let* ((article (make-test-article
+                     :headline "Spliced"
+                     :body-text (format nil "First.~%~%## Part~%~%Second.")))
+           (lens '(:class classic.schema:classic-article
+                   :purpose :default
+                   :properties (classic.schema:headline
+                                classic.schema:body)))
+           (ctx (make-minimal-context :entity article)))
+      (let ((result (apply-lens ctx lens article)))
+        ;; headline + paragraph + titled section
+        (is (= 3 (length result)))
+        (is (equal "Spliced" (first result)))
+        (is (string= "PARAGRAPH" (symbol-name (node-tag (second result)))))
+        (is (equal "Part" (get-attr (third result) :title)))))))
 
 ;;; ============================================================
 ;;; apply-sublens

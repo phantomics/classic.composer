@@ -210,7 +210,27 @@ and how. The display mode cascade:
 4. `:text` (universal fallback)
 
 Display modes: `:text`, `:image`, `:link`, `:uri`, `:html`,
-`:markdown` (stubbed), `:date`, `:list`.
+`:markdown`, `:date`, `:list`.
+
+The `:markdown` mode reads the slot's text with the Lexis Markdown
+reader (`lexis.markdown`): headings become nested titled sections, and
+lists, code blocks, block quotes, links, images, tables, definition
+lists and wiki links become their Lexis tags. The reader is safe by
+default: raw HTML is kept as text, and links keep only the `http`,
+`https`, `mailto` and `classic` URI schemes. A body of several blocks
+is spliced into the surrounding content rather than wrapped in a
+section of its own.
+
+Applications pass options to the reader by specializing the
+`markdown-options` generic on their content classes. A wiki, for
+example, supplies a resolver that turns `[[Page]]` into a link to the
+named page:
+
+```lisp
+(defmethod markdown-options (context (entity wiki-page) slot-name)
+  (declare (ignore context slot-name))
+  (list :wiki-link-resolver #'resolve-wiki-link))
+```
 
 Sublens references handle relation slots: the composer retrieves
 the related entity, finds the target lens, and recursively applies
@@ -376,6 +396,9 @@ doc/
   Composer.md             -- detailed architecture document
   DevLog.ThemeResolution.md -- theme resolution development log
   DevLog.FullRenderDemo.md  -- full render pipeline development log
+  DevLog.ForumRenderDemo.md -- forum demo development log
+  DevLog.WikiRenderDemo.md  -- wiki demo development log
+  DevLog.MarkdownReader.md  -- Markdown reader adoption log
   demos/
     blog-post-output.html    -- blog demo: single-post page
     blog-list-output.html    -- blog demo: index page
@@ -390,6 +413,12 @@ doc/
 - `classic` -- the Classic foundation (MOP, persistence protocol, URI scheme)
 - `classic.schema.alpha` -- the alpha schema (ontological classes, theme resolution)
 - `closer-mop` -- MOP access for lens display mode cascade
+- `lexis.markdown` -- the Lexis Markdown reader, for the `:markdown`
+  display mode (it brings in the Lexis core and 3bmd)
+
+`lexis.markdown` is a module of Lexis, in its `mod/markdown/`
+directory. With Lexis in Quicklisp's `local-projects`, run
+`(ql:register-local-projects)` once so that Quicklisp finds it.
 
 For the complete user experience, load `classic.composer.dist.alpha`:
 
@@ -402,8 +431,8 @@ common content models) plus the composer.
 
 The composer produces Lexis s-expressions as output. To render them,
 load a Lexis renderer (`lexis.html` for HTML, others for PDF,
-terminal, etc.). The composer itself has no dependency on Lexis -- it
-produces the s-expression format directly.
+terminal, etc.). The composer depends on no renderer: it produces the
+s-expression format directly, and uses Lexis only to read Markdown.
 
 ## License
 

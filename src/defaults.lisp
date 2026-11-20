@@ -130,7 +130,7 @@ Returns a Lexis subtree or NIL if no entity is set."
                (when parts
                  `(section (@ :class "feature") ,@parts))))))
        ;; Fallback: direct body extraction
-       (compose-feature-from-body entity)))))
+       (compose-feature-from-body context entity)))))
 
 (defun entity-title (entity)
   "Extract a title from an entity, trying headline then label."
@@ -141,10 +141,12 @@ Returns a Lexis subtree or NIL if no entity is set."
         (classic.schema:label entity))
       "Untitled"))
 
-(defun compose-feature-from-body (entity)
+(defun compose-feature-from-body (context entity)
   "Extract body content from an entity without lens guidance.
 If body is a Lexis s-expression, return it directly. If it's a
-string, wrap in a section with paragraph."
+string, wrap it in a section titled with the entity's title: the
+blocks read from it when the body slot is declared :format :markdown,
+otherwise a single paragraph."
   (let ((body (when (and (slot-exists-p entity 'classic.schema:body)
                          (slot-boundp entity 'classic.schema:body))
                 (classic.schema:body entity))))
@@ -156,7 +158,19 @@ string, wrap in a section with paragraph."
       ((and (consp body) (consp (car body)) (symbolp (caar body)))
        (let ((title (entity-title entity)))
          `(section (@ :title ,title) ,@body)))
-      ;; Body is a plain string -- wrap in paragraph
+      ;; Markdown string -- read it into blocks
+      ((and (stringp body)
+            (eq :markdown (compute-display-mode 'classic.schema:body
+                                                (class-of entity))))
+       (let ((blocks (render-slot-via-display-mode
+                      :markdown body
+                      :context context
+                      :entity entity
+                      :slot-name 'classic.schema:body)))
+         `(section (@ :title ,(entity-title entity))
+            ,@(cond ((block-list-p blocks) blocks)
+                    (blocks (list blocks))))))
+      ;; Other plain string -- wrap in paragraph
       ((stringp body)
        (let ((title (entity-title entity)))
          `(section (@ :title ,title)

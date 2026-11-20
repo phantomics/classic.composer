@@ -18,7 +18,7 @@
   :description "Content composition engine for the Classic publishing framework"
   :version "0.2.0"
   :license "BSD-3"
-  :depends-on ("classic" "classic.schema.alpha" "closer-mop")
+  :depends-on ("classic" "classic.schema.alpha" "closer-mop" "lexis.markdown")
   :pathname "src/"
   :serial t
   :components

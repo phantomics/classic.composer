@@ -44,6 +44,23 @@
         (is (not (null feature)))
         (is (tagged-node-p feature))))))
 
+(def-test compose-feature-body-reads-markdown ()
+  "Without a lens, a string body declared :format :markdown is read as
+Markdown into the titled feature section: its headings become nested
+sections, not literal text."
+  (with-clean-strategy ()
+    (let* ((article (make-test-article
+                     :headline "Markdown Post"
+                     :body-text (format nil "Intro *here*.~%~%## Part~%~%More.")))
+           (ctx (make-minimal-context :entity article)))
+      (let* ((feature (compose-feature ctx))
+             (children (node-children feature)))
+        (is (equal "Markdown Post" (get-attr feature :title)))
+        (is (= 2 (length children)))
+        (is (string= "PARAGRAPH" (symbol-name (node-tag (first children)))))
+        (is (= 1 (length (find-nodes "EMPHASIS" (first children)))))
+        (is (equal "Part" (get-attr (second children) :title)))))))
+
 (def-test compose-feature-lexis-body-passthrough ()
   "compose-feature passes through a Lexis s-expression body directly."
   (with-clean-strategy ()

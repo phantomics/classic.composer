@@ -174,9 +174,34 @@ For each property in a lens:
 | `:link` | `(web-link (@ :uri ...) label)` | URI slots as clickable links |
 | `:uri` | Plain text of the URI | URI slots displayed as URIs |
 | `:html` | Pass-through (already Lexis) | Body slots in Lexis form |
-| `:markdown` | Stubbed: wraps in paragraph | Body slots in Markdown |
+| `:markdown` | Blocks read by `lexis.markdown`, spliced in place | Body slots in Markdown |
 | `:date` | Formatted date string | Timestamp slots |
 | `:list` | `(unordered-list ...)` | List-valued slots |
+
+A mode may produce a list of blocks rather than one node: a Markdown
+body of several blocks, or an `:html` slot holding a list of Lexis
+forms. The lens evaluator splices such a list into the surrounding
+content. Wrapping it in an untitled `section` instead would push its
+sections one level deeper.
+
+### Markdown Bodies
+
+The `:markdown` mode reads text with the Lexis Markdown reader,
+`lexis.markdown:markdown->lexis`. Markdown headings become nested
+titled sections, and the reader's safe defaults apply: raw HTML stays
+text, and links keep only the `http`, `https`, `mailto` and `classic`
+URI schemes.
+
+The reader's options come from the `markdown-options` generic, called
+with the composition context, the entity and the slot name. Its
+default method returns no options. Application models specialize it
+on their content classes. A wiki supplies a `:wiki-link-resolver` that
+looks pages up by anchor, which the composer cannot do itself, since
+it does not depend on the content models. Only content from a trusted
+source should get `:raw-html :passthrough`.
+
+The body fallback (no lens) reads a string body as Markdown when the
+body slot is declared `:format :markdown`.
 
 ### Sublens References
 
@@ -342,6 +367,7 @@ classic.composer.dist.alpha        -- distribution shim for end users
         +-- classic                -- foundation (protocols, MOP)
         +-- classic.schema.alpha   -- schema (classes, theme resolution)
         +-- closer-mop             -- MOP access for lens cascade
+        +-- lexis.markdown         -- Markdown reader for :markdown mode
 ```
 
 Schema references throughout the composer use the `classic.schema`
