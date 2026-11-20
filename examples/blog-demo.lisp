@@ -195,7 +195,7 @@ return the theme entity. Stores in *THEME*."
                    :theme-version "1.0"
                    :tier-templates `((:frame . ,frame-template))
                    :slot-fills slot-fills
-                   :asset-base-uri "/static/"
+                   :asset-base-uri "../../examples/static/"
                    :asset-manifest '((:stylesheets ("blog.css")))
                    :lenses
                    '(;; Full article view for the single-post page.

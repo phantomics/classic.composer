@@ -31,7 +31,7 @@
    (:file "collector")
    (:file "theme")
    (:file "lens")
-    (:file "defaults")))
+   (:file "defaults")))
 
 (asdf:defsystem "classic.composer/tests"
   :description "Test suite for Classic Composer"

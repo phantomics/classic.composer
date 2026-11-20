@@ -157,7 +157,7 @@ Attaches it to the publication. Returns the child theme."
                    :theme-version "1.0"
                    :tier-templates `((:frame . ,frame-template))
                    :slot-fills slot-fills
-                   :asset-base-uri "/static/"
+                   :asset-base-uri "../../examples/static/"
                    :asset-manifest '((:stylesheets ("wiki.css")))
                    :lenses
                    `(;; Full page view: headline + body as Lexis

@@ -77,6 +77,8 @@ a:hover { text-decoration: underline; }
     border: 1px solid var(--rule);
     padding: 1rem 1.25rem;
     margin-bottom: 1.5rem;
+    width: 30%;
+    float: right;
 }
 
 .infobox dt {

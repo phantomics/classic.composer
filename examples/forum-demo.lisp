@@ -176,7 +176,7 @@ Stores in *THEME*."
                    :theme-version "1.0"
                    :tier-templates `((:frame . ,frame-template))
                    :slot-fills slot-fills
-                   :asset-base-uri "/static/"
+                   :asset-base-uri "../../examples/static/"
                    :asset-manifest '((:stylesheets ("forum.css")))
                    :lenses
                    '(;; Thread listing entry: title + creation date.
