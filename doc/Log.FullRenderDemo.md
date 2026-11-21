@@ -1,3 +1,29 @@
+---
+id:            CCOMPOSER-DRAFT-fullrenderdemo
+title:         Full Render Demo Development Log
+genre:         Log
+scope:         component
+project:       Classic Composer
+component:     demo
+language:      en
+status:        Draft
+created:       2026-06-05
+provenance:
+  assistant:          claude-opus-5-5
+  original-assistant: claude-opus-4-6
+  migrated-from:      doc/DevLog.FullRenderDemo.md@0f8183f
+decisions:
+  - CCOMPOSER-DRAFT-fullrenderdemo-D1
+  - CCOMPOSER-DRAFT-fullrenderdemo-D2
+  - CCOMPOSER-DRAFT-fullrenderdemo-D3
+  - CCOMPOSER-DRAFT-fullrenderdemo-D4
+  - CCOMPOSER-DRAFT-fullrenderdemo-D5
+  - CCOMPOSER-DRAFT-fullrenderdemo-D6
+  - CCOMPOSER-DRAFT-fullrenderdemo-D7
+  - CCOMPOSER-DRAFT-fullrenderdemo-D8
+  - CCOMPOSER-DRAFT-fullrenderdemo-D9
+---
+
 # Full Render Demo: Development Log
 
 This document chronicles the construction of the Classic Composer's
@@ -76,9 +102,10 @@ emits it.
 
 ## Design Decisions
 
-### 1. Asset surface uses Lexis passthrough
+### CCOMPOSER-DRAFT-fullrenderdemo-D1 — Asset surface uses Lexis passthrough
 
-**Question:** How should the composer surface stylesheet and script
+**Status:** Proposed
+**Context:** How should the composer surface stylesheet and script
 references for the HTML renderer to emit as `<link>` and `<script>`
 tags?
 
@@ -105,9 +132,12 @@ independent at the data layer. The composer doesn't care about HTML
 specifically -- it produces a Lexis tree containing passthrough nodes
 labeled for HTML. A PDF or terminal renderer would simply omit them.
 
-### 2. Asset list binds to a slot via splice
+**Alternatives:** See [Concurrent Lexis Change: Passthrough](#concurrent-lexis-change-passthrough).
 
-**Question:** Where does the asset list get inserted into the page?
+### CCOMPOSER-DRAFT-fullrenderdemo-D2 — Asset list binds to a slot via splice
+
+**Status:** Proposed
+**Context:** Where does the asset list get inserted into the page?
 
 **Decision:** Bind the asset list to a slot named `theme.assets` and
 let frame templates include `(template.slot (@ :name "theme.assets"))`
@@ -127,9 +157,12 @@ The earlier sketch wrapped the asset list in a `(section (@ :class
 the output. Removing the wrapper and letting splice do its work
 produces cleaner HTML.
 
-### 3. Default `compose-aggregate` walks `classic-container` entities
+**Alternatives:** See the Decision.
 
-**Question:** When no theme provides an `:aggregate` tier-template,
+### CCOMPOSER-DRAFT-fullrenderdemo-D3 — Default `compose-aggregate` walks `classic-container` entities
+
+**Status:** Proposed
+**Context:** When no theme provides an `:aggregate` tier-template,
 what should the default `compose-aggregate` do?
 
 **Decision:** If the context entity is a `classic-container`, walk its
@@ -150,9 +183,12 @@ The cascade is: theme `:aggregate` template -> container walk -> NIL.
 Application models that want different aggregate behavior still
 specialize, but the common case is now covered.
 
-### 4. Lens preference: `:summary` then `:label`
+**Alternatives:** See the Decision.
 
-**Question:** Which lens purpose should the default container walk
+### CCOMPOSER-DRAFT-fullrenderdemo-D4 — Lens preference: `:summary` then `:label`
+
+**Status:** Proposed
+**Context:** Which lens purpose should the default container walk
 use to render entries?
 
 **Decision:** Try `:summary` first; fall back to `:label`.
@@ -163,9 +199,12 @@ reference. A theme that wants a richer index defines a `:summary`
 lens; a theme that defines only `:label` still gets a working index
 with bare titles.
 
-### 5. `compose-feature` no longer adds a title attribute to the wrapper
+**Alternatives:** Not recorded in the original.
 
-**Question:** Should the section wrapping the lens output carry a
+### CCOMPOSER-DRAFT-fullrenderdemo-D5 — `compose-feature` no longer adds a title attribute to the wrapper
+
+**Status:** Proposed
+**Context:** Should the section wrapping the lens output carry a
 `:title` attribute derived from the entity?
 
 **Decision:** No. The wrapper is now `(section (@ :class "feature")
@@ -184,9 +223,12 @@ fights the lens's intent. Removing the title from the wrapper makes
 the lens fully responsible for what appears at the top of the
 feature.
 
-### 6. Standard `page-title` binding from the entity
+**Alternatives:** See the Decision.
 
-**Question:** Themes naturally want the page's `<title>` element to
+### CCOMPOSER-DRAFT-fullrenderdemo-D6 — Standard `page-title` binding from the entity
+
+**Status:** Proposed
+**Context:** Themes naturally want the page's `<title>` element to
 carry the entity's title. How should this flow without per-page
 boilerplate?
 
@@ -204,9 +246,12 @@ answer in the common case.
 The binding is conditional on the slot not already being bound, so
 explicit overrides still win.
 
-### 7. Body sections as a list, with passthrough rendering handling both
+**Alternatives:** See the Decision.
 
-**Question:** What shape should an article body have when stored as
+### CCOMPOSER-DRAFT-fullrenderdemo-D7 — Body sections as a list, with passthrough rendering handling both
+
+**Status:** Proposed
+**Context:** What shape should an article body have when stored as
 Lexis s-expressions?
 
 **Decision:** Allow either a single tagged subtree or a list of
@@ -219,9 +264,12 @@ This matches authoring practice: a short article is one section; a
 longer one may have several top-level sections. Both should "just
 work" without authors having to add a top-level wrapper.
 
-### 8. Demo body data uses an alist with `:body` key
+**Alternatives:** Not recorded in the original.
 
-**Question:** How should the demo data express bodies that have
+### CCOMPOSER-DRAFT-fullrenderdemo-D8 — Demo body data uses an alist with `:body` key
+
+**Status:** Proposed
+**Context:** How should the demo data express bodies that have
 multiple sections?
 
 **Decision:** Each post entry is `(title (alist))` where the alist
@@ -233,9 +281,12 @@ This matches Lisp's natural alist convention: a key followed by zero
 or more values. It avoided introducing a separate field for "list of
 sections" and keeps each post entry compact.
 
-### 9. Self-contained demo file, no fixtures
+**Alternatives:** See the Decision.
 
-**Question:** Should the demo load fixture files for blog posts, the
+### CCOMPOSER-DRAFT-fullrenderdemo-D9 — Self-contained demo file, no fixtures
+
+**Status:** Proposed
+**Context:** Should the demo load fixture files for blog posts, the
 theme, and the stylesheet? Or contain everything inline?
 
 **Decision:** Contain everything inline. The post bodies are a
@@ -250,14 +301,16 @@ load the demo, and see results. No environmental setup, no fixture
 loading, no path manipulation beyond what's needed to find the demo
 file itself.
 
+**Alternatives:** See the Context.
+
 
 ## Implementation
 
 ### Composer changes
 
-#### `src/theme.lisp`: passthrough asset nodes
+#### `src/theme.lisp@0f8183f`: passthrough asset nodes
 
-`theme-asset-list` was rewritten to produce passthrough nodes:
+`src/theme.lisp:theme-asset-list@0f8183f` was rewritten to produce passthrough nodes:
 
 ```lisp
 (:stylesheet
@@ -273,7 +326,7 @@ file itself.
 The previous version produced custom `(stylesheet ...)` and
 `(script ...)` tags that had no Lexis renderer methods.
 
-#### `src/defaults.lisp`: `compose-page` enhancements
+#### `src/defaults.lisp@0f8183f`: `compose-page` enhancements
 
 Two additions:
 
@@ -282,12 +335,12 @@ Two additions:
 2. Asset binding now binds the bare list (for splice) instead of
    wrapping in a `(section ...)` container.
 
-`compose-feature` lost the `:title` attribute on its wrapper section,
+`src/defaults.lisp:compose-feature@0f8183f` lost the `:title` attribute on its wrapper section,
 delegating title placement entirely to the lens.
 
-#### `src/defaults.lisp`: default `compose-aggregate` container walk
+#### `src/defaults.lisp@0f8183f`: default `compose-aggregate` container walk
 
-A new default for `compose-aggregate` plus two helpers:
+A new default for `src/defaults.lisp:compose-aggregate@0f8183f` plus two helpers:
 
 ```lisp
 (defmethod compose-aggregate ((context composition-context))
@@ -303,32 +356,32 @@ A new default for `compose-aggregate` plus two helpers:
 The entry function applies a lens (`:summary` then `:label`) and
 falls back to bare label text if no lens matches.
 
-#### `src/lens.lisp`: `render-html-passthrough` handles list values
+#### `src/lens.lisp@0f8183f`: `render-html-passthrough` handles list values
 
 Extended to handle three shapes: single tagged node, list of tagged
 nodes (wraps in a containing section), other (coerces to string).
 
 ### Demo files
 
-#### `examples/blog-demo.lisp` (~225 lines)
+#### `examples/blog-demo.lisp@0f8183f` (~225 lines)
 
 A self-contained Common Lisp file that:
 
 - Defines a `classic.composer.demo` package using all the right
   systems
-- Captures its own load directory via `*demo-source-directory*` so
+- Captures its own load directory via `examples/blog-demo.lisp:*demo-source-directory*@0f8183f` so
   output paths resolve regardless of caller environment
-- Provides `setup-blog`, `setup-theme`, `render-post-page`,
-  `render-list-page`, and `run-demo` as the public entry points
+- Provides `examples/blog-demo.lisp:setup-blog@0f8183f`, `examples/blog-demo.lisp:setup-theme@0f8183f`, `examples/blog-demo.lisp:render-post-page@0f8183f`,
+  `examples/blog-demo.lisp:render-list-page@0f8183f`, and `examples/blog-demo.lisp:run-demo@0f8183f` as the public entry points
 - Stores three sample posts as Lexis s-expressions inline in
-  `+post-bodies+`
+  `examples/blog-demo.lisp:+post-bodies+@0f8183f`
 - Constructs and persists a single `classic-theme` with a frame
   template, slot-fills, asset manifest, and three lenses (article
   default + summary, person label)
-- Writes both rendered pages to `doc/demos/` when `run-demo` is
+- Writes both rendered pages to `doc/demos/` when `examples/blog-demo.lisp:run-demo@0f8183f` is
   called
 
-#### `examples/static/blog.css` (~85 lines)
+#### `examples/static/blog.css@0f8183f` (~85 lines)
 
 A reference stylesheet that styles the demo's class-tagged sections:
 `.site-header`, `.site-footer`, `.aggregate`, `.aggregate-entry`,
@@ -338,18 +391,18 @@ A reference stylesheet that styles the demo's class-tagged sections:
 
 `test/test-theme-integration.lisp` updated:
 `theme-asset-list-produces-lexis-nodes` renamed to
-`theme-asset-list-produces-passthrough-nodes` and updated to verify
+`test/test-theme-integration.lisp:theme-asset-list-produces-passthrough-nodes@0f8183f` and updated to verify
 the new shape (`PASSTHROUGH` tag, `:medium :html` attribute,
 `:kind` distinguishing stylesheet vs script).
 
 `test/test-defaults.lisp` gained three tests for the new
 `compose-aggregate` default:
 
-- `compose-aggregate-walks-container` -- two-entry container produces
+- `test/test-defaults.lisp:compose-aggregate-walks-container@0f8183f` -- two-entry container produces
   two entries
-- `compose-aggregate-uses-summary-lens` -- summary lens applied when
+- `test/test-defaults.lisp:compose-aggregate-uses-summary-lens@0f8183f` -- summary lens applied when
   available
-- `compose-aggregate-nil-without-container` -- non-container entity
+- `test/test-defaults.lisp:compose-aggregate-nil-without-container@0f8183f` -- non-container entity
   with no theme template returns NIL
 
 ### Documentation changes
@@ -453,19 +506,21 @@ The list page contains:
 
 ## Files
 
-| Action | File | Description |
+Table: Files created or modified by this work.
+
+| File | Action | Description |
 |---|---|---|
-| Modified | `src/theme.lisp` | `theme-asset-list` produces passthrough nodes |
-| Modified | `src/defaults.lisp` | `compose-page` `page-title` binding; asset splice; `compose-feature` no title; default `compose-aggregate` for containers; helpers `compose-container-entries`, `compose-container-entry` |
-| Modified | `src/lens.lisp` | `render-html-passthrough` handles list-of-nodes shape |
-| Modified | `test/test-theme-integration.lisp` | renamed test, verifies passthrough shape |
-| Modified | `test/test-defaults.lisp` | three new tests for default `compose-aggregate` |
-| Modified | `README.md` | demo section rewritten to point to runnable demo |
-| Created | `examples/blog-demo.lisp` | self-contained end-to-end demo |
-| Created | `examples/static/blog.css` | reference stylesheet |
-| Created | `doc/demos/blog-post-output.html` | rendered output |
-| Created | `doc/demos/blog-list-output.html` | rendered output |
-| Created | this file | |
+| `src/theme.lisp` | Modified | `theme-asset-list` produces passthrough nodes |
+| `src/defaults.lisp` | Modified | `compose-page` `page-title` binding; asset splice; `compose-feature` no title; default `compose-aggregate` for containers; helpers `compose-container-entries`, `compose-container-entry` |
+| `src/lens.lisp` | Modified | `render-html-passthrough` handles list-of-nodes shape |
+| `test/test-theme-integration.lisp` | Modified | renamed test, verifies passthrough shape |
+| `test/test-defaults.lisp` | Modified | three new tests for default `compose-aggregate` |
+| `README.md` | Modified | demo section rewritten to point to runnable demo |
+| `examples/blog-demo.lisp` | Created | self-contained end-to-end demo |
+| `examples/static/blog.css` | Created | reference stylesheet |
+| `doc/demos/blog-post-output.html` | Created | rendered output |
+| `doc/demos/blog-list-output.html` | Created | rendered output |
+| this file | Created | |
 
 
 ## Metrics
