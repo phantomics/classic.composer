@@ -433,7 +433,7 @@ examples/
   static/wiki.css   -- reference stylesheet for the wiki demo
 doc/
   Arch.Composer.md        -- detailed architecture document
-  DevLog.ThemeResolution.md -- theme resolution development log
+  Log.ThemeResolution.md    -- theme resolution development log
   DevLog.FullRenderDemo.md  -- full render pipeline development log
   DevLog.ForumRenderDemo.md -- forum demo development log
   DevLog.WikiRenderDemo.md  -- wiki demo development log

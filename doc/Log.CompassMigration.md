@@ -251,7 +251,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
   decision records, open questions and roadmap its notes call for.
 - **Five documents still unmarked**, to be migrated one at a time, each
   recorded in an `## Update` section:
-  - `doc/DevLog.ThemeResolution.md`
+  - `doc/DevLog.ThemeResolution.md` (now `doc/Log.ThemeResolution.md`)
   - `doc/DevLog.FullRenderDemo.md`
   - `doc/DevLog.ForumRenderDemo.md`
   - `doc/DevLog.WikiRenderDemo.md`
