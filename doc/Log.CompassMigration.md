@@ -414,5 +414,80 @@ whole as the Log
     CLASSIC-0010 and CLASSIC-0011.
 
 Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md` (now
-`doc/Log.FullRenderDemo.md`), `doc/DevLog.ForumRenderDemo.md`, `doc/DevLog.WikiRenderDemo.md` and
-`doc/DevLog.ReadOnlyDemos.md`.
+`doc/Log.FullRenderDemo.md`), `doc/DevLog.ForumRenderDemo.md`,
+`doc/DevLog.WikiRenderDemo.md` and `doc/DevLog.ReadOnlyDemos.md`.
+
+## Update 2026-11-21 — doc/DevLog.FullRenderDemo.md
+
+The third migration: the log of the first end-to-end render demo,
+migrated whole as the Log
+[CCOMPOSER-DRAFT-fullrenderdemo](Log.FullRenderDemo.md).
+
+- **Original:** `doc/DevLog.FullRenderDemo.md`, at `migrated-from`
+  revision `0f8183f`, the only commit to touch it, which is also the
+  commit of the work it records.
+- **Move** (`446f2ef`): `git mv` to `doc/Log.FullRenderDemo.md`, with
+  the `README.md` structure listing and the `AGENTS.md` migration line
+  updated, and the two mentions of the old path in this Log, both
+  history, given the new path after them.
+- **Reshape** (`3eba656`), form only:
+  - front-matter as CCOMPOSER-DRAFT-fullrenderdemo: genre `Log`, scope
+    `component`, component `demo`, status `Draft`, and `provenance`
+    naming the original's assistant, claude-opus-4-6;
+  - `created: 2026-06-05`, from the document's own date line. Git dates
+    it from `0f8183f`, committed at 00:05 on 2026-06-06, six minutes
+    after the day the date line names;
+  - the nine numbered decisions as records `-D1` to `-D9`, keeping
+    their numbers and titles, each "Question" as the record's Context.
+    CCOMPOSER-DRAFT-fullrenderdemo-D1's Alternatives point to the
+    background section on Lexis passthrough, which says what the
+    composer would have done without it. Those of
+    CCOMPOSER-DRAFT-fullrenderdemo-D2,
+    CCOMPOSER-DRAFT-fullrenderdemo-D3,
+    CCOMPOSER-DRAFT-fullrenderdemo-D5,
+    CCOMPOSER-DRAFT-fullrenderdemo-D6 and
+    CCOMPOSER-DRAFT-fullrenderdemo-D8 point to the Decision, whose text
+    names the option rejected; that of
+    CCOMPOSER-DRAFT-fullrenderdemo-D9 points to the Context. The other
+    two read "Not recorded in the original.";
+  - 5 file headings and 16 symbol references in Implementation pinned
+    to the work's commit, `0f8183f`. Symbols named only in headings or
+    code blocks, a test the work renamed away, and the output paths
+    were left as they were;
+  - a `Table:` caption on the Files table, its columns put in the
+    spine's order.
+
+  The original's background section on Lexis passthrough, and its
+  Design Properties Preserved, Issues Encountered and Metrics sections,
+  stay where they were; it already had a Verification section.
+- **Check:** `compass check --skip-unmarked --federation` reported 0
+  errors and 0 warnings over the corpus; a word diff against the
+  original removed only the decision numbers, kept in the identifiers,
+  the "Question" labels, bare names, reappearing in their pins, and
+  table cells, moved between columns.
+- **Notes on stale content,** for a revision:
+  - CCOMPOSER-DRAFT-fullrenderdemo-D7, wrapping a list of body sections
+    in an untitled section, was replaced by splicing in `ac700d0`
+    (`src/lens.lisp:render-html-passthrough@3eba656`), as
+    CCOMPOSER-DRAFT-lexismarkdown-D3 records.
+  - The Files table and Verification name
+    `doc/demos/blog-post-output.html` and
+    `doc/demos/blog-list-output.html` as created by the work, but
+    `0f8183f` does not hold them: they were first committed in
+    `ad3fe3c`, and replaced by the pages in `doc/demos/blog/` in
+    `7fa52ba`.
+  - Outstanding Work names a `:placement` attribute as the hook for
+    putting assets in `<head>`, where
+    CCOMPOSER-DRAFT-fullrenderdemo-D1 says the composer emits `:kind`.
+    The Markdown mode it lists as stubbed is real, child themes are
+    exercised by the wiki demo, and the blog model's `write-post` is
+    now `write-article`; asset placement in `<head>` is still open, on
+    Lexis's side.
+  - The default container walk has changed:
+    `src/defaults.lisp:compose-container-entry@3eba656` takes an entity,
+    and the entries come from
+    `src/defaults.lisp:container-entries@3eba656`, since `7fa52ba`.
+  - "Lexis spec Section 5.4" names LEXIS-0001 without a link.
+
+Three documents remain unmarked: `doc/DevLog.ForumRenderDemo.md`,
+`doc/DevLog.WikiRenderDemo.md` and `doc/DevLog.ReadOnlyDemos.md`.
