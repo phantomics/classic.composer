@@ -10,13 +10,67 @@ provenance:
   assistant:          claude-opus-5-5
   original-assistant: claude-opus-4-6
   migrated-from:      doc/Composer.md@7fa52ba
+relates-to:
+  - CCOMPOSER-DRAFT-composerref
+  - CCOMPOSER-DRAFT-lexismarkdown
+  - CCOMPOSER-DRAFT-compass-migration
+  - CLASSIC-0010
+  - CLASSIC-0011
+  - LEXIS-0002
+cites:
+  - title:     "Fresnel — Display Vocabulary for RDF"
+    locator:   "https://www.w3.org/2005/04/fresnel-info/"
+    external:  true
+  - title:     "Scribble: The Racket Documentation Tool"
+    locator:   "https://docs.racket-lang.org/scribble/"
+    external:  true
+  - title:     "WordPress Shortcode API"
+    locator:   "https://codex.wordpress.org/Shortcode_API"
+    external:  true
+decisions:
+  - CCOMPOSER-DRAFT-composer-D1
+  - CCOMPOSER-DRAFT-composer-D2
+  - CCOMPOSER-DRAFT-composer-D3
+  - CCOMPOSER-DRAFT-composer-D4
+  - CCOMPOSER-DRAFT-composer-D5
+  - CCOMPOSER-DRAFT-composer-D6
+open-questions:
+  - CCOMPOSER-DRAFT-composer-O1
+  - CCOMPOSER-DRAFT-composer-O2
+  - CCOMPOSER-DRAFT-composer-O3
+  - CCOMPOSER-DRAFT-composer-O4
+  - CCOMPOSER-DRAFT-composer-O5
 ---
 
 # The Classic Composer Architecture
 
+This record is the design of the Classic Composer, the system that
+assembles Classic content into Lexis documents for display. It sets
+out the composer's boundaries, the five-tier content model it
+composes pages with, the decisions that shape it, and the parts of
+the design not yet built: the capability extensions, complex
+templates, the operative tier and its hand-off to Seed, and
+distribution. The parts that run are described in
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md), which this record
+links to rather than repeats.
+
 ## Canonical Terms
 
-See [The Five-Tier Content Model](#the-five-tier-content-model).
+Table: Terms used in this design, with their definitions.
+
+| Term | Definition |
+|---|---|
+| Tier | One of five structural roles content plays on a page: frame, feature, adjunct, aggregate, operative (see [The Five-Tier Content Model](#the-five-tier-content-model)) |
+| Composition context | The state of one composition: persistence strategy, publication, primary entity, resolved theme, slot bindings and collections |
+| Theme | A `classic-theme` resource: tier templates, slot-fills, lenses, capabilities and assets, inherited along a chain of parent themes |
+| Lens | A Fresnel-inspired spec, held by a theme, naming which properties of an entity class to render, in what order and how, for a purpose such as `:default` or `:summary` |
+| Display mode | How a lens renders one property value, such as `:text`, `:link` or `:markdown` |
+| Template slot | A `template.slot` placeholder in a Lexis template, filled by name from the context's bindings |
+| Slot-fill | A Lexis subtree a theme supplies for a named template slot of a parent theme's template |
+| Anchor | A `compose.anchor` node whose registered handler produces query-driven content |
+| Collector | A function run over the resolved tree before anchors evaluate, gathering metadata for them |
+| Capability | A named, additive extension registered for a tier |
+| Extension generic | A generic function an application specializes to adapt composition to its content, such as `entity-href` |
 
 ## Thesis
 
@@ -37,6 +91,11 @@ search index).
 **The composer** owns: content assembly, template application, page
 composition, lens evaluation.
 
+This division follows CLASSIC-D29, in Classic's theme ontology Log
+[CLASSIC-0010](../../classic/doc/theme/Log.ThemeOntology.md): Classic's
+core defines what a theme is, and the composer consumes themes for
+rendering.
+
 The composer depends on the foundation (for protocol generics) and the
 schema (for entity classes and theme resolution). It uses the
 `classic.schema` package nickname so the same source works against any
@@ -44,20 +103,130 @@ schema that declares the nickname.
 
 ## Influences
 
-See [Lens-Driven Feature Composition](#lens-driven-feature-composition)
-and [Collect Phase](#collect-phase).
+- **Fresnel**, the W3C display vocabulary for RDF, gives the lens: a
+  per-class selection of properties, in order, with formatting hints
+  and sublenses for related resources, chosen by purpose. Its format
+  vocabulary is replaced by a small fixed set of display modes, and
+  lenses are plists held by themes rather than RDF resources.
+- **Scribble**, the Racket documentation system, gives "collect then
+  render": a pass that gathers metadata from the whole document
+  before any dependent content is produced, so anchors need not
+  depend on one another.
+- **Seed**, or another control system, takes the implementation of
+  interactive controls, leaving the composer only their placement
+  (CCOMPOSER-DRAFT-composer-D4).
+- **WordPress shortcodes** are the counterexample: nested shortcodes
+  re-parsed until none remain can make expansion exponential. The
+  composer's fixed sequence of single passes rejects that model
+  (CCOMPOSER-DRAFT-composer-D6).
 
 ## Settled Decisions
 
-Not recorded in the original.
+### CCOMPOSER-DRAFT-composer-D1 — The composer is read-only with respect to Classic's data
+
+**Status:** Proposed
+**Context:** Composition reads publications, entities, relations and
+themes. Rendering is tempting to optimize by writing back: caching
+resolved values, denormalizing display fields, or reordering
+containers for display.
+**Decision:** The composer consumes the persistence protocol and never
+writes to it. Values a page needs that are not stored are computed
+while composing, through the extension generics. The only writes the
+composer causes are downstream, as rendered artifacts reach
+distribution; interactive controls, which write, are placed by the
+composer and implemented elsewhere (CCOMPOSER-DRAFT-composer-D4).
+**Alternatives:** Writing derived values back was not adopted: the
+composer would need write access to the store, the read path of
+composition would become a write path, and a display choice would
+change the data for every other reader. The forum and wiki demos once wrote such values; they
+were rewritten to compute them, as
+[DevLog.ReadOnlyDemos.md](DevLog.ReadOnlyDemos.md) records.
+
+### CCOMPOSER-DRAFT-composer-D2 — Tiers are defined by structural role, not application domain
+
+**Status:** Proposed
+**Context:** The composer serves blogs, wikis, forums and other
+publication types, each with its own page kinds.
+**Decision:** The composer organizes content into five tiers based on
+the structural role content plays on a page, not the application
+domain it belongs to. A blog, wiki, forum and social network all use
+the same tiers with different composition decisions.
+**Alternatives:** Page types per domain (a blog post page, a forum
+thread page) were not adopted: each new publication type would need
+its own composition code, and nothing would be shared between them.
+The blog, forum and wiki demos compose all their pages with the same
+tier methods.
+
+### CCOMPOSER-DRAFT-composer-D3 — Extensions only add; none excludes another
+
+**Status:** Proposed
+**Context:** Publications need features the base composer does not
+have: hero banners, sidebars, feeds, comment threads, forms.
+**Decision:** The composer is organized as a base package with additive
+capability extensions. Every extension adds a feature to the base
+rather than replacing it. Each augments a specific content pattern,
+so capabilities compose without conflict, and content that matches no
+loaded capability passes through the base rendering unchanged.
+**Alternatives:** Mutually exclusive alternatives, such as one of
+several frame engines or aggregate renderers chosen per publication,
+were not adopted: they make features conflict, and a publication
+could not combine two that replace the same part.
+
+### CCOMPOSER-DRAFT-composer-D4 — The composer places controls; Seed implements them
+
+**Status:** Proposed
+**Context:** Pages hold interactive controls: comment forms, rating
+widgets, search dialogs, editors. They are the write path back into
+Classic, and their behavior depends on the client.
+**Decision:** The operative tier specifies control placement; Seed (or
+another control system) implements the controls. The composer decides
+what control goes where, what it targets and what permission it
+requires; Seed decides how the control looks and behaves.
+**Alternatives:** Rendering controls in the composer was not adopted:
+it would tie composition to one client technology and bring the write
+path into a read-only system. The separation means the composer can
+place controls without knowing how they're implemented, and Seed can
+implement controls without knowing where they're placed.
+
+### CCOMPOSER-DRAFT-composer-D5 — Schema references go through the classic.schema nickname
+
+**Status:** Proposed
+**Context:** Classic's schema is versioned: the composer is built
+against `classic.schema.alpha`, and later schemas are expected.
+**Decision:** Schema references throughout the composer use the
+`classic.schema` package nickname, never a schema package's own name.
+Only the ASDF dependency names the alpha schema. A future
+`classic.composer.dist.beta` would load the same composer source
+against a beta schema.
+**Alternatives:** Naming `classic.schema.alpha` in the source was not
+adopted: each schema would need its own copy of the composer.
+
+### CCOMPOSER-DRAFT-composer-D6 — Composition is a fixed sequence of single passes
+
+**Status:** Proposed
+**Context:** Templates nest: a frame holds slots, slots hold composed
+content, and anchors produce content from queries. Systems that expand
+templates recursively can do work exponential in the nesting.
+**Decision:** A page is composed in a fixed sequence of stages, each one
+pass over the tree: tiers composed, slots resolved, metadata collected,
+anchors evaluated. Inner content is composed before it is bound into
+outer templates, a resolved slot's value is not searched for further
+slots, and anchors depend on the collected metadata rather than on one
+another. Composition time is proportional to the size of the page.
+**Alternatives:** Recursive expansion until no placeholder remains, as
+with WordPress shortcodes, was not adopted, for its unbounded cost.
+Ordering anchors by their dependencies was not adopted: it would need
+dependency resolution and cycle detection, where the collect phase
+gives every anchor what it needs.
 
 
 ## The Five-Tier Content Model
 
 The composer organizes content into five tiers based on the structural
-role content plays on a page, not the application domain it belongs to.
-This makes the tiers domain-agnostic -- a blog, wiki, forum, and social
-network all use the same tiers with different composition decisions.
+role content plays on a page, not the application domain it belongs to
+(CCOMPOSER-DRAFT-composer-D2). This makes the tiers domain-agnostic --
+a blog, wiki, forum, and social network all use the same tiers with
+different composition decisions.
 
 ### 1. Frame
 
@@ -75,7 +244,10 @@ a wiki article, a forum post, a product listing. Typically one per page
 (the entity the URL resolves to).
 
 In a forum context, all posts in a thread are feature content -- there is
-no structural subordination between the opening post and replies.
+no structural subordination between the opening post and replies. A
+thread page presents them through the aggregate tier, as an aggregate of
+those features: the thread is a container, and its posts are its
+entries, each rendered as feature content would be.
 
 ### 3. Adjunct
 
@@ -102,12 +274,13 @@ not content -- they are interfaces for producing or modifying content.
 The operative tier specifies *what control goes where* and *what it
 targets*. The actual control implementation is delegated to a separate
 system (such as Seed) which determines the control's behavior and
-appearance.
+appearance (CCOMPOSER-DRAFT-composer-D4).
 
 The operative tier is the write-path surface. Tiers 1-4 are read-path
 (content flows from Classic through the composer to the renderer). Tier 5
 provides the interface through which user actions flow back into Classic's
-persistence and workflow protocols.
+persistence and workflow protocols. Tiers 1-4 are built; the operative
+tier is not (CCOMPOSER-DRAFT-composer-O3).
 
 ## Tier Relationships
 
@@ -121,159 +294,38 @@ Table: What each tier reads from and writes to Classic, and where its content co
 | Aggregate | Container contents, query results | No | Query results |
 | Operative | Workflow state (available actions) | Yes (via controls) | Interaction specs |
 
+Each tier is a generic function with a default method; the defaults
+are described in
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#tier-generics).
+
 
 ## Theme Integration
 
 Themes are first-class Classic resources (`classic-theme`) stored
 through the persistence protocol. The core ontology defines what
-themes are; the composer consumes them for rendering.
-
-### Theme Resolution
-
-At context creation, the composer resolves the full theme chain:
-
-1. Walk `parent-theme` links from child to root
-2. Merge capabilities (union, with exclusion support)
-3. Collect per-tier overrides
-4. Merge configuration bindings (child overrides parent keys)
-5. Merge slot-fills (child overrides parent slot names)
-6. Merge lenses (child overrides parent on (class, purpose) pairs)
-7. Collect asset manifests (parent first, child last for CSS stacking)
-
-All resolved state is stored on the composition context for consumption
-by tier methods.
-
-### Tier Template Cascade
-
-For each composition tier, the composer selects a template via:
-
-1. Per-tier override (`classic-theme-override` for this tier) -- wins
-2. Theme's `tier-templates` alist entry for the tier
-3. Built-in default (minimal frame, body extraction, etc.)
-
-### Slot-Fills: Structural Extension Points
-
-Parent themes designate extension points via `template.slot` nodes:
-
-```lisp
-(document (@ :title (template.slot (@ :name "page-title")))
-  (header (template.slot (@ :name "theme.brand")))
-  (template.slot (@ :name "main-content"))
-  (template.slot (@ :name "theme.footer-extras"))
-  (footer ...))
-```
-
-Child themes supply Lexis subtrees for these slots via the `slot-fills`
-slot on `classic-theme`, without replacing the parent's template.
-Slot-fills compose through inheritance: child entries override parent
-entries on matching slot-name; unmatched parent entries pass through.
-
-### Capability Activation
-
-The theme's resolved capability set (after exclusion processing)
-determines which registered composer capabilities participate in
-dispatch during this composition. The composer validates:
-
-- All capabilities in the activation set are registered (warn or error)
-- All `required-capabilities` are present in the set
-
-Validation strictness is controlled by `*strict-capabilities*`.
+themes are; the composer consumes them for rendering. At context
+creation the composer resolves a theme's chain of parents and merges
+what the chain declares: capabilities, overrides, configuration,
+slot-fills, lenses and assets. A child theme extends its parent
+through slot-fills and lenses without replacing its templates. The
+resolution, the tier template cascade, slot-fills, configuration,
+assets and capability validation are described in
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#theme-integration), and
+the ontology in [CLASSIC-0011](../../classic/doc/theme/Ref.Theme.md).
 
 
 ## Lens-Driven Feature Composition
 
-When a theme provides Fresnel-inspired lenses, the feature tier uses
-them to determine which entity slots to render and how.
-
-### Display Mode Cascade
-
-For each property in a lens:
-
-1. Explicit `:display` from the lens property spec
-2. Slot's MOP `:format` annotation (`:markdown` -> `:markdown`, etc.)
-3. Slot's `:persistence :relation` with no sublens -> `:link`
-4. `:text` (universal fallback)
-
-### Display Modes
-
-Table: The display modes, what each produces, and its use case.
-
-| Mode | Produces | Use case |
-|------|----------|----------|
-| `:text` | Text node or `(paragraph ...)` | Plain string slots |
-| `:image` | `(image (@ :src ... :alt ...))` | URI slots pointing to images |
-| `:link` | `(web-link (@ :uri ...) label)` | URI slots as clickable links |
-| `:uri` | Plain text of the URI | URI slots displayed as URIs |
-| `:html` | Pass-through (already Lexis) | Body slots in Lexis form |
-| `:markdown` | Blocks read by `lexis.markdown`, spliced in place | Body slots in Markdown |
-| `:date` | Formatted date string | Timestamp slots |
-| `:list` | `(unordered-list ...)` | List-valued slots |
-
-A mode may produce a list of blocks rather than one node: a Markdown
-body of several blocks, or an `:html` slot holding a list of Lexis
-forms. The lens evaluator splices such a list into the surrounding
-content. Wrapping it in an untitled `section` instead would push its
-sections one level deeper.
-
-### Markdown Bodies
-
-The `:markdown` mode reads text with the Lexis Markdown reader,
-`lexis.markdown:markdown->lexis`. Markdown headings become nested
-titled sections, and the reader's safe defaults apply: raw HTML stays
-text, and links keep only the `http`, `https`, `mailto` and `classic`
-URI schemes.
-
-The reader's options come from the `markdown-options` generic, called
-with the composition context, the entity and the slot name. Its
-default method returns no options. Application models specialize it
-on their content classes. A wiki supplies a `:wiki-link-resolver` that
-looks pages up by anchor, which the composer cannot do itself, since
-it does not depend on the content models. Only content from a trusted
-source should get `:raw-html :passthrough`.
-
-The body fallback (no lens) reads a string body as Markdown when the
-body slot is declared `:format :markdown`.
-
-### Sublens References
-
-Relation slots can declare a sublens: `(author :sublens classic-person
-:purpose :label)`. The composer retrieves the related entity, finds
-the target lens, and recursively applies it. Fallback chain:
-
-1. Lens for (sublens-class, sublens-purpose)
-2. Lens for (actual-class, :label)
-3. Entity's `label` slot as plain text
-
-The related entity is found with `resolve-reference`, so a reference
-need not be a URI (see [Extension Generics](#extension-generics)).
-The `:link` mode follows references the same way. A resolved target
-is linked to its page, or to the reference when that is a URI, and
-shown by its title. An unresolved reference that is not a URI, such
-as the name of a missing wiki page, is shown as text.
-
-### Property Options
-
-Table: The lens property options and their effects.
-
-| Option | Effect |
-|--------|--------|
-| `:link :self` | Link the rendered value to the page of the entity it belongs to (`entity-href`); for inline values such as titles |
-| `:label "Text"` | Caption the value: an inline value becomes `(paragraph (strong "Text:") " " value)`; a block value is preceded by a paragraph holding the caption |
-
-### Aggregate Lenses
-
-A lens with purpose `:aggregate` on a container class orders that
-container's entries in aggregate views. `:sort-by` names the property
-to sort by, read like any lens property. `:sort-order :descending`
-reverses the order. The sort is stable, numbers compare numerically,
-other values compare by printed form without regard to case, and
-entries without a value go last. Like every lens, an aggregate lens
-belongs to a theme. It orders only the publications that use the
-theme, and it changes the view, not the container.
-
-```lisp
-(:class classic-container :purpose :aggregate :sort-by headline)
-```
+When a theme provides Fresnel-inspired lenses, the composer uses them
+to determine which entity properties to render and how: the feature
+through a `:default` lens, container entries through `:summary` or
+`:label` lenses, and related entities through sublenses. A display
+mode cascade chooses how each value renders, from the lens's explicit
+choice, then the slot's declared format, then its persistence. Lenses
+are data in themes; what is not stored is computed through the
+extension generics below. The modes, Markdown bodies, sublenses,
+property options and aggregate lenses are described in
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#lens-evaluation).
 
 Without lenses, the feature tier falls back to direct body extraction.
 
@@ -281,49 +333,26 @@ Without lenses, the feature tier falls back to direct body extraction.
 ## Extension Generics
 
 Applications adapt composition to their content by specializing
-generic functions on their content classes. The composer is
-read-only, so these are read paths: a method computes what a page
-shows and must not change the publication. Each default keeps the
-composer's base behavior.
+generic functions on their content classes, not by changing their data
+before composing (CCOMPOSER-DRAFT-composer-D1). Each generic has a
+default that keeps the composer's base behavior. They supply computed
+properties for lenses, resolve references that are not URIs, give the
+URLs of entities' pages, order containers' entries, and set the
+Markdown reader's options. Each is described in
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#extension-generics).
 
-Table: The extension generics, what each returns, and its default.
-
-| Generic | Returns | Default |
-|---------|---------|---------|
-| `lens-property-value (context entity property)` | The value a lens reads for `property` | The slot's bound value |
-| `resolve-reference (context entity property value)` | The entity a reference names | Retrieve `value` as a URI |
-| `entity-href (context entity)` | The URL of the entity's page | `nil`: no link |
-| `container-entries (context container)` | The entities an aggregate view lists, in order | `contains`, in `container-reading-order`, sorted by an aggregate lens |
-| `container-reading-order (container)` | `:as-stored` or `:reverse` | `:as-stored` |
-| `markdown-options (context entity slot-name)` | Options for the Markdown reader | None |
-
-- **Computed properties.** A lens names a property that is not a slot,
-  and a `lens-property-value` method (usually with an `eql`
-  specializer on the property) supplies its value. The forum demo's
-  `post-author-account` finds a post's author account through the
-  reverse relation `sioc:account_of`, with `context-query`.
-- **References.** A wiki's typed slots name pages by anchor. A
-  `resolve-reference` method on the wiki page class looks the anchor
-  up, so sublenses and `:link` properties reach the pages.
-- **Page links.** `entity-href` gives the URL scheme, which is the
-  site's choice: file names for a static site, routes for a server.
-  The composer links through `:link :self`, through `:link`
-  references, and in container entries rendered without a lens.
-- **Ordering.** An order that is a rule of the content type, such as
-  a forum listing pinned threads first, is a `container-entries`
-  method on the container class. An order that is a presentation
-  choice, such as an alphabetical index, is an aggregate lens in the
-  theme.
-
-`render-lens-property` renders a single property spec the way a lens
-does, for code that lays out properties itself, such as an infobox.
+An order that is a rule of the content type, such as a forum listing
+pinned threads first, is a method on the container class. An order
+that is a presentation choice, such as an alphabetical index, is an
+aggregate lens in the theme, and so belongs to one publication.
 
 
 ## Capability-Addition Model
 
 The composer is organized as a base package with additive capability
 extensions. Every extension adds a feature to the base rather than
-replacing it. There are no mutually exclusive alternatives.
+replacing it. There are no mutually exclusive alternatives
+(CCOMPOSER-DRAFT-composer-D3).
 
 ### Base Package
 
@@ -337,11 +366,17 @@ replacing it. There are no mutually exclusive alternatives.
 - Theme resolution and lens evaluation
 
 The base package alone produces working output. Extensions enhance it.
+The base package also holds the capability registry, and validates a
+theme's capabilities against it; the default tier methods do not yet
+dispatch to capabilities (CCOMPOSER-DRAFT-composer-O1).
 
 ### Capability Extensions
 
 Each extension is an ASDF system that registers itself with the base
-composer, declaring what content patterns it can handle.
+composer, declaring what content patterns it can handle. The theme's
+resolved capability set, after exclusions, determines which registered
+capabilities take part in a composition. These systems are planned;
+none exists yet.
 
 ```
 classic.composer                          -- base protocols + defaults
@@ -370,48 +405,22 @@ base rendering unchanged.
 
 ## Templates and Anchors
 
-### Simple Templates
-
-Lexis documents with `template.slot` placeholder nodes. The composer
-substitutes content into slots by name:
-
-```lisp
-(document (@ :title (template.slot (@ :name "page-title")))
-  (navigation ...)
-  (section (@ :title (template.slot (@ :name "page-title")))
-    (template.slot (@ :name "main-content")))
-  (footer ...))
-```
+Simple templates are Lexis documents with `template.slot` placeholder
+nodes, filled by name. Anchors are `compose.anchor` nodes whose
+registered handlers produce query-driven, conditional content, and
+the collect phase gathers the metadata they need before any of them
+runs (CCOMPOSER-DRAFT-composer-D6). Anchors keep query logic in CL
+where it belongs while keeping the template declarative. All three
+are described in
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#templates-anchors-and-collectors).
 
 ### Complex Templates
 
 CL functions that receive a content entity and persistence context and
 return a Lexis tree. Used when composition requires triplestore queries,
-conditional sections, or dynamic content assembly.
-
-### Anchors
-
-`compose.anchor` nodes specify query-driven, conditional content
-insertion:
-
-```lisp
-(compose.anchor
-  (@ :name "related-by-tags"
-     :limit 5
-     :fallback nil))
-```
-
-Anchor handlers return Lexis trees that are spliced into the composed
-document. A `:fallback nil` anchor that produces no content is removed
-entirely. Anchors keep query logic in CL where it belongs while keeping
-the template declarative.
-
-### Collect Phase
-
-Before anchors evaluate, the collect phase walks the resolved tree
-and gathers structural metadata (section headings, link targets,
-entity counts). This is the Scribble-style "collect then render"
-pattern that avoids cross-dependencies between anchors.
+conditional sections, or dynamic content assembly. Complex templates are
+not built (CCOMPOSER-DRAFT-composer-O2); anchors and the extension
+generics cover some of their uses.
 
 
 ## Composition Workflow
@@ -459,6 +468,12 @@ renderers, from Lexis to HTML, PDF, terminal, Markdown and JSON-LD;
 and distribution to a CDN, a file cache, a search index and
 notifications.
 
+The composer performs the stages through the composed Lexis tree, as
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#composition-pipeline)
+describes. Renderers are separate systems, of which Lexis's HTML
+renderer exists; distribution is not built
+(CCOMPOSER-DRAFT-composer-O4).
+
 The composer and renderers are stateless services that scale
 independently from Classic's logic layer and persistence backend.
 
@@ -466,7 +481,8 @@ independently from Classic's logic layer and persistence backend.
 ## Operative Tier and Seed
 
 The operative tier specifies control placement; Seed (or another
-control system) implements the controls. The boundary:
+control system) implements the controls
+(CCOMPOSER-DRAFT-composer-D4). The boundary:
 
 - **Composer decides:** "a comment form goes here, targeting this
   container, requiring the :write permission"
@@ -475,7 +491,10 @@ control system) implements the controls. The boundary:
 
 This separation means the composer can place controls without knowing
 how they're implemented, and Seed can implement controls without knowing
-where they're placed.
+where they're placed. The composer turns an operative spec into a
+`compose.operative` placeholder node carrying the spec as attributes;
+no tier produces specs yet, and the hand-off to Seed is undefined
+(CCOMPOSER-DRAFT-composer-O3).
 
 
 ## Layered Architecture
@@ -505,14 +524,74 @@ resolution), `closer-mop` (MOP access for the lens cascade) and
 `lexis.markdown` (the Markdown reader for the `:markdown` mode).
 
 Schema references throughout the composer use the `classic.schema`
-package nickname. A future `classic.composer.dist.beta` would load
-the same composer source against a beta schema.
+package nickname (CCOMPOSER-DRAFT-composer-D5). A future
+`classic.composer.dist.beta` would load the same composer source
+against a beta schema. The repository's files are listed in
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#project-structure).
 
 
 ## Open Questions
 
-Not recorded in the original.
+### CCOMPOSER-DRAFT-composer-O1 — How do capabilities take part in composition?
+
+The registry, `define-capability` and `dispatch-capability` exist, and
+`compose-page` validates a theme's capabilities against the registry,
+but no tier method dispatches to a capability. Which tiers dispatch,
+at which nodes (each node of a theme template, or only nodes whose tag
+no other method handles), and how does the theme's activation set
+limit which registered capabilities may answer?
+
+### CCOMPOSER-DRAFT-composer-O2 — How is a complex template declared?
+
+Themes are persisted resources, and their tier templates are Lexis
+data, but a complex template is a CL function. How does a theme name
+one: by a registered name, resolved like an anchor handler, or by a
+generic function specialized on the entity's class, as the extension
+generics are? And what may it do that an anchor or an extension
+generic cannot?
+
+### CCOMPOSER-DRAFT-composer-O3 — What is the operative spec, and how does Seed receive it?
+
+`compose-operative` returns no specs, and the `compose.operative`
+placeholder's attributes are whatever a spec holds. What does a spec
+name (the control, its target, its placement, the permission and
+workflow transition it needs), where does the composer learn which
+actions the reader may take, and how does Seed find and expand the
+placeholders in a rendered page?
+
+### CCOMPOSER-DRAFT-composer-O4 — How do rendered artifacts reach distribution?
+
+The composer's only write path is downstream, to a CDN, a file cache,
+a search index and notifications, but nothing carries composed pages
+there, and nothing decides when a page must be composed again after
+its content changes. Is distribution a service of its own, fed by
+Classic's workflow and federation events, and what does it need from
+the composer to know which pages an entity appears on?
+
+### CCOMPOSER-DRAFT-composer-O5 — Should the composer's wrapper sections raise heading levels?
+
+`compose-feature` wraps lens output in `(section (@ :class "feature")
+...)`, and container entries are wrapped the same way. Lexis counts
+every section when it computes heading depth, so a feature's Markdown
+`##` heading renders as `<h3>`. The composer's side of LEXIS-O3, in
+[LEXIS-0002](../../lexis/doc/Plan.RenderMarkdown.md), was settled by
+splicing bodies instead of wrapping them
+(CCOMPOSER-DRAFT-lexismarkdown-D3); the remaining level awaits a
+change in Lexis, such as not counting untitled sections, or a
+container tag that is not a section.
 
 ## Roadmap
 
-Not recorded in the original.
+1. **Capability dispatch** (CCOMPOSER-DRAFT-composer-O1): wire
+   dispatch into the tier methods and limit it to the theme's
+   activation set, then build the first extension systems, such as
+   `classic.composer.frame.hero` and `classic.composer.aggregate.feed`.
+2. **The operative tier** (CCOMPOSER-DRAFT-composer-O3): define the
+   operative spec and its placeholder with Seed, and build
+   `classic.composer.operative.forms`.
+3. **Complex templates** (CCOMPOSER-DRAFT-composer-O2), once the uses
+   anchors and extension generics leave uncovered are known.
+4. **Distribution** (CCOMPOSER-DRAFT-composer-O4), with the services
+   that consume composed pages.
+5. **`classic.composer.dist.beta`** (CCOMPOSER-DRAFT-composer-D5), when
+   Classic publishes a beta schema.

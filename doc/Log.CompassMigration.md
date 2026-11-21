@@ -262,3 +262,60 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
 - **Mentions by description.** CCOMPOSER-DRAFT-lexismarkdown-D1 refers
   to "the architecture document" in prose, without a link; it may link
   to CCOMPOSER-DRAFT-composer when that Log is next revised.
+
+## Update 2026-11-21 — The Ref split and the Architecture's revision
+
+This installment completes the migration of the architecture document
+(CCOMPOSER-DRAFT-compass-migration-D3): the running-code sections were
+split into a Ref, and the Architecture was revised to link to it.
+
+### The Ref (`46d0707`)
+
+[CCOMPOSER-DRAFT-composerref](Ref.Composer.md) was written with
+`compass-author`, with `api-version` "0.2.0" and
+`provenance.migrated-from` naming the same original as the
+Architecture, `doc/Composer.md@7fa52ba`. It carries the original's
+Theme Integration, Lens-Driven Feature Composition, Extension Generics,
+and its simple templates, anchors and collect phase, checked against
+the code and pinned to `7fa52ba`, the last commit to change `src/`. It
+adds a Composition Pipeline section and a Project Structure. Checking
+the original's claims against the code corrected four:
+
+- the theme's capability set does not decide dispatch: `compose-page`
+  validates it, and no default tier method calls `dispatch-capability`;
+- an anchor's fallback is used only when no handler is registered, and
+  a warning is signalled then;
+- lenses serve container entries and sublenses as well as the feature
+  tier;
+- the composer registers no collectors or anchor handlers of its own.
+
+### The Architecture's revision
+
+[CCOMPOSER-DRAFT-composer](Arch.Composer.md) was revised as an ordinary
+edit, committed with this Update:
+
+- an abstract, and a Canonical Terms table in place of the pointer;
+- Influences: Fresnel, Scribble, Seed, and WordPress shortcodes as the
+  counterexample, with the outside sources in `cites:`;
+- the Thesis cites CLASSIC-D29, which put the theme ontology in
+  Classic and rendering in the composer;
+- six decision records: the five candidates the reshape listed
+  (CCOMPOSER-DRAFT-compass-migration-D4), and a sixth, composition as
+  a fixed sequence of single passes, from the original's workflow and
+  the README's account of it, each with its alternatives;
+- the running-code sections reduced to summaries linking to the Ref;
+- the unbuilt parts marked as such, with five open questions:
+  capability dispatch, complex templates, the operative spec and Seed,
+  distribution, and the heading level the wrapper sections add;
+- a Roadmap ordered by those questions;
+- the forum claim reconciled with the forum demo: a thread's posts are
+  feature content, which a thread page presents as an aggregate, as
+  [DevLog.ForumRenderDemo.md](DevLog.ForumRenderDemo.md) records.
+
+`compass check --skip-unmarked --federation` reported 0 errors and 0
+warnings over the corpus, with every reference verified, and
+`compass index --check` the index current.
+
+With this installment, the Ref split of Outstanding Work is done. The
+Architecture and the Ref remain `Draft`, and their records `Proposed`,
+until the steward sets their statuses.
