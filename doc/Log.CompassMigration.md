@@ -339,3 +339,80 @@ committed after `3a95f57`, the commit the release tag `v0.2.0` marks:
   framework's passes, and a sixth open question,
   CCOMPOSER-O6, asks how sublens cycles are bounded,
   first on the Roadmap.
+
+## Update 2026-11-21 — doc/DevLog.ThemeResolution.md
+
+The second migration: the log of the theme resolution work, migrated
+whole as the Log
+[CCOMPOSER-DRAFT-themeresolution](Log.ThemeResolution.md).
+
+- **Original:** `doc/DevLog.ThemeResolution.md`, at `migrated-from`
+  revision `3e9068e`, the only commit to touch it, which is also the
+  commit of the work it records.
+- **Move** (`5929753`): `git mv` to `doc/Log.ThemeResolution.md`, with
+  the `README.md` structure listing and the `AGENTS.md` migration line
+  updated. This Log's own backlog list keeps the old path, as history,
+  with the new path noted after it.
+- **Reshape** (`a44422f`), form only:
+  - front-matter as CCOMPOSER-DRAFT-themeresolution: genre `Log`, scope
+    `component`, component `theme`, status `Draft`, `provenance` naming
+    the original's assistant, claude-opus-4-6, and `relates-to`
+    CCOMPOSER-0001, the document the original names as
+    `doc/Composer.md`;
+  - the twelve numbered decisions as records `-D1` to `-D12`, keeping
+    their numbers and titles. Each original "Question" became the
+    record's Context. Alternatives point to the Context where the
+    question names the rejected option
+    (CCOMPOSER-DRAFT-themeresolution-D1,
+    CCOMPOSER-DRAFT-themeresolution-D3,
+    CCOMPOSER-DRAFT-themeresolution-D4 and
+    CCOMPOSER-DRAFT-themeresolution-D8), to the Decision where it does
+    (CCOMPOSER-DRAFT-themeresolution-D9), and read "Not recorded in
+    the original." for the other seven;
+  - 27 symbols and 8 file headings in Implementation pinned to the
+    work's commit, `3e9068e`; the Files table's paths left as history,
+    and `doc/Composer.md` noted as now `doc/Arch.Composer.md`;
+  - a Verification section pointing to Outstanding Work, which says no
+    test suite existed;
+  - a `Table:` caption on the Files table, its columns put in the
+    spine's order.
+
+  The original's background section on the dist factorization, and
+  its Design Properties Preserved and Metrics sections, stay where
+  they were. Its date line, 2026-06-05, matches Git's, so `created` is
+  left to Git.
+- **Check:** `compass check --skip-unmarked --federation` reported 0
+  errors and 0 warnings over the corpus; a word diff against the
+  original removed only the decision numbers, kept in the identifiers,
+  the "Question" labels, the bold of "Decision: Eager.", bare symbol
+  names, reappearing in their pins, and table cells, moved between
+  columns.
+- **Notes on stale content,** for a revision:
+  - CCOMPOSER-DRAFT-themeresolution-D4, the theme's capabilities as the
+    activation set for dispatch, was never built: no tier method calls
+    `src/capability.lisp:dispatch-capability@a44422f`, as
+    CCOMPOSER-0001 records in its open question on capability
+    dispatch.
+  - CCOMPOSER-DRAFT-themeresolution-D8, the stubbed Markdown mode, was
+    replaced by the Lexis Markdown reader
+    (`src/lens.lisp:render-markdown@a44422f`), as
+    [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) records.
+  - Design Properties Preserved says sublens recursion is bounded by
+    the depth of the relationship graph, but
+    `src/lens.lisp:apply-sublens@a44422f` follows lenses that refer to
+    each other without end, as CCOMPOSER-0001 records in its open
+    question on sublens cycles.
+  - Outstanding Work is partly done since: a test suite was added in
+    `ce26e78`, the Markdown mode is real, and assets reach the HTML
+    renderer as passthrough nodes
+    (`src/theme.lisp:theme-asset-list@a44422f`). Capability dispatch
+    and cross-reference resolution remain.
+  - The file sizes are approximate: "~180 lines" for `src/theme.lisp`,
+    which had 214 lines at `3e9068e`.
+  - The Lexis specification ("Section 7.3") and Classic's theme
+    ontology are mentioned without links; they are LEXIS-0001, and
+    CLASSIC-0010 and CLASSIC-0011.
+
+Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md`,
+`doc/DevLog.ForumRenderDemo.md`, `doc/DevLog.WikiRenderDemo.md` and
+`doc/DevLog.ReadOnlyDemos.md`.
