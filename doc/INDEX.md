@@ -14,6 +14,7 @@ Table: Documents in the CCOMPOSER namespace.
 | [CCOMPOSER-0002](Ref.Composer.md) | Classic Composer Reference | Ref | project | Current | — |
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
+| [CCOMPOSER-DRAFT-themeresolution](Log.ThemeResolution.md) | Theme Resolution Development Log | Log | component | Draft | theme |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 
@@ -34,6 +35,18 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D4](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d4--the-body-fallback-reads-markdown-bodies) | Decision | The body fallback reads Markdown bodies | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D6](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d6--the-wiki-demo-resolves-wiki-links-during-composition) | Decision | The wiki demo resolves wiki links during composition | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
+| [CCOMPOSER-DRAFT-themeresolution-D1](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d1--eager-theme-resolution-at-context-creation) | Decision | Eager theme resolution at context creation | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D2](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d2--theme-source-priority) | Decision | Theme source priority | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D3](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d3--tier-template-cascade-override---tier-templates---default) | Decision | Tier template cascade: override -> tier-templates -> default | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D4](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d4--capability-activation-set-from-theme) | Decision | Capability activation set from theme | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D5](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d5--capability-validation-warn-by-default-strict-mode-optional) | Decision | Capability validation: warn by default, strict mode optional | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D6](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d6--lens-driven-feature-composition-with-body-fallback) | Decision | Lens-driven feature composition with body fallback | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D7](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d7--display-mode-cascade-mirrors-fresnel-extended-with-mop) | Decision | Display mode cascade mirrors Fresnel, extended with MOP | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D8](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d8--markdown-display-mode-stubbed) | Decision | Markdown display mode stubbed | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D9](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d9--silent-skip-for-absent-slots-warn-for-nonexistent-slots) | Decision | Silent skip for absent slots, warn for nonexistent slots | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D10](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d10--asset-collection-with-css-stacking-order) | Decision | Asset collection with CSS stacking order | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D11](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d11--schema-agnostic-via-nickname-pattern) | Decision | Schema-agnostic via nickname pattern | Proposed | CCOMPOSER-DRAFT-themeresolution |
+| [CCOMPOSER-DRAFT-themeresolution-D12](Log.ThemeResolution.md#ccomposer-draft-themeresolution-d12--distribution-shim-for-end-users) | Decision | Distribution shim for end users | Proposed | CCOMPOSER-DRAFT-themeresolution |
 | [CCOMPOSER-O1](Arch.Composer.md#ccomposer-o1--how-do-capabilities-take-part-in-composition) | Open question | How do capabilities take part in composition? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O2](Arch.Composer.md#ccomposer-o2--how-is-a-complex-template-declared) | Open question | How is a complex template declared? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O3](Arch.Composer.md#ccomposer-o3--what-is-the-operative-spec-and-how-does-seed-receive-it) | Open question | What is the operative spec, and how does Seed receive it? | — | CCOMPOSER-0001 |

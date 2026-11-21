@@ -1,3 +1,33 @@
+---
+id:            CCOMPOSER-DRAFT-themeresolution
+title:         Theme Resolution Development Log
+genre:         Log
+scope:         component
+project:       Classic Composer
+component:     theme
+language:      en
+status:        Draft
+provenance:
+  assistant:          claude-opus-5-5
+  original-assistant: claude-opus-4-6
+  migrated-from:      doc/DevLog.ThemeResolution.md@3e9068e
+relates-to:
+  - CCOMPOSER-0001
+decisions:
+  - CCOMPOSER-DRAFT-themeresolution-D1
+  - CCOMPOSER-DRAFT-themeresolution-D2
+  - CCOMPOSER-DRAFT-themeresolution-D3
+  - CCOMPOSER-DRAFT-themeresolution-D4
+  - CCOMPOSER-DRAFT-themeresolution-D5
+  - CCOMPOSER-DRAFT-themeresolution-D6
+  - CCOMPOSER-DRAFT-themeresolution-D7
+  - CCOMPOSER-DRAFT-themeresolution-D8
+  - CCOMPOSER-DRAFT-themeresolution-D9
+  - CCOMPOSER-DRAFT-themeresolution-D10
+  - CCOMPOSER-DRAFT-themeresolution-D11
+  - CCOMPOSER-DRAFT-themeresolution-D12
+---
+
 # Theme Resolution: Development Log
 
 This document chronicles the design decisions and implementation of
@@ -79,12 +109,13 @@ schema symbols correctly until the nickname convention was adopted.
 
 ## Design Decisions
 
-### 1. Eager theme resolution at context creation
+### CCOMPOSER-DRAFT-themeresolution-D1 — Eager theme resolution at context creation
 
-**Question:** Should the theme chain be resolved lazily (on first
+**Status:** Proposed
+**Context:** Should the theme chain be resolved lazily (on first
 access by a tier method) or eagerly (at context creation time)?
 
-**Decision: Eager.** `make-context` resolves the full chain when a
+**Decision:** Eager. `make-context` resolves the full chain when a
 theme is available. Rationale:
 
 - Theme resolution queries the persistence layer (following
@@ -97,9 +128,12 @@ theme is available. Rationale:
   parents, broken chains) before composition begins, not partway
   through a page render.
 
-### 2. Theme source priority
+**Alternatives:** See the Context.
 
-**Question:** When multiple theme sources are available (explicit
+### CCOMPOSER-DRAFT-themeresolution-D2 — Theme source priority
+
+**Status:** Proposed
+**Context:** When multiple theme sources are available (explicit
 URI argument, explicit entity, publication's `ui-theme` slot), which
 wins?
 
@@ -114,9 +148,12 @@ preview, testing, or per-request theme switching, while the common
 case (use the publication's configured theme) requires no explicit
 argument.
 
-### 3. Tier template cascade: override -> tier-templates -> default
+**Alternatives:** Not recorded in the original.
 
-**Question:** When a theme provides both a `tier-templates` entry
+### CCOMPOSER-DRAFT-themeresolution-D3 — Tier template cascade: override -> tier-templates -> default
+
+**Status:** Proposed
+**Context:** When a theme provides both a `tier-templates` entry
 and a `classic-theme-override` for the same tier, which wins?
 
 **Decision:** The override wins. The cascade for each tier is:
@@ -129,9 +166,12 @@ This matches the intent of the override system: overrides are
 targeted modifications that should take precedence over the theme's
 general template for that tier.
 
-### 4. Capability activation set from theme
+**Alternatives:** See the Context.
 
-**Question:** Should the composer activate all registered
+### CCOMPOSER-DRAFT-themeresolution-D4 — Capability activation set from theme
+
+**Status:** Proposed
+**Context:** Should the composer activate all registered
 capabilities globally, or only those declared by the theme?
 
 **Decision:** Theme's resolved capabilities are the activation set.
@@ -144,9 +184,12 @@ This prevents a loaded capability extension from affecting
 compositions that didn't opt into it. A theme author controls
 exactly which capabilities are active for their theme.
 
-### 5. Capability validation: warn by default, strict mode optional
+**Alternatives:** See the Context.
 
-**Question:** What happens when a theme declares a capability that
+### CCOMPOSER-DRAFT-themeresolution-D5 — Capability validation: warn by default, strict mode optional
+
+**Status:** Proposed
+**Context:** What happens when a theme declares a capability that
 isn't registered, or requires one that isn't in the activation set?
 
 **Decision:** Default behavior is to warn. Setting
@@ -155,9 +198,12 @@ developer experience (warnings during development help identify
 missing extensions) with robustness (production systems can enable
 strict mode to catch misconfiguration early).
 
-### 6. Lens-driven feature composition with body fallback
+**Alternatives:** Not recorded in the original.
 
-**Question:** How should `compose-feature` choose between lens-driven
+### CCOMPOSER-DRAFT-themeresolution-D6 — Lens-driven feature composition with body fallback
+
+**Status:** Proposed
+**Context:** How should `compose-feature` choose between lens-driven
 rendering and direct body extraction?
 
 **Decision:** If the resolved theme provides a lens matching the
@@ -172,9 +218,12 @@ This means:
   same behavior as before
 - The fallback is the same code path that existed pre-theme-integration
 
-### 7. Display mode cascade mirrors Fresnel, extended with MOP
+**Alternatives:** Not recorded in the original.
 
-**Question:** How should the display mode for a slot be determined
+### CCOMPOSER-DRAFT-themeresolution-D7 — Display mode cascade mirrors Fresnel, extended with MOP
+
+**Status:** Proposed
+**Context:** How should the display mode for a slot be determined
 when the lens doesn't declare an explicit `:display`?
 
 **Decision:** The cascade:
@@ -191,9 +240,12 @@ defaults without requiring lens authors to annotate every property.
 A body slot with `:format :html` renders as pass-through Lexis
 without the lens needing to say so.
 
-### 8. Markdown display mode stubbed
+**Alternatives:** Not recorded in the original.
 
-**Question:** The `:markdown` display mode requires a Markdown
+### CCOMPOSER-DRAFT-themeresolution-D8 — Markdown display mode stubbed
+
+**Status:** Proposed
+**Context:** The `:markdown` display mode requires a Markdown
 parser. Should the composer depend on a Markdown library?
 
 **Decision:** Stub for now. `:markdown` wraps the string value in a
@@ -201,9 +253,12 @@ parser. Should the composer depend on a Markdown library?
 `cl-markdown`) is a future dependency that can be added without
 changing the lens or display mode interface.
 
-### 9. Silent skip for absent slots, warn for nonexistent slots
+**Alternatives:** See the Context.
 
-**Question:** What should lens evaluation do when a property
+### CCOMPOSER-DRAFT-themeresolution-D9 — Silent skip for absent slots, warn for nonexistent slots
+
+**Status:** Proposed
+**Context:** What should lens evaluation do when a property
 references a slot that is unbound or NIL on the entity?
 
 **Decision:** Skip silently. This is the common case for optional
@@ -216,9 +271,12 @@ lens authoring bug and warrants investigation, but the current
 implementation skips it rather than erroring (robustness over
 strictness for the prototype).
 
-### 10. Asset collection with CSS stacking order
+**Alternatives:** See the Decision.
 
-**Question:** When collecting assets from a theme chain, what order
+### CCOMPOSER-DRAFT-themeresolution-D10 — Asset collection with CSS stacking order
+
+**Status:** Proposed
+**Context:** When collecting assets from a theme chain, what order
 should they appear in?
 
 **Decision:** Parent assets first, child assets last. This produces
@@ -226,9 +284,12 @@ the correct CSS cascade: parent stylesheet establishes the visual
 foundation, child stylesheet overrides specific rules. The same
 ordering applies to scripts and other asset types.
 
-### 11. Schema-agnostic via nickname pattern
+**Alternatives:** Not recorded in the original.
 
-**Question:** How should the composer reference schema symbols?
+### CCOMPOSER-DRAFT-themeresolution-D11 — Schema-agnostic via nickname pattern
+
+**Status:** Proposed
+**Context:** How should the composer reference schema symbols?
 
 **Decision:** Follow the engine's convention. The composer's ASDF
 system depends on `classic.schema.alpha` explicitly, but all source
@@ -242,9 +303,12 @@ package. All schema references are explicitly qualified as
 `classic.schema:symbol-name`, keeping the schema dependency visible
 at every call site.
 
-### 12. Distribution shim for end users
+**Alternatives:** Not recorded in the original.
 
-**Question:** How should end users load the composer with a complete
+### CCOMPOSER-DRAFT-themeresolution-D12 — Distribution shim for end users
+
+**Status:** Proposed
+**Context:** How should end users load the composer with a complete
 Classic installation?
 
 **Decision:** A thin `classic.composer.dist.alpha` meta-system that
@@ -258,103 +322,105 @@ depends on `classic.dist.alpha`, `classic.models.common`, and
 This parallels Classic core's dist pattern. A future beta variant
 would be `classic.composer.dist.beta`.
 
+**Alternatives:** Not recorded in the original.
+
 
 ## Implementation
 
-### New file: `src/theme.lisp` (~180 lines)
+### New file: `src/theme.lisp@3e9068e` (~180 lines)
 
 Theme resolution glue connecting Classic core's theme ontology to
 the composer's pipeline.
 
-- `resolve-theme-for-context` -- populates all resolved-theme slots
+- `src/theme.lisp:resolve-theme-for-context@3e9068e` -- populates all resolved-theme slots
   on the context by calling the schema's resolution functions
   (chain, capabilities, overrides, bindings, slot-fills, lenses,
   assets). Called during `make-context`.
-- `theme-tier-template` -- the three-level cascade (override ->
+- `src/theme.lisp:theme-tier-template@3e9068e` -- the three-level cascade (override ->
   tier-templates -> NIL) for selecting a tier's template.
-- `apply-theme-config-to-context` -- binds scalar config entries
+- `src/theme.lisp:apply-theme-config-to-context@3e9068e` -- binds scalar config entries
   into context with `theme.config.` prefix.
-- `apply-theme-slot-fills-to-context` -- binds slot-fills directly
+- `src/theme.lisp:apply-theme-slot-fills-to-context@3e9068e` -- binds slot-fills directly
   by name, treating NIL fills as "no contribution" (slot removed
   during resolution).
-- `validate-theme-capabilities` -- checks activation set against
+- `src/theme.lisp:validate-theme-capabilities@3e9068e` -- checks activation set against
   registry and required-capabilities against activation set. Warns
   by default; errors when `*strict-capabilities*` is T.
-- `collect-theme-assets` -- walks chain root-to-child, building a
+- `src/theme.lisp:collect-theme-assets@3e9068e` -- walks chain root-to-child, building a
   flat list of asset plists with resolved URIs.
-- `theme-asset-list` -- converts collected assets into Lexis subtree
+- `src/theme.lisp:theme-asset-list@3e9068e` -- converts collected assets into Lexis subtree
   nodes (stylesheet, script) for template slot binding.
 
-### New file: `src/lens.lisp` (~230 lines)
+### New file: `src/lens.lisp@3e9068e` (~230 lines)
 
 Fresnel-inspired lens evaluation.
 
-- `compute-display-mode` -- the four-level cascade using MOP
+- `src/lens.lisp:compute-display-mode@3e9068e` -- the four-level cascade using MOP
   introspection (`slot-format`, `slot-persistence`).
-- `find-slot-def` -- MOP helper to locate an effective slot
+- `src/lens.lisp:find-slot-def@3e9068e` -- MOP helper to locate an effective slot
   definition on a class.
-- `render-slot-via-display-mode` -- dispatcher to per-mode renderers.
-- Eight per-mode renderer functions: `render-text`, `render-image`,
-  `render-link`, `render-uri`, `render-html-passthrough`,
-  `render-markdown-stub`, `render-date`, `render-list`.
-- `apply-lens` -- walks a lens's property specs, rendering each
+- `src/lens.lisp:render-slot-via-display-mode@3e9068e` -- dispatcher to per-mode renderers.
+- Eight per-mode renderer functions: `src/lens.lisp:render-text@3e9068e`, `src/lens.lisp:render-image@3e9068e`,
+  `src/lens.lisp:render-link@3e9068e`, `src/lens.lisp:render-uri@3e9068e`, `src/lens.lisp:render-html-passthrough@3e9068e`,
+  `src/lens.lisp:render-markdown-stub@3e9068e`, `src/lens.lisp:render-date@3e9068e`, `src/lens.lisp:render-list@3e9068e`.
+- `src/lens.lisp:apply-lens@3e9068e` -- walks a lens's property specs, rendering each
   slot according to its display mode, skipping unbound/NIL slots.
-- `apply-sublens` -- handles relation slots: retrieves the related
+- `src/lens.lisp:apply-sublens@3e9068e` -- handles relation slots: retrieves the related
   entity, finds the target lens in the resolved theme, recursively
   applies it. Fallback: target purpose -> `:label` purpose for
   actual class -> entity's `label` slot.
-- `apply-sublens-single` -- single-entity version of sublens
+- `src/lens.lisp:apply-sublens-single@3e9068e` -- single-entity version of sublens
   application, handling the fallback chain.
 
-### Modified: `src/context.lisp`
+### Modified: `src/context.lisp@3e9068e`
 
 Seven new slots on `composition-context` for resolved theme state:
 `theme-chain`, `theme-capabilities`, `theme-overrides`,
 `theme-config`, `theme-slot-fills`, `theme-lenses`, `theme-assets`.
 
-`make-context` gains `:theme-uri` keyword argument and eager theme
+`src/context.lisp:make-context@3e9068e` gains `:theme-uri` keyword argument and eager theme
 resolution. Priority: explicit URI > explicit entity > publication's
 `ui-theme` > NIL.
 
 All `classic:label` references changed to `classic.schema:label`.
 
-### Modified: `src/defaults.lisp`
+### Modified: `src/defaults.lisp@3e9068e`
 
-`compose-page` now runs theme validation, config binding, slot-fill
+`src/defaults.lisp:compose-page@3e9068e` now runs theme validation, config binding, slot-fill
 binding, and asset binding before tier composition. Pipeline steps
 increased from 8 to 11.
 
-`compose-frame` uses the tier template cascade: theme override ->
+`src/defaults.lisp:compose-frame@3e9068e` uses the tier template cascade: theme override ->
 tier-templates -> hardcoded default.
 
-`compose-feature` attempts lens-driven composition first (via
+`src/defaults.lisp:compose-feature@3e9068e` attempts lens-driven composition first (via
 `apply-lens` with the entity's class and `:default` purpose), falling
 back to direct body extraction when no lens is found.
 
-`compose-adjunct` and `compose-aggregate` check for theme tier
+`src/defaults.lisp:compose-adjunct@3e9068e` and `src/defaults.lisp:compose-aggregate@3e9068e` check for theme tier
 templates before returning NIL.
 
 All schema references qualified as `classic.schema:`.
 
-### Modified: `src/packages.lisp`
+### Modified: `src/packages.lisp@3e9068e`
 
 Package now `:use`s `#:classic` for foundation symbol inheritance.
 Added ~25 new exports across theme integration and lens evaluation
 sections. Removed the stub `template` and `compose` packages
 (replaced by dotted symbols in earlier work).
 
-### Modified: `classic.composer.asd`
+### Modified: `classic.composer.asd@3e9068e`
 
 Dependencies updated from `("classic")` to `("classic"
 "classic.schema.alpha" "closer-mop")`. Components gain `theme` and
 `lens` files. Version bumped to 0.2.0.
 
-### New file: `classic.composer.dist.alpha.asd`
+### New file: `classic.composer.dist.alpha.asd@3e9068e`
 
 Thin meta-system: depends on `classic.dist.alpha`,
 `classic.models.common`, and `classic.composer`.
 
-### Modified: `src/anchor.lisp`
+### Modified: `src/anchor.lisp@3e9068e`
 
 Single reference: `classic:keywords` -> `classic.schema:keywords`.
 
@@ -365,7 +431,7 @@ Updated demo to load `classic.composer.dist.alpha` and use
 integration, lens-driven feature composition, and the layered
 architecture. Updated system structure and dependency listings.
 
-### Modified: `doc/Composer.md`
+### Modified: `doc/Composer.md` (now `doc/Arch.Composer.md`)
 
 Rewritten to reflect the full architecture: four-layer dependency
 structure, theme resolution workflow, tier template cascade,
@@ -394,21 +460,28 @@ guarantees:
   structure.
 
 
+## Verification
+
+See [Outstanding Work](#outstanding-work).
+
+
 ## Files
 
-| Action | File | Description |
+Table: Files created or modified by this work.
+
+| File | Action | Description |
 |---|---|---|
-| Created | `src/theme.lisp` | Theme resolution glue (~180 lines) |
-| Created | `src/lens.lisp` | Lens evaluation, display modes, sublens (~230 lines) |
-| Created | `classic.composer.dist.alpha.asd` | Distribution shim |
-| Modified | `classic.composer.asd` | Dependencies, components, version |
-| Modified | `src/packages.lisp` | Foundation `:use`, ~25 new exports |
-| Modified | `src/context.lisp` | 7 theme slots, eager resolution, schema qualification |
-| Modified | `src/defaults.lisp` | Theme-aware pipeline, lens-driven feature, tier cascade |
-| Modified | `src/anchor.lisp` | Schema qualification (1 reference) |
-| Modified | `README.md` | Updated demo, theme/lens docs, architecture |
-| Modified | `doc/Composer.md` | Full rewrite for layered architecture |
-| Created | this file | |
+| `src/theme.lisp` | Created | Theme resolution glue (~180 lines) |
+| `src/lens.lisp` | Created | Lens evaluation, display modes, sublens (~230 lines) |
+| `classic.composer.dist.alpha.asd` | Created | Distribution shim |
+| `classic.composer.asd` | Modified | Dependencies, components, version |
+| `src/packages.lisp` | Modified | Foundation `:use`, ~25 new exports |
+| `src/context.lisp` | Modified | 7 theme slots, eager resolution, schema qualification |
+| `src/defaults.lisp` | Modified | Theme-aware pipeline, lens-driven feature, tier cascade |
+| `src/anchor.lisp` | Modified | Schema qualification (1 reference) |
+| `README.md` | Modified | Updated demo, theme/lens docs, architecture |
+| `doc/Composer.md` | Modified | Full rewrite for layered architecture |
+| this file | Created | |
 
 
 ## Metrics
