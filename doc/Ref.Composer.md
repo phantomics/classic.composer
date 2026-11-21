@@ -30,7 +30,7 @@ content, and template slots, anchors and collectors. The design
 behind it, including the parts not yet built, is
 [CCOMPOSER-DRAFT-composer](Arch.Composer.md); the theme ontology the
 composer consumes is [CLASSIC-0011](../../classic/doc/theme/Ref.Theme.md).
-Code references are pinned to commit `7fa52ba`. This reference was
+Code references are pinned to the release tag `v0.2.0`. This reference was
 split from the original architecture document, `doc/Composer.md`, as
 [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) records.
 
@@ -39,7 +39,7 @@ split from the original architecture document, `doc/Composer.md`, as
 
 ### `make-context`
 
-`src/context.lisp:make-context@7fa52ba` creates a
+`src/context.lisp:make-context@v0.2.0` creates a
 `composition-context`, which carries the state of one composition: the
 persistence strategy (required), the publication, the primary entity,
 the theme, the bindings for template slots, and the collections the
@@ -60,7 +60,7 @@ The context reads Classic's data and never writes it:
 
 ### `compose-page`
 
-`src/defaults.lisp:compose-page@7fa52ba` composes a page and returns a
+`src/defaults.lisp:compose-page@v0.2.0` composes a page and returns a
 Lexis `document` s-expression. In order:
 
 1. Binds `page-title` to the entity's headline, or else its label,
@@ -95,11 +95,11 @@ Table: The tier generics and what their default methods return.
 | `compose-feature` | The entity rendered through the theme's `:default` lens for its class, wrapped in `(section (@ :class "feature") ...)`; without a lens, the entity's body (see [The body fallback](#the-body-fallback)) |
 | `compose-adjunct` | The theme's template for `:adjunct`, as a one-item list, or `nil` |
 | `compose-aggregate` | The theme's template for `:aggregate`; otherwise, for a `classic-container` entity, a `(section (@ :class "aggregate") ...)` of its entries (see [Container entries](#container-entries)); otherwise `nil` |
-| `compose-operative` | `nil` (`src/defaults.lisp:compose-operative@7fa52ba`); an application's method returns operative specs, plists that `compose-page` turns into `compose.operative` placeholder nodes |
+| `compose-operative` | `nil` (`src/defaults.lisp:compose-operative@v0.2.0`); an application's method returns operative specs, plists that `compose-page` turns into `compose.operative` placeholder nodes |
 
 #### The body fallback
 
-Without a lens, `src/defaults.lisp:compose-feature-from-body@7fa52ba`
+Without a lens, `src/defaults.lisp:compose-feature-from-body@v0.2.0`
 returns the entity's body:
 
 - a Lexis form, as it is;
@@ -127,7 +127,7 @@ themes are; the composer consumes them for rendering.
 
 ### Theme Resolution
 
-At context creation, `src/theme.lisp:resolve-theme-for-context@7fa52ba`
+At context creation, `src/theme.lisp:resolve-theme-for-context@v0.2.0`
 resolves the full theme chain with the schema's resolution functions,
 and stores the result on the context for the tier methods:
 
@@ -141,7 +141,7 @@ and stores the result on the context for the tier methods:
 
 ### Tier Template Cascade
 
-For each composition tier, `src/theme.lisp:theme-tier-template@7fa52ba`
+For each composition tier, `src/theme.lisp:theme-tier-template@v0.2.0`
 selects a template via:
 
 1. Per-tier override (`classic-theme-override` for this tier) -- wins
@@ -166,17 +166,17 @@ Child themes supply Lexis subtrees for these slots via the `slot-fills`
 slot on `classic-theme`, without replacing the parent's template.
 Slot-fills compose through inheritance: child entries override parent
 entries on matching slot-name; unmatched parent entries pass through.
-`src/theme.lisp:apply-theme-slot-fills-to-context@7fa52ba` binds each
+`src/theme.lisp:apply-theme-slot-fills-to-context@v0.2.0` binds each
 fill by its slot name; a fill of `nil` is not bound, so its slot is
 removed.
 
 ### Configuration and Assets
 
-- **Configuration.** `src/theme.lisp:apply-theme-config-to-context@7fa52ba`
+- **Configuration.** `src/theme.lisp:apply-theme-config-to-context@v0.2.0`
   binds each merged configuration entry, such as
   `("primary-color" . "#2a5db0")`, as a template binding named
   `theme.config.primary-color`.
-- **Assets.** `src/theme.lisp:theme-asset-list@7fa52ba` turns the
+- **Assets.** `src/theme.lisp:theme-asset-list@v0.2.0` turns the
   collected asset manifests, each file prefixed with its theme's
   `asset-base-uri`, into HTML passthrough nodes, which `compose-page`
   binds as `theme.assets`. Stylesheets become
@@ -189,13 +189,17 @@ removed.
 
 A capability is a named extension registered for a tier, with an
 optional predicate on nodes and a handler that returns a Lexis subtree:
-`src/capability.lisp:define-capability@7fa52ba`. `register-capability`,
-`find-capability` and `list-capabilities` manage the registry, and
-`src/capability.lisp:dispatch-capability@7fa52ba` calls the first
-capability of a tier whose predicate accepts a node.
+`src/capability.lisp:define-capability@v0.2.0`. `register-capability`,
+`find-capability` and `list-capabilities` manage the registry; a
+capability registered again under its name replaces the earlier one.
+`src/capability.lisp:dispatch-capability@v0.2.0` tries the
+capabilities of a tier in turn, most recently registered first (its
+documentation says registration order, which the registry does not
+keep), and returns the content of the first whose predicate accepts
+the node and whose handler returns something, or `nil` if none does.
 
 `compose-page` validates the theme with
-`src/theme.lisp:validate-theme-capabilities@7fa52ba`: every capability
+`src/theme.lisp:validate-theme-capabilities@v0.2.0`: every capability
 in the theme's activation set must be registered, and every one in its
 `required-capabilities` must be in the activation set. A failure
 signals a warning, or an error when `*strict-capabilities*` is true.
@@ -213,7 +217,7 @@ they name. A lens is found for a class or its nearest superclass.
 
 ### Display Mode Cascade
 
-For each property in a lens, `src/lens.lisp:compute-display-mode@7fa52ba`
+For each property in a lens, `src/lens.lisp:compute-display-mode@v0.2.0`
 chooses:
 
 1. Explicit `:display` from the lens property spec
@@ -223,7 +227,7 @@ chooses:
 
 ### Display Modes
 
-`src/lens.lisp:render-slot-via-display-mode@7fa52ba` renders a value in
+`src/lens.lisp:render-slot-via-display-mode@v0.2.0` renders a value in
 its mode; a `nil` value renders as nothing.
 
 Table: The display modes, what each produces, and its use case.
@@ -249,7 +253,7 @@ sections one level deeper.
 
 The `:markdown` mode reads text with the Lexis Markdown reader,
 `lexis.markdown:markdown->lexis`, in
-`src/lens.lisp:render-markdown@7fa52ba`. Markdown headings become
+`src/lens.lisp:render-markdown@v0.2.0`. Markdown headings become
 nested titled sections, and the reader's safe defaults apply: raw HTML
 stays text, and links keep only the `http`, `https`, `mailto` and
 `classic` URI schemes. The reader is described in
@@ -269,7 +273,7 @@ body slot is declared `:format :markdown`.
 ### Sublens References
 
 Relation slots can declare a sublens: `(author :sublens classic-person
-:purpose :label)`. `src/lens.lisp:apply-sublens@7fa52ba` resolves the
+:purpose :label)`. `src/lens.lisp:apply-sublens@v0.2.0` resolves the
 related entity, finds the target lens, and recursively applies it. A
 list of references renders as an `unordered-list`, one item each.
 Fallback chain:
@@ -281,7 +285,7 @@ Fallback chain:
 The related entity is found with `resolve-reference`, so a reference
 need not be a URI (see [Extension Generics](#extension-generics)).
 The `:link` mode follows references the same way, in
-`src/lens.lisp:render-reference-link@7fa52ba`. A resolved target
+`src/lens.lisp:render-reference-link@v0.2.0`. A resolved target
 is linked to its page, or to the reference when that is a URI, and
 shown by its title. An unresolved reference that is not a URI, such
 as the name of a missing wiki page, is shown as text.
@@ -307,7 +311,7 @@ to sort by, read like any lens property. `:sort-order :descending`
 reverses the order. The sort is stable, numbers compare numerically,
 other values compare by printed form without regard to case, and
 entries without a value go last
-(`src/defaults.lisp:sort-entities@7fa52ba`). Like every lens, an
+(`src/defaults.lisp:sort-entities@v0.2.0`). Like every lens, an
 aggregate lens belongs to a theme. It orders only the publications
 that use the theme, and it changes the view, not the container.
 
@@ -320,7 +324,7 @@ that use the theme, and it changes the view, not the container.
 - `apply-lens` renders every property of a lens for an entity, and
   returns the rendered subtrees in property order, splicing block
   lists and skipping properties without a value.
-- `src/lens.lisp:render-lens-property@7fa52ba` renders one property
+- `src/lens.lisp:render-lens-property@v0.2.0` renders one property
   spec the way a lens does, for code that lays out properties itself,
   such as an infobox.
 - `apply-sublens`, `compute-display-mode` and
@@ -381,7 +385,7 @@ The composer substitutes content into slots by name:
   (footer ...))
 ```
 
-`src/template.lisp:resolve-slots@7fa52ba` replaces each slot with the
+`src/template.lisp:resolve-slots@v0.2.0` replaces each slot with the
 context binding of its name, in one pass. A binding may be a string, a
 Lexis node, or a list of nodes, which is spliced in the slot's place.
 Slots may also stand as attribute values, such as `:title`. A slot
@@ -400,12 +404,12 @@ insertion:
      :fallback nil))
 ```
 
-`src/anchor.lisp:define-anchor-handler@7fa52ba` registers a handler for
+`src/anchor.lisp:define-anchor-handler@v0.2.0` registers a handler for
 an anchor name, a function of the context, the primary entity and the
 anchor's other attributes as a plist. Anchor handlers return Lexis
 trees that are spliced into the composed document; a handler that
 returns `nil` removes its anchor. When no handler is registered for
-the name, `src/anchor.lisp:evaluate-anchor@7fa52ba` signals a warning
+the name, `src/anchor.lisp:evaluate-anchor@v0.2.0` signals a warning
 and uses the anchor's `:fallback` attribute, so that `:fallback nil`
 or no fallback removes the anchor. Anchors are evaluated in document
 order, after the collect phase. Anchors keep query logic in CL where
@@ -418,8 +422,8 @@ and gathers structural metadata (section headings, link targets,
 entity counts). This is the Scribble-style "collect then render"
 pattern that avoids cross-dependencies between anchors.
 
-`src/collector.lisp:define-collector@7fa52ba` registers a collector, a
-function of the context and a node. `src/collector.lisp:run-collectors@7fa52ba`
+`src/collector.lisp:define-collector@v0.2.0` registers a collector, a
+function of the context and a node. `src/collector.lisp:run-collectors@v0.2.0`
 calls every registered collector on every node, in document order
 (depth-first, pre-order). Collectors add to named collections with
 `collect-into`, and anchor handlers read them with

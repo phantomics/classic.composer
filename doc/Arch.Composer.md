@@ -24,8 +24,8 @@ cites:
   - title:     "Scribble: The Racket Documentation Tool"
     locator:   "https://docs.racket-lang.org/scribble/"
     external:  true
-  - title:     "WordPress Shortcode API"
-    locator:   "https://codex.wordpress.org/Shortcode_API"
+  - title:     "Shortcode — Common APIs Handbook, WordPress Developer Resources"
+    locator:   "https://developer.wordpress.org/apis/shortcode/"
     external:  true
 decisions:
   - CCOMPOSER-DRAFT-composer-D1
@@ -40,6 +40,7 @@ open-questions:
   - CCOMPOSER-DRAFT-composer-O3
   - CCOMPOSER-DRAFT-composer-O4
   - CCOMPOSER-DRAFT-composer-O5
+  - CCOMPOSER-DRAFT-composer-O6
 ---
 
 # The Classic Composer Architecture
@@ -115,10 +116,12 @@ schema that declares the nickname.
 - **Seed**, or another control system, takes the implementation of
   interactive controls, leaving the composer only their placement
   (CCOMPOSER-DRAFT-composer-D4).
-- **WordPress shortcodes** are the counterexample: nested shortcodes
-  re-parsed until none remain can make expansion exponential. The
-  composer's fixed sequence of single passes rejects that model
-  (CCOMPOSER-DRAFT-composer-D6).
+- **WordPress shortcodes** are the counterexample. The shortcode
+  parser makes a single pass, but a handler may call `do_shortcode()`
+  on its own content to expand the shortcodes nested in it, so how far
+  expansion recurses, and what it costs, is left to each handler's
+  code. The composer's fixed sequence of single passes keeps that
+  recursion out of templates (CCOMPOSER-DRAFT-composer-D6).
 
 ## Settled Decisions
 
@@ -166,7 +169,12 @@ have: hero banners, sidebars, feeds, comment threads, forms.
 capability extensions. Every extension adds a feature to the base
 rather than replacing it. Each augments a specific content pattern,
 so capabilities compose without conflict, and content that matches no
-loaded capability passes through the base rendering unchanged.
+loaded capability passes through the base rendering unchanged. Freedom
+from conflict depends on capabilities claiming distinct content
+patterns: what happens when two accept the same node is not decided
+(CCOMPOSER-DRAFT-composer-O1). The registry's dispatch takes the first
+capability that accepts a node and returns content, most recently
+registered first, so load order decides between them.
 **Alternatives:** Mutually exclusive alternatives, such as one of
 several frame engines or aggregate renderers chosen per publication,
 were not adopted: they make features conflict, and a publication
@@ -205,19 +213,28 @@ adopted: each schema would need its own copy of the composer.
 
 **Status:** Proposed
 **Context:** Templates nest: a frame holds slots, slots hold composed
-content, and anchors produce content from queries. Systems that expand
-templates recursively can do work exponential in the nesting.
+content, and anchors produce content from queries. Where expanding a
+placeholder may expand the placeholders in its output again, the cost
+of a page depends on how deep the expansion goes, which no stage of
+the framework bounds.
 **Decision:** A page is composed in a fixed sequence of stages, each one
 pass over the tree: tiers composed, slots resolved, metadata collected,
 anchors evaluated. Inner content is composed before it is bound into
 outer templates, a resolved slot's value is not searched for further
 slots, and anchors depend on the collected metadata rather than on one
-another. Composition time is proportional to the size of the page.
-**Alternatives:** Recursive expansion until no placeholder remains, as
-with WordPress shortcodes, was not adopted, for its unbounded cost.
-Ordering anchors by their dependencies was not adopted: it would need
-dependency resolution and cycle detection, where the collect phase
-gives every anchor what it needs.
+another. The framework's own passes are therefore linear in the size
+of the page. What runs inside them is not bounded by the framework:
+anchor handlers and extension-generic methods cost what their code
+costs, an aggregate lens's sort is O(n log n) in the entries, and
+sublenses recurse with no depth limit
+(CCOMPOSER-DRAFT-composer-O6).
+**Alternatives:** Expansion that handlers may repeat on their own
+output, as a WordPress shortcode handler may by calling
+`do_shortcode()` on its content, was not adopted: it leaves the depth
+of expansion, and its cost, to each handler's code. Ordering anchors
+by their dependencies was not adopted: it would need dependency
+resolution and cycle detection, where the collect phase gives every
+anchor what it needs.
 
 
 ## The Five-Tier Content Model
@@ -374,9 +391,10 @@ dispatch to capabilities (CCOMPOSER-DRAFT-composer-O1).
 
 Each extension is an ASDF system that registers itself with the base
 composer, declaring what content patterns it can handle. The theme's
-resolved capability set, after exclusions, determines which registered
-capabilities take part in a composition. These systems are planned;
-none exists yet.
+resolved capability set, after exclusions, is to determine which
+registered capabilities take part in a composition; how it does is
+open (CCOMPOSER-DRAFT-composer-O1). These systems are planned; none
+exists yet.
 
 ```
 classic.composer                          -- base protocols + defaults
@@ -539,7 +557,10 @@ The registry, `define-capability` and `dispatch-capability` exist, and
 but no tier method dispatches to a capability. Which tiers dispatch,
 at which nodes (each node of a theme template, or only nodes whose tag
 no other method handles), and how does the theme's activation set
-limit which registered capabilities may answer?
+limit which registered capabilities may answer? And when two
+capabilities accept the same node, which applies: the first by load
+order, as the registry's dispatch now decides, one the theme ranks
+higher, or both in turn?
 
 ### CCOMPOSER-DRAFT-composer-O2 — How is a complex template declared?
 
@@ -580,18 +601,30 @@ splicing bodies instead of wrapping them
 change in Lexis, such as not counting untitled sections, or a
 container tag that is not a section.
 
+### CCOMPOSER-DRAFT-composer-O6 — How are sublens cycles bounded?
+
+A sublens applies the target entity's lens, which may itself declare
+sublenses. `src/lens.lisp:apply-sublens@v0.2.0` sets no depth limit
+and keeps no record of the entities it has visited, so two lenses
+that refer to each other, such as an article's author shown through
+a person lens that lists the person's articles, recurse without end.
+Should the composer limit sublens depth, stop at an entity already
+being rendered, or leave lenses to the theme author to keep acyclic?
+
 ## Roadmap
 
-1. **Capability dispatch** (CCOMPOSER-DRAFT-composer-O1): wire
+1. **Sublens cycles** (CCOMPOSER-DRAFT-composer-O6): bound sublens
+   recursion before themes with richer lenses are written.
+2. **Capability dispatch** (CCOMPOSER-DRAFT-composer-O1): wire
    dispatch into the tier methods and limit it to the theme's
    activation set, then build the first extension systems, such as
    `classic.composer.frame.hero` and `classic.composer.aggregate.feed`.
-2. **The operative tier** (CCOMPOSER-DRAFT-composer-O3): define the
+3. **The operative tier** (CCOMPOSER-DRAFT-composer-O3): define the
    operative spec and its placeholder with Seed, and build
    `classic.composer.operative.forms`.
-3. **Complex templates** (CCOMPOSER-DRAFT-composer-O2), once the uses
+4. **Complex templates** (CCOMPOSER-DRAFT-composer-O2), once the uses
    anchors and extension generics leave uncovered are known.
-4. **Distribution** (CCOMPOSER-DRAFT-composer-O4), with the services
+5. **Distribution** (CCOMPOSER-DRAFT-composer-O4), with the services
    that consume composed pages.
-5. **`classic.composer.dist.beta`** (CCOMPOSER-DRAFT-composer-D5), when
+6. **`classic.composer.dist.beta`** (CCOMPOSER-DRAFT-composer-D5), when
    Classic publishes a beta schema.

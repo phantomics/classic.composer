@@ -319,3 +319,23 @@ warnings over the corpus, with every reference verified, and
 With this installment, the Ref split of Outstanding Work is done. The
 Architecture and the Ref remain `Draft`, and their records `Proposed`,
 until the steward sets their statuses.
+
+A `compass-review` of both documents followed, and its fixes were
+committed after `3a95f57`, the commit the release tag `v0.2.0` marks:
+
+- the Ref's code references were repinned from `7fa52ba` to `v0.2.0`,
+  which holds the same `src/`;
+- the Ref describes `dispatch-capability` as the code behaves: each
+  accepting capability in turn, most recently registered first, until
+  one returns content;
+- the Architecture's account of WordPress shortcodes was corrected
+  against the cited documentation, which describes a single-pass
+  parser whose handlers may expand nested shortcodes themselves, and
+  the citation's locator updated;
+- CCOMPOSER-DRAFT-composer-D3 notes that capabilities conflict when two
+  accept the same node, a question added to
+  CCOMPOSER-DRAFT-composer-O1;
+- CCOMPOSER-DRAFT-composer-D6 limits its linear-cost claim to the
+  framework's passes, and a sixth open question,
+  CCOMPOSER-DRAFT-composer-O6, asks how sublens cycles are bounded,
+  first on the Roadmap.
