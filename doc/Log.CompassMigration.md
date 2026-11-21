@@ -9,7 +9,7 @@ status:        Draft
 provenance:
   assistant:   claude-opus-5-5
 relates-to:
-  - CCOMPOSER-DRAFT-composer
+  - CCOMPOSER-0001
   - CCOMPOSER-DRAFT-lexismarkdown
   - CLASSIC-0034
   - CLASSIC-0036
@@ -28,7 +28,7 @@ Compass (commit `d226fc4`), and the migration of each document written
 before it, one at a time. The migration began from commit `7ccacd3`.
 The body records the adoption and the first migration, of the
 architecture document into
-[CCOMPOSER-DRAFT-composer](Arch.Composer.md). Each later document is
+[CCOMPOSER-0001](Arch.Composer.md). Each later document is
 recorded in an `## Update` section, with its original path, its
 `migrated-from` revision, its move and reshape commits, and the notes
 on stale content that its migration left for the revision after it.
@@ -102,7 +102,7 @@ tier and Seed, complex templates, distribution and a future
 `classic.composer.dist.beta`, which read as an `Architecture`. A
 migration changes only a document's form and never splits it.
 **Decision:** `Composer.md` is migrated whole, as the Architecture
-[CCOMPOSER-DRAFT-composer](Arch.Composer.md), the genre of its title
+[CCOMPOSER-0001](Arch.Composer.md), the genre of its title
 and its overview role. After the reshape, a `Ref.Composer.md` is
 written with `compass-author`, carrying the running-code sections and
 `provenance.migrated-from` naming the same original, and the
@@ -171,7 +171,7 @@ generated in `06ac6bb`.
   `README.md` structure listing updated. The Files tables of three
   Logs that name `doc/Composer.md` were left as history.
 - **Reshape** (`139e180`), form only:
-  - front-matter as CCOMPOSER-DRAFT-composer: genre `Architecture`,
+  - front-matter as CCOMPOSER-0001: genre `Architecture`,
     scope `project`, status `Draft`, and `provenance` naming the
     original's assistant, claude-opus-4-6;
   - the H1 in the Architecture form; "Overview" renamed `Thesis`;
@@ -247,7 +247,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
 
 - **The Ref split** (CCOMPOSER-DRAFT-compass-migration-D3): write
   `Ref.Composer.md`, and revise
-  [CCOMPOSER-DRAFT-composer](Arch.Composer.md) to link to it, with the
+  [CCOMPOSER-0001](Arch.Composer.md) to link to it, with the
   decision records, open questions and roadmap its notes call for.
 - **Five documents still unmarked**, to be migrated one at a time, each
   recorded in an `## Update` section:
@@ -261,7 +261,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
   asks for `compass assign`.
 - **Mentions by description.** CCOMPOSER-DRAFT-lexismarkdown-D1 refers
   to "the architecture document" in prose, without a link; it may link
-  to CCOMPOSER-DRAFT-composer when that Log is next revised.
+  to CCOMPOSER-0001 when that Log is next revised.
 
 ## Update 2026-11-21 — The Ref split and the Architecture's revision
 
@@ -291,7 +291,7 @@ the original's claims against the code corrected four:
 
 ### The Architecture's revision
 
-[CCOMPOSER-DRAFT-composer](Arch.Composer.md) was revised as an ordinary
+[CCOMPOSER-0001](Arch.Composer.md) was revised as an ordinary
 edit, committed with this Update:
 
 - an abstract, and a Canonical Terms table in place of the pointer;
@@ -332,10 +332,10 @@ committed after `3a95f57`, the commit the release tag `v0.2.0` marks:
   against the cited documentation, which describes a single-pass
   parser whose handlers may expand nested shortcodes themselves, and
   the citation's locator updated;
-- CCOMPOSER-DRAFT-composer-D3 notes that capabilities conflict when two
+- CCOMPOSER-D3 notes that capabilities conflict when two
   accept the same node, a question added to
-  CCOMPOSER-DRAFT-composer-O1;
-- CCOMPOSER-DRAFT-composer-D6 limits its linear-cost claim to the
+  CCOMPOSER-O1;
+- CCOMPOSER-D6 limits its linear-cost claim to the
   framework's passes, and a sixth open question,
-  CCOMPOSER-DRAFT-composer-O6, asks how sublens cycles are bounded,
+  CCOMPOSER-O6, asks how sublens cycles are bounded,
   first on the Roadmap.

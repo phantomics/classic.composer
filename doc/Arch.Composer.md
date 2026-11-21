@@ -1,5 +1,5 @@
 ---
-id:            CCOMPOSER-DRAFT-composer
+id:            CCOMPOSER-0001
 title:         The Classic Composer Architecture
 genre:         Architecture
 scope:         project
@@ -32,19 +32,19 @@ cites:
     locator:   "https://developer.wordpress.org/apis/shortcode/"
     external:  true
 decisions:
-  - CCOMPOSER-DRAFT-composer-D1
-  - CCOMPOSER-DRAFT-composer-D2
-  - CCOMPOSER-DRAFT-composer-D3
-  - CCOMPOSER-DRAFT-composer-D4
-  - CCOMPOSER-DRAFT-composer-D5
-  - CCOMPOSER-DRAFT-composer-D6
+  - CCOMPOSER-D1
+  - CCOMPOSER-D2
+  - CCOMPOSER-D3
+  - CCOMPOSER-D4
+  - CCOMPOSER-D5
+  - CCOMPOSER-D6
 open-questions:
-  - CCOMPOSER-DRAFT-composer-O1
-  - CCOMPOSER-DRAFT-composer-O2
-  - CCOMPOSER-DRAFT-composer-O3
-  - CCOMPOSER-DRAFT-composer-O4
-  - CCOMPOSER-DRAFT-composer-O5
-  - CCOMPOSER-DRAFT-composer-O6
+  - CCOMPOSER-O1
+  - CCOMPOSER-O2
+  - CCOMPOSER-O3
+  - CCOMPOSER-O4
+  - CCOMPOSER-O5
+  - CCOMPOSER-O6
 ---
 
 # The Classic Composer Architecture
@@ -119,17 +119,17 @@ schema that declares the nickname.
   depend on one another.
 - **Seed**, or another control system, takes the implementation of
   interactive controls, leaving the composer only their placement
-  (CCOMPOSER-DRAFT-composer-D4).
+  (CCOMPOSER-D4).
 - **WordPress shortcodes** are the counterexample. The shortcode
   parser makes a single pass, but a handler may call `do_shortcode()`
   on its own content to expand the shortcodes nested in it, so how far
   expansion recurses, and what it costs, is left to each handler's
   code. The composer's fixed sequence of single passes keeps that
-  recursion out of templates (CCOMPOSER-DRAFT-composer-D6).
+  recursion out of templates (CCOMPOSER-D6).
 
 ## Settled Decisions
 
-### CCOMPOSER-DRAFT-composer-D1 — The composer is read-only with respect to Classic's data
+### CCOMPOSER-D1 — The composer is read-only with respect to Classic's data
 
 **Status:** Proposed
 **Context:** Composition reads publications, entities, relations and
@@ -141,7 +141,7 @@ writes to it. Values a page needs that are not stored are computed
 while composing, through the extension generics. The only writes the
 composer causes are downstream, as rendered artifacts reach
 distribution; interactive controls, which write, are placed by the
-composer and implemented elsewhere (CCOMPOSER-DRAFT-composer-D4).
+composer and implemented elsewhere (CCOMPOSER-D4).
 **Alternatives:** Writing derived values back was not adopted: the
 composer would need write access to the store, the read path of
 composition would become a write path, and a display choice would
@@ -149,7 +149,7 @@ change the data for every other reader. The forum and wiki demos once wrote such
 were rewritten to compute them, as
 [DevLog.ReadOnlyDemos.md](DevLog.ReadOnlyDemos.md) records.
 
-### CCOMPOSER-DRAFT-composer-D2 — Tiers are defined by structural role, not application domain
+### CCOMPOSER-D2 — Tiers are defined by structural role, not application domain
 
 **Status:** Proposed
 **Context:** The composer serves blogs, wikis, forums and other
@@ -164,7 +164,7 @@ its own composition code, and nothing would be shared between them.
 The blog, forum and wiki demos compose all their pages with the same
 tier methods.
 
-### CCOMPOSER-DRAFT-composer-D3 — Extensions only add; none excludes another
+### CCOMPOSER-D3 — Extensions only add; none excludes another
 
 **Status:** Proposed
 **Context:** Publications need features the base composer does not
@@ -176,7 +176,7 @@ so capabilities compose without conflict, and content that matches no
 loaded capability passes through the base rendering unchanged. Freedom
 from conflict depends on capabilities claiming distinct content
 patterns: what happens when two accept the same node is not decided
-(CCOMPOSER-DRAFT-composer-O1). The registry's dispatch takes the first
+(CCOMPOSER-O1). The registry's dispatch takes the first
 capability that accepts a node and returns content, most recently
 registered first, so load order decides between them.
 **Alternatives:** Mutually exclusive alternatives, such as one of
@@ -184,7 +184,7 @@ several frame engines or aggregate renderers chosen per publication,
 were not adopted: they make features conflict, and a publication
 could not combine two that replace the same part.
 
-### CCOMPOSER-DRAFT-composer-D4 — The composer places controls; Seed implements them
+### CCOMPOSER-D4 — The composer places controls; Seed implements them
 
 **Status:** Proposed
 **Context:** Pages hold interactive controls: comment forms, rating
@@ -200,7 +200,7 @@ path into a read-only system. The separation means the composer can
 place controls without knowing how they're implemented, and Seed can
 implement controls without knowing where they're placed.
 
-### CCOMPOSER-DRAFT-composer-D5 — Schema references go through the classic.schema nickname
+### CCOMPOSER-D5 — Schema references go through the classic.schema nickname
 
 **Status:** Proposed
 **Context:** Classic's schema is versioned: the composer is built
@@ -213,7 +213,7 @@ against a beta schema.
 **Alternatives:** Naming `classic.schema.alpha` in the source was not
 adopted: each schema would need its own copy of the composer.
 
-### CCOMPOSER-DRAFT-composer-D6 — Composition is a fixed sequence of single passes
+### CCOMPOSER-D6 — Composition is a fixed sequence of single passes
 
 **Status:** Proposed
 **Context:** Templates nest: a frame holds slots, slots hold composed
@@ -231,7 +231,7 @@ of the page. What runs inside them is not bounded by the framework:
 anchor handlers and extension-generic methods cost what their code
 costs, an aggregate lens's sort is O(n log n) in the entries, and
 sublenses recurse with no depth limit
-(CCOMPOSER-DRAFT-composer-O6).
+(CCOMPOSER-O6).
 **Alternatives:** Expansion that handlers may repeat on their own
 output, as a WordPress shortcode handler may by calling
 `do_shortcode()` on its content, was not adopted: it leaves the depth
@@ -245,7 +245,7 @@ anchor what it needs.
 
 The composer organizes content into five tiers based on the structural
 role content plays on a page, not the application domain it belongs to
-(CCOMPOSER-DRAFT-composer-D2). This makes the tiers domain-agnostic --
+(CCOMPOSER-D2). This makes the tiers domain-agnostic --
 a blog, wiki, forum, and social network all use the same tiers with
 different composition decisions.
 
@@ -295,13 +295,13 @@ not content -- they are interfaces for producing or modifying content.
 The operative tier specifies *what control goes where* and *what it
 targets*. The actual control implementation is delegated to a separate
 system (such as Seed) which determines the control's behavior and
-appearance (CCOMPOSER-DRAFT-composer-D4).
+appearance (CCOMPOSER-D4).
 
 The operative tier is the write-path surface. Tiers 1-4 are read-path
 (content flows from Classic through the composer to the renderer). Tier 5
 provides the interface through which user actions flow back into Classic's
 persistence and workflow protocols. Tiers 1-4 are built; the operative
-tier is not (CCOMPOSER-DRAFT-composer-O3).
+tier is not (CCOMPOSER-O3).
 
 ## Tier Relationships
 
@@ -355,7 +355,7 @@ Without lenses, the feature tier falls back to direct body extraction.
 
 Applications adapt composition to their content by specializing
 generic functions on their content classes, not by changing their data
-before composing (CCOMPOSER-DRAFT-composer-D1). Each generic has a
+before composing (CCOMPOSER-D1). Each generic has a
 default that keeps the composer's base behavior. They supply computed
 properties for lenses, resolve references that are not URIs, give the
 URLs of entities' pages, order containers' entries, and set the
@@ -373,7 +373,7 @@ aggregate lens in the theme, and so belongs to one publication.
 The composer is organized as a base package with additive capability
 extensions. Every extension adds a feature to the base rather than
 replacing it. There are no mutually exclusive alternatives
-(CCOMPOSER-DRAFT-composer-D3).
+(CCOMPOSER-D3).
 
 ### Base Package
 
@@ -389,7 +389,7 @@ replacing it. There are no mutually exclusive alternatives
 The base package alone produces working output. Extensions enhance it.
 The base package also holds the capability registry, and validates a
 theme's capabilities against it; the default tier methods do not yet
-dispatch to capabilities (CCOMPOSER-DRAFT-composer-O1).
+dispatch to capabilities (CCOMPOSER-O1).
 
 ### Capability Extensions
 
@@ -397,7 +397,7 @@ Each extension is an ASDF system that registers itself with the base
 composer, declaring what content patterns it can handle. The theme's
 resolved capability set, after exclusions, is to determine which
 registered capabilities take part in a composition; how it does is
-open (CCOMPOSER-DRAFT-composer-O1). These systems are planned; none
+open (CCOMPOSER-O1). These systems are planned; none
 exists yet.
 
 ```
@@ -431,7 +431,7 @@ Simple templates are Lexis documents with `template.slot` placeholder
 nodes, filled by name. Anchors are `compose.anchor` nodes whose
 registered handlers produce query-driven, conditional content, and
 the collect phase gathers the metadata they need before any of them
-runs (CCOMPOSER-DRAFT-composer-D6). Anchors keep query logic in CL
+runs (CCOMPOSER-D6). Anchors keep query logic in CL
 where it belongs while keeping the template declarative. All three
 are described in
 [CCOMPOSER-DRAFT-composerref](Ref.Composer.md#templates-anchors-and-collectors).
@@ -441,7 +441,7 @@ are described in
 CL functions that receive a content entity and persistence context and
 return a Lexis tree. Used when composition requires triplestore queries,
 conditional sections, or dynamic content assembly. Complex templates are
-not built (CCOMPOSER-DRAFT-composer-O2); anchors and the extension
+not built (CCOMPOSER-O2); anchors and the extension
 generics cover some of their uses.
 
 
@@ -494,7 +494,7 @@ The composer performs the stages through the composed Lexis tree, as
 [CCOMPOSER-DRAFT-composerref](Ref.Composer.md#composition-pipeline)
 describes. Renderers are separate systems, of which Lexis's HTML
 renderer exists; distribution is not built
-(CCOMPOSER-DRAFT-composer-O4).
+(CCOMPOSER-O4).
 
 The composer and renderers are stateless services that scale
 independently from Classic's logic layer and persistence backend.
@@ -504,7 +504,7 @@ independently from Classic's logic layer and persistence backend.
 
 The operative tier specifies control placement; Seed (or another
 control system) implements the controls
-(CCOMPOSER-DRAFT-composer-D4). The boundary:
+(CCOMPOSER-D4). The boundary:
 
 - **Composer decides:** "a comment form goes here, targeting this
   container, requiring the :write permission"
@@ -516,7 +516,7 @@ how they're implemented, and Seed can implement controls without knowing
 where they're placed. The composer turns an operative spec into a
 `compose.operative` placeholder node carrying the spec as attributes;
 no tier produces specs yet, and the hand-off to Seed is undefined
-(CCOMPOSER-DRAFT-composer-O3).
+(CCOMPOSER-O3).
 
 
 ## Layered Architecture
@@ -546,7 +546,7 @@ resolution), `closer-mop` (MOP access for the lens cascade) and
 `lexis.markdown` (the Markdown reader for the `:markdown` mode).
 
 Schema references throughout the composer use the `classic.schema`
-package nickname (CCOMPOSER-DRAFT-composer-D5). A future
+package nickname (CCOMPOSER-D5). A future
 `classic.composer.dist.beta` would load the same composer source
 against a beta schema. The repository's files are listed in
 [CCOMPOSER-DRAFT-composerref](Ref.Composer.md#project-structure).
@@ -554,7 +554,7 @@ against a beta schema. The repository's files are listed in
 
 ## Open Questions
 
-### CCOMPOSER-DRAFT-composer-O1 — How do capabilities take part in composition?
+### CCOMPOSER-O1 — How do capabilities take part in composition?
 
 The registry, `define-capability` and `dispatch-capability` exist, and
 `compose-page` validates a theme's capabilities against the registry,
@@ -566,7 +566,7 @@ capabilities accept the same node, which applies: the first by load
 order, as the registry's dispatch now decides, one the theme ranks
 higher, or both in turn?
 
-### CCOMPOSER-DRAFT-composer-O2 — How is a complex template declared?
+### CCOMPOSER-O2 — How is a complex template declared?
 
 Themes are persisted resources, and their tier templates are Lexis
 data, but a complex template is a CL function. How does a theme name
@@ -575,7 +575,7 @@ generic function specialized on the entity's class, as the extension
 generics are? And what may it do that an anchor or an extension
 generic cannot?
 
-### CCOMPOSER-DRAFT-composer-O3 — What is the operative spec, and how does Seed receive it?
+### CCOMPOSER-O3 — What is the operative spec, and how does Seed receive it?
 
 `compose-operative` returns no specs, and the `compose.operative`
 placeholder's attributes are whatever a spec holds. What does a spec
@@ -584,7 +584,7 @@ workflow transition it needs), where does the composer learn which
 actions the reader may take, and how does Seed find and expand the
 placeholders in a rendered page?
 
-### CCOMPOSER-DRAFT-composer-O4 — How do rendered artifacts reach distribution?
+### CCOMPOSER-O4 — How do rendered artifacts reach distribution?
 
 The composer's only write path is downstream, to a CDN, a file cache,
 a search index and notifications, but nothing carries composed pages
@@ -593,7 +593,7 @@ its content changes. Is distribution a service of its own, fed by
 Classic's workflow and federation events, and what does it need from
 the composer to know which pages an entity appears on?
 
-### CCOMPOSER-DRAFT-composer-O5 — Should the composer's wrapper sections raise heading levels?
+### CCOMPOSER-O5 — Should the composer's wrapper sections raise heading levels?
 
 `compose-feature` wraps lens output in `(section (@ :class "feature")
 ...)`, and container entries are wrapped the same way. Lexis counts
@@ -605,7 +605,7 @@ splicing bodies instead of wrapping them
 change in Lexis, such as not counting untitled sections, or a
 container tag that is not a section.
 
-### CCOMPOSER-DRAFT-composer-O6 — How are sublens cycles bounded?
+### CCOMPOSER-O6 — How are sublens cycles bounded?
 
 A sublens applies the target entity's lens, which may itself declare
 sublenses. `src/lens.lisp:apply-sublens@v0.2.0` sets no depth limit
@@ -617,18 +617,18 @@ being rendered, or leave lenses to the theme author to keep acyclic?
 
 ## Roadmap
 
-1. **Sublens cycles** (CCOMPOSER-DRAFT-composer-O6): bound sublens
+1. **Sublens cycles** (CCOMPOSER-O6): bound sublens
    recursion before themes with richer lenses are written.
-2. **Capability dispatch** (CCOMPOSER-DRAFT-composer-O1): wire
+2. **Capability dispatch** (CCOMPOSER-O1): wire
    dispatch into the tier methods and limit it to the theme's
    activation set, then build the first extension systems, such as
    `classic.composer.frame.hero` and `classic.composer.aggregate.feed`.
-3. **The operative tier** (CCOMPOSER-DRAFT-composer-O3): define the
+3. **The operative tier** (CCOMPOSER-O3): define the
    operative spec and its placeholder with Seed, and build
    `classic.composer.operative.forms`.
-4. **Complex templates** (CCOMPOSER-DRAFT-composer-O2), once the uses
+4. **Complex templates** (CCOMPOSER-O2), once the uses
    anchors and extension generics leave uncovered are known.
-5. **Distribution** (CCOMPOSER-DRAFT-composer-O4), with the services
+5. **Distribution** (CCOMPOSER-O4), with the services
    that consume composed pages.
-6. **`classic.composer.dist.beta`** (CCOMPOSER-DRAFT-composer-D5), when
+6. **`classic.composer.dist.beta`** (CCOMPOSER-D5), when
    Classic publishes a beta schema.

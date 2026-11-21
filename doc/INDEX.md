@@ -10,33 +10,33 @@ Table: Documents in the CCOMPOSER namespace.
 
 | ID | Title | Genre | Scope | Status | Component |
 |---|---|---|---|---|---|
+| [CCOMPOSER-0001](Arch.Composer.md) | The Classic Composer Architecture | Architecture | project | Accepted | — |
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
-| [CCOMPOSER-DRAFT-composer](Arch.Composer.md) | The Classic Composer Architecture | Architecture | project | Draft | — |
-| [CCOMPOSER-DRAFT-composerref](Ref.Composer.md) | Classic Composer Reference | Ref | project | Draft | — |
+| [CCOMPOSER-DRAFT-composerref](Ref.Composer.md) | Classic Composer Reference | Ref | project | Current | — |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 
 | ID | Kind | Title | Status | Host |
 |---|---|---|---|---|
+| [CCOMPOSER-D1](Arch.Composer.md#ccomposer-d1--the-composer-is-read-only-with-respect-to-classics-data) | Decision | The composer is read-only with respect to Classic's data | Proposed | CCOMPOSER-0001 |
+| [CCOMPOSER-D2](Arch.Composer.md#ccomposer-d2--tiers-are-defined-by-structural-role-not-application-domain) | Decision | Tiers are defined by structural role, not application domain | Proposed | CCOMPOSER-0001 |
+| [CCOMPOSER-D3](Arch.Composer.md#ccomposer-d3--extensions-only-add-none-excludes-another) | Decision | Extensions only add; none excludes another | Proposed | CCOMPOSER-0001 |
+| [CCOMPOSER-D4](Arch.Composer.md#ccomposer-d4--the-composer-places-controls-seed-implements-them) | Decision | The composer places controls; Seed implements them | Proposed | CCOMPOSER-0001 |
+| [CCOMPOSER-D5](Arch.Composer.md#ccomposer-d5--schema-references-go-through-the-classicschema-nickname) | Decision | Schema references go through the classic.schema nickname | Proposed | CCOMPOSER-0001 |
+| [CCOMPOSER-D6](Arch.Composer.md#ccomposer-d6--composition-is-a-fixed-sequence-of-single-passes) | Decision | Composition is a fixed sequence of single passes | Proposed | CCOMPOSER-0001 |
 | [CCOMPOSER-DRAFT-compass-migration-D1](Log.CompassMigration.md#ccomposer-draft-compass-migration-d1--this-log-is-the-migrations-record-with-no-plan-of-its-own) | Decision | This Log is the migration's record, with no Plan of its own | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D2](Log.CompassMigration.md#ccomposer-draft-compass-migration-d2--a-document-replaced-by-a-native-one-is-deleted-not-migrated) | Decision | A document replaced by a native one is deleted, not migrated | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D3](Log.CompassMigration.md#ccomposer-draft-compass-migration-d3--the-architecture-document-becomes-an-architecture-now-and-a-ref-is-split-from-it-afterwards) | Decision | The architecture document becomes an Architecture now and a Ref is split from it afterwards | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D4](Log.CompassMigration.md#ccomposer-draft-compass-migration-d4--decision-records-are-not-extracted-from-prose-during-a-reshape) | Decision | Decision records are not extracted from prose during a reshape | Proposed | CCOMPOSER-DRAFT-compass-migration |
-| [CCOMPOSER-DRAFT-composer-D1](Arch.Composer.md#ccomposer-draft-composer-d1--the-composer-is-read-only-with-respect-to-classics-data) | Decision | The composer is read-only with respect to Classic's data | Proposed | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-D2](Arch.Composer.md#ccomposer-draft-composer-d2--tiers-are-defined-by-structural-role-not-application-domain) | Decision | Tiers are defined by structural role, not application domain | Proposed | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-D3](Arch.Composer.md#ccomposer-draft-composer-d3--extensions-only-add-none-excludes-another) | Decision | Extensions only add; none excludes another | Proposed | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-D4](Arch.Composer.md#ccomposer-draft-composer-d4--the-composer-places-controls-seed-implements-them) | Decision | The composer places controls; Seed implements them | Proposed | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-D5](Arch.Composer.md#ccomposer-draft-composer-d5--schema-references-go-through-the-classicschema-nickname) | Decision | Schema references go through the classic.schema nickname | Proposed | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-D6](Arch.Composer.md#ccomposer-draft-composer-d6--composition-is-a-fixed-sequence-of-single-passes) | Decision | Composition is a fixed sequence of single passes | Proposed | CCOMPOSER-DRAFT-composer |
 | [CCOMPOSER-DRAFT-lexismarkdown-D1](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d1--the-composer-depends-on-lexismarkdown-directly) | Decision | The composer depends on lexis.markdown directly | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D2](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d2--reader-options-come-from-a-markdown-options-generic) | Decision | Reader options come from a markdown-options generic | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D4](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d4--the-body-fallback-reads-markdown-bodies) | Decision | The body fallback reads Markdown bodies | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D6](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d6--the-wiki-demo-resolves-wiki-links-during-composition) | Decision | The wiki demo resolves wiki links during composition | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
-| [CCOMPOSER-DRAFT-composer-O1](Arch.Composer.md#ccomposer-draft-composer-o1--how-do-capabilities-take-part-in-composition) | Open question | How do capabilities take part in composition? | — | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-O2](Arch.Composer.md#ccomposer-draft-composer-o2--how-is-a-complex-template-declared) | Open question | How is a complex template declared? | — | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-O3](Arch.Composer.md#ccomposer-draft-composer-o3--what-is-the-operative-spec-and-how-does-seed-receive-it) | Open question | What is the operative spec, and how does Seed receive it? | — | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-O4](Arch.Composer.md#ccomposer-draft-composer-o4--how-do-rendered-artifacts-reach-distribution) | Open question | How do rendered artifacts reach distribution? | — | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-O5](Arch.Composer.md#ccomposer-draft-composer-o5--should-the-composers-wrapper-sections-raise-heading-levels) | Open question | Should the composer's wrapper sections raise heading levels? | — | CCOMPOSER-DRAFT-composer |
-| [CCOMPOSER-DRAFT-composer-O6](Arch.Composer.md#ccomposer-draft-composer-o6--how-are-sublens-cycles-bounded) | Open question | How are sublens cycles bounded? | — | CCOMPOSER-DRAFT-composer |
+| [CCOMPOSER-O1](Arch.Composer.md#ccomposer-o1--how-do-capabilities-take-part-in-composition) | Open question | How do capabilities take part in composition? | — | CCOMPOSER-0001 |
+| [CCOMPOSER-O2](Arch.Composer.md#ccomposer-o2--how-is-a-complex-template-declared) | Open question | How is a complex template declared? | — | CCOMPOSER-0001 |
+| [CCOMPOSER-O3](Arch.Composer.md#ccomposer-o3--what-is-the-operative-spec-and-how-does-seed-receive-it) | Open question | What is the operative spec, and how does Seed receive it? | — | CCOMPOSER-0001 |
+| [CCOMPOSER-O4](Arch.Composer.md#ccomposer-o4--how-do-rendered-artifacts-reach-distribution) | Open question | How do rendered artifacts reach distribution? | — | CCOMPOSER-0001 |
+| [CCOMPOSER-O5](Arch.Composer.md#ccomposer-o5--should-the-composers-wrapper-sections-raise-heading-levels) | Open question | Should the composer's wrapper sections raise heading levels? | — | CCOMPOSER-0001 |
+| [CCOMPOSER-O6](Arch.Composer.md#ccomposer-o6--how-are-sublens-cycles-bounded) | Open question | How are sublens cycles bounded? | — | CCOMPOSER-0001 |

@@ -16,7 +16,7 @@ provenance:
   original-assistant: claude-opus-4-6
   migrated-from:      doc/Composer.md@7fa52ba
 relates-to:
-  - CCOMPOSER-DRAFT-composer
+  - CCOMPOSER-0001
   - CCOMPOSER-DRAFT-lexismarkdown
   - CCOMPOSER-DRAFT-compass-migration
   - CLASSIC-0011
@@ -32,7 +32,7 @@ tier generics, theme integration, lens evaluation, the extension
 generics through which applications adapt composition to their
 content, and template slots, anchors and collectors. The design
 behind it, including the parts not yet built, is
-[CCOMPOSER-DRAFT-composer](Arch.Composer.md); the theme ontology the
+[CCOMPOSER-0001](Arch.Composer.md); the theme ontology the
 composer consumes is [CLASSIC-0011](../../classic/doc/theme/Ref.Theme.md).
 Code references are pinned to the release tag `v0.2.0`. This reference was
 split from the original architecture document, `doc/Composer.md`, as
@@ -480,7 +480,7 @@ stylesheets, and `doc/demos/` the pages they render.
 The test suite runs with the manifest's `:test` command,
 `(progn (ql:quickload "classic.composer/tests") (classic.composer-tests::run-all-tests))`.
 
-See also [CCOMPOSER-DRAFT-composer](Arch.Composer.md) for the design,
+See also [CCOMPOSER-0001](Arch.Composer.md) for the design,
 [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) for the
 Markdown integration, and
 [CLASSIC-0011](../../classic/doc/theme/Ref.Theme.md) for the theme
