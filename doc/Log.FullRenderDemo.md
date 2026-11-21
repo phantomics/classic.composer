@@ -1,13 +1,12 @@
 ---
-id:            CCOMPOSER-DRAFT-fullrenderdemo
+id:            CCOMPOSER-0004
 title:         Full Render Demo Development Log
 genre:         Log
 scope:         component
 project:       Classic Composer
 component:     demo
 language:      en
-status:        Draft
-created:       Implemented
+status:        Implemented
 authors:
   - Andrew Sengul
 approved-by:   Andrew Sengul
@@ -17,15 +16,15 @@ provenance:
   original-assistant: claude-opus-4-6
   migrated-from:      doc/DevLog.FullRenderDemo.md@0f8183f
 decisions:
-  - CCOMPOSER-DRAFT-fullrenderdemo-D1
-  - CCOMPOSER-DRAFT-fullrenderdemo-D2
-  - CCOMPOSER-DRAFT-fullrenderdemo-D3
-  - CCOMPOSER-DRAFT-fullrenderdemo-D4
-  - CCOMPOSER-DRAFT-fullrenderdemo-D5
-  - CCOMPOSER-DRAFT-fullrenderdemo-D6
-  - CCOMPOSER-DRAFT-fullrenderdemo-D7
-  - CCOMPOSER-DRAFT-fullrenderdemo-D8
-  - CCOMPOSER-DRAFT-fullrenderdemo-D9
+  - CCOMPOSER-D19
+  - CCOMPOSER-D20
+  - CCOMPOSER-D21
+  - CCOMPOSER-D22
+  - CCOMPOSER-D23
+  - CCOMPOSER-D24
+  - CCOMPOSER-D25
+  - CCOMPOSER-D26
+  - CCOMPOSER-D27
 ---
 
 # Full Render Demo: Development Log
@@ -106,7 +105,7 @@ emits it.
 
 ## Design Decisions
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D1 — Asset surface uses Lexis passthrough
+### CCOMPOSER-D19 — Asset surface uses Lexis passthrough
 
 **Status:** Implemented
 **Context:** How should the composer surface stylesheet and script
@@ -138,7 +137,7 @@ labeled for HTML. A PDF or terminal renderer would simply omit them.
 
 **Alternatives:** See [Concurrent Lexis Change: Passthrough](#concurrent-lexis-change-passthrough).
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D2 — Asset list binds to a slot via splice
+### CCOMPOSER-D20 — Asset list binds to a slot via splice
 
 **Status:** Implemented
 **Context:** Where does the asset list get inserted into the page?
@@ -163,7 +162,7 @@ produces cleaner HTML.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D3 — Default `compose-aggregate` walks `classic-container` entities
+### CCOMPOSER-D21 — Default `compose-aggregate` walks `classic-container` entities
 
 **Status:** Implemented
 **Context:** When no theme provides an `:aggregate` tier-template,
@@ -189,7 +188,7 @@ specialize, but the common case is now covered.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D4 — Lens preference: `:summary` then `:label`
+### CCOMPOSER-D22 — Lens preference: `:summary` then `:label`
 
 **Status:** Implemented
 **Context:** Which lens purpose should the default container walk
@@ -205,7 +204,7 @@ with bare titles.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D5 — `compose-feature` no longer adds a title attribute to the wrapper
+### CCOMPOSER-D23 — `compose-feature` no longer adds a title attribute to the wrapper
 
 **Status:** Implemented
 **Context:** Should the section wrapping the lens output carry a
@@ -229,7 +228,7 @@ feature.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D6 — Standard `page-title` binding from the entity
+### CCOMPOSER-D24 — Standard `page-title` binding from the entity
 
 **Status:** Implemented
 **Context:** Themes naturally want the page's `<title>` element to
@@ -252,7 +251,7 @@ explicit overrides still win.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D7 — Body sections as a list, with passthrough rendering handling both
+### CCOMPOSER-D25 — Body sections as a list, with passthrough rendering handling both
 
 **Status:** Superseded
 **Context:** What shape should an article body have when stored as
@@ -270,7 +269,7 @@ work" without authors having to add a top-level wrapper.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D8 — Demo body data uses an alist with `:body` key
+### CCOMPOSER-D26 — Demo body data uses an alist with `:body` key
 
 **Status:** Implemented
 **Context:** How should the demo data express bodies that have
@@ -287,7 +286,7 @@ sections" and keeps each post entry compact.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-fullrenderdemo-D9 — Self-contained demo file, no fixtures
+### CCOMPOSER-D27 — Self-contained demo file, no fixtures
 
 **Status:** Implemented
 **Context:** Should the demo load fixture files for blog posts, the

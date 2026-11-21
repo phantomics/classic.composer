@@ -421,7 +421,7 @@ Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md` (now
 
 The third migration: the log of the first end-to-end render demo,
 migrated whole as the Log
-[CCOMPOSER-DRAFT-fullrenderdemo](Log.FullRenderDemo.md).
+[CCOMPOSER-0004](Log.FullRenderDemo.md).
 
 - **Original:** `doc/DevLog.FullRenderDemo.md`, at `migrated-from`
   revision `0f8183f`, the only commit to touch it, which is also the
@@ -431,7 +431,7 @@ migrated whole as the Log
   updated, and the two mentions of the old path in this Log, both
   history, given the new path after them.
 - **Reshape** (`3eba656`), form only:
-  - front-matter as CCOMPOSER-DRAFT-fullrenderdemo: genre `Log`, scope
+  - front-matter as CCOMPOSER-0004: genre `Log`, scope
     `component`, component `demo`, status `Draft`, and `provenance`
     naming the original's assistant, claude-opus-4-6;
   - `created: 2026-06-05`, from the document's own date line. Git dates
@@ -439,16 +439,16 @@ migrated whole as the Log
     after the day the date line names;
   - the nine numbered decisions as records `-D1` to `-D9`, keeping
     their numbers and titles, each "Question" as the record's Context.
-    CCOMPOSER-DRAFT-fullrenderdemo-D1's Alternatives point to the
+    CCOMPOSER-D19's Alternatives point to the
     background section on Lexis passthrough, which says what the
     composer would have done without it. Those of
-    CCOMPOSER-DRAFT-fullrenderdemo-D2,
-    CCOMPOSER-DRAFT-fullrenderdemo-D3,
-    CCOMPOSER-DRAFT-fullrenderdemo-D5,
-    CCOMPOSER-DRAFT-fullrenderdemo-D6 and
-    CCOMPOSER-DRAFT-fullrenderdemo-D8 point to the Decision, whose text
+    CCOMPOSER-D20,
+    CCOMPOSER-D21,
+    CCOMPOSER-D23,
+    CCOMPOSER-D24 and
+    CCOMPOSER-D26 point to the Decision, whose text
     names the option rejected; that of
-    CCOMPOSER-DRAFT-fullrenderdemo-D9 points to the Context. The other
+    CCOMPOSER-D27 points to the Context. The other
     two read "Not recorded in the original.";
   - 5 file headings and 16 symbol references in Implementation pinned
     to the work's commit, `0f8183f`. Symbols named only in headings or
@@ -466,7 +466,7 @@ migrated whole as the Log
   the "Question" labels, bare names, reappearing in their pins, and
   table cells, moved between columns.
 - **Notes on stale content,** for a revision:
-  - CCOMPOSER-DRAFT-fullrenderdemo-D7, wrapping a list of body sections
+  - CCOMPOSER-D25, wrapping a list of body sections
     in an untitled section, was replaced by splicing in `ac700d0`
     (`src/lens.lisp:render-html-passthrough@3eba656`), as
     CCOMPOSER-DRAFT-lexismarkdown-D3 records.
@@ -478,7 +478,7 @@ migrated whole as the Log
     `7fa52ba`.
   - Outstanding Work names a `:placement` attribute as the hook for
     putting assets in `<head>`, where
-    CCOMPOSER-DRAFT-fullrenderdemo-D1 says the composer emits `:kind`.
+    CCOMPOSER-D19 says the composer emits `:kind`.
     The Markdown mode it lists as stubbed is real, child themes are
     exercised by the wiki demo, and the blog model's `write-post` is
     now `write-article`; asset placement in `<head>` is still open, on

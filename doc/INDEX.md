@@ -13,8 +13,8 @@ Table: Documents in the CCOMPOSER namespace.
 | [CCOMPOSER-0001](Arch.Composer.md) | The Classic Composer Architecture | Architecture | project | Accepted | — |
 | [CCOMPOSER-0002](Ref.Composer.md) | Classic Composer Reference | Ref | project | Current | — |
 | [CCOMPOSER-0003](Log.ThemeResolution.md) | Theme Resolution Development Log | Log | component | Implemented | theme |
+| [CCOMPOSER-0004](Log.FullRenderDemo.md) | Full Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
-| [CCOMPOSER-DRAFT-fullrenderdemo](Log.FullRenderDemo.md) | Full Render Demo Development Log | Log | component | Draft | demo |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
@@ -39,19 +39,19 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-D16](Log.ThemeResolution.md#ccomposer-d16--asset-collection-with-css-stacking-order) | Decision | Asset collection with CSS stacking order | Implemented | CCOMPOSER-0003 |
 | [CCOMPOSER-D17](Log.ThemeResolution.md#ccomposer-d17--schema-agnostic-via-nickname-pattern) | Decision | Schema-agnostic via nickname pattern | Implemented | CCOMPOSER-0003 |
 | [CCOMPOSER-D18](Log.ThemeResolution.md#ccomposer-d18--distribution-shim-for-end-users) | Decision | Distribution shim for end users | Implemented | CCOMPOSER-0003 |
+| [CCOMPOSER-D19](Log.FullRenderDemo.md#ccomposer-d19--asset-surface-uses-lexis-passthrough) | Decision | Asset surface uses Lexis passthrough | Implemented | CCOMPOSER-0004 |
+| [CCOMPOSER-D20](Log.FullRenderDemo.md#ccomposer-d20--asset-list-binds-to-a-slot-via-splice) | Decision | Asset list binds to a slot via splice | Implemented | CCOMPOSER-0004 |
+| [CCOMPOSER-D21](Log.FullRenderDemo.md#ccomposer-d21--default-compose-aggregate-walks-classic-container-entities) | Decision | Default compose-aggregate walks classic-container entities | Implemented | CCOMPOSER-0004 |
+| [CCOMPOSER-D22](Log.FullRenderDemo.md#ccomposer-d22--lens-preference-summary-then-label) | Decision | Lens preference: :summary then :label | Implemented | CCOMPOSER-0004 |
+| [CCOMPOSER-D23](Log.FullRenderDemo.md#ccomposer-d23--compose-feature-no-longer-adds-a-title-attribute-to-the-wrapper) | Decision | compose-feature no longer adds a title attribute to the wrapper | Implemented | CCOMPOSER-0004 |
+| [CCOMPOSER-D24](Log.FullRenderDemo.md#ccomposer-d24--standard-page-title-binding-from-the-entity) | Decision | Standard page-title binding from the entity | Implemented | CCOMPOSER-0004 |
+| [CCOMPOSER-D25](Log.FullRenderDemo.md#ccomposer-d25--body-sections-as-a-list-with-passthrough-rendering-handling-both) | Decision | Body sections as a list, with passthrough rendering handling both | Superseded | CCOMPOSER-0004 |
+| [CCOMPOSER-D26](Log.FullRenderDemo.md#ccomposer-d26--demo-body-data-uses-an-alist-with-body-key) | Decision | Demo body data uses an alist with :body key | Implemented | CCOMPOSER-0004 |
+| [CCOMPOSER-D27](Log.FullRenderDemo.md#ccomposer-d27--self-contained-demo-file-no-fixtures) | Decision | Self-contained demo file, no fixtures | Implemented | CCOMPOSER-0004 |
 | [CCOMPOSER-DRAFT-compass-migration-D1](Log.CompassMigration.md#ccomposer-draft-compass-migration-d1--this-log-is-the-migrations-record-with-no-plan-of-its-own) | Decision | This Log is the migration's record, with no Plan of its own | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D2](Log.CompassMigration.md#ccomposer-draft-compass-migration-d2--a-document-replaced-by-a-native-one-is-deleted-not-migrated) | Decision | A document replaced by a native one is deleted, not migrated | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D3](Log.CompassMigration.md#ccomposer-draft-compass-migration-d3--the-architecture-document-becomes-an-architecture-now-and-a-ref-is-split-from-it-afterwards) | Decision | The architecture document becomes an Architecture now and a Ref is split from it afterwards | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D4](Log.CompassMigration.md#ccomposer-draft-compass-migration-d4--decision-records-are-not-extracted-from-prose-during-a-reshape) | Decision | Decision records are not extracted from prose during a reshape | Proposed | CCOMPOSER-DRAFT-compass-migration |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D1](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d1--asset-surface-uses-lexis-passthrough) | Decision | Asset surface uses Lexis passthrough | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D2](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d2--asset-list-binds-to-a-slot-via-splice) | Decision | Asset list binds to a slot via splice | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D3](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d3--default-compose-aggregate-walks-classic-container-entities) | Decision | Default compose-aggregate walks classic-container entities | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D4](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d4--lens-preference-summary-then-label) | Decision | Lens preference: :summary then :label | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D5](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d5--compose-feature-no-longer-adds-a-title-attribute-to-the-wrapper) | Decision | compose-feature no longer adds a title attribute to the wrapper | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D6](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d6--standard-page-title-binding-from-the-entity) | Decision | Standard page-title binding from the entity | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D7](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d7--body-sections-as-a-list-with-passthrough-rendering-handling-both) | Decision | Body sections as a list, with passthrough rendering handling both | Superseded | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D8](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d8--demo-body-data-uses-an-alist-with-body-key) | Decision | Demo body data uses an alist with :body key | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
-| [CCOMPOSER-DRAFT-fullrenderdemo-D9](Log.FullRenderDemo.md#ccomposer-draft-fullrenderdemo-d9--self-contained-demo-file-no-fixtures) | Decision | Self-contained demo file, no fixtures | Implemented | CCOMPOSER-DRAFT-fullrenderdemo |
 | [CCOMPOSER-DRAFT-lexismarkdown-D1](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d1--the-composer-depends-on-lexismarkdown-directly) | Decision | The composer depends on lexis.markdown directly | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D2](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d2--reader-options-come-from-a-markdown-options-generic) | Decision | Reader options come from a markdown-options generic | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
