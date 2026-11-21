@@ -1,12 +1,16 @@
 ---
-id:            CCOMPOSER-DRAFT-themeresolution
+id:            CCOMPOSER-0003
 title:         Theme Resolution Development Log
 genre:         Log
 scope:         component
 project:       Classic Composer
 component:     theme
 language:      en
-status:        Draft
+status:        Implemented
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:          claude-opus-5-5
   original-assistant: claude-opus-4-6
@@ -14,18 +18,18 @@ provenance:
 relates-to:
   - CCOMPOSER-0001
 decisions:
-  - CCOMPOSER-DRAFT-themeresolution-D1
-  - CCOMPOSER-DRAFT-themeresolution-D2
-  - CCOMPOSER-DRAFT-themeresolution-D3
-  - CCOMPOSER-DRAFT-themeresolution-D4
-  - CCOMPOSER-DRAFT-themeresolution-D5
-  - CCOMPOSER-DRAFT-themeresolution-D6
-  - CCOMPOSER-DRAFT-themeresolution-D7
-  - CCOMPOSER-DRAFT-themeresolution-D8
-  - CCOMPOSER-DRAFT-themeresolution-D9
-  - CCOMPOSER-DRAFT-themeresolution-D10
-  - CCOMPOSER-DRAFT-themeresolution-D11
-  - CCOMPOSER-DRAFT-themeresolution-D12
+  - CCOMPOSER-D7
+  - CCOMPOSER-D8
+  - CCOMPOSER-D9
+  - CCOMPOSER-D10
+  - CCOMPOSER-D11
+  - CCOMPOSER-D12
+  - CCOMPOSER-D13
+  - CCOMPOSER-D14
+  - CCOMPOSER-D15
+  - CCOMPOSER-D16
+  - CCOMPOSER-D17
+  - CCOMPOSER-D18
 ---
 
 # Theme Resolution: Development Log
@@ -109,9 +113,9 @@ schema symbols correctly until the nickname convention was adopted.
 
 ## Design Decisions
 
-### CCOMPOSER-DRAFT-themeresolution-D1 — Eager theme resolution at context creation
+### CCOMPOSER-D7 — Eager theme resolution at context creation
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Should the theme chain be resolved lazily (on first
 access by a tier method) or eagerly (at context creation time)?
 
@@ -130,9 +134,9 @@ theme is available. Rationale:
 
 **Alternatives:** See the Context.
 
-### CCOMPOSER-DRAFT-themeresolution-D2 — Theme source priority
+### CCOMPOSER-D8 — Theme source priority
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** When multiple theme sources are available (explicit
 URI argument, explicit entity, publication's `ui-theme` slot), which
 wins?
@@ -150,9 +154,9 @@ argument.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-themeresolution-D3 — Tier template cascade: override -> tier-templates -> default
+### CCOMPOSER-D9 — Tier template cascade: override -> tier-templates -> default
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** When a theme provides both a `tier-templates` entry
 and a `classic-theme-override` for the same tier, which wins?
 
@@ -168,9 +172,9 @@ general template for that tier.
 
 **Alternatives:** See the Context.
 
-### CCOMPOSER-DRAFT-themeresolution-D4 — Capability activation set from theme
+### CCOMPOSER-D10 — Capability activation set from theme
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Should the composer activate all registered
 capabilities globally, or only those declared by the theme?
 
@@ -186,9 +190,9 @@ exactly which capabilities are active for their theme.
 
 **Alternatives:** See the Context.
 
-### CCOMPOSER-DRAFT-themeresolution-D5 — Capability validation: warn by default, strict mode optional
+### CCOMPOSER-D11 — Capability validation: warn by default, strict mode optional
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** What happens when a theme declares a capability that
 isn't registered, or requires one that isn't in the activation set?
 
@@ -200,9 +204,9 @@ strict mode to catch misconfiguration early).
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-themeresolution-D6 — Lens-driven feature composition with body fallback
+### CCOMPOSER-D12 — Lens-driven feature composition with body fallback
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** How should `compose-feature` choose between lens-driven
 rendering and direct body extraction?
 
@@ -220,9 +224,9 @@ This means:
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-themeresolution-D7 — Display mode cascade mirrors Fresnel, extended with MOP
+### CCOMPOSER-D13 — Display mode cascade mirrors Fresnel, extended with MOP
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** How should the display mode for a slot be determined
 when the lens doesn't declare an explicit `:display`?
 
@@ -242,9 +246,9 @@ without the lens needing to say so.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-themeresolution-D8 — Markdown display mode stubbed
+### CCOMPOSER-D14 — Markdown display mode stubbed
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** The `:markdown` display mode requires a Markdown
 parser. Should the composer depend on a Markdown library?
 
@@ -255,9 +259,9 @@ changing the lens or display mode interface.
 
 **Alternatives:** See the Context.
 
-### CCOMPOSER-DRAFT-themeresolution-D9 — Silent skip for absent slots, warn for nonexistent slots
+### CCOMPOSER-D15 — Silent skip for absent slots, warn for nonexistent slots
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** What should lens evaluation do when a property
 references a slot that is unbound or NIL on the entity?
 
@@ -273,9 +277,9 @@ strictness for the prototype).
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-themeresolution-D10 — Asset collection with CSS stacking order
+### CCOMPOSER-D16 — Asset collection with CSS stacking order
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** When collecting assets from a theme chain, what order
 should they appear in?
 
@@ -286,9 +290,9 @@ ordering applies to scripts and other asset types.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-themeresolution-D11 — Schema-agnostic via nickname pattern
+### CCOMPOSER-D17 — Schema-agnostic via nickname pattern
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** How should the composer reference schema symbols?
 
 **Decision:** Follow the engine's convention. The composer's ASDF
@@ -305,9 +309,9 @@ at every call site.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-themeresolution-D12 — Distribution shim for end users
+### CCOMPOSER-D18 — Distribution shim for end users
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** How should end users load the composer with a complete
 Classic installation?
 

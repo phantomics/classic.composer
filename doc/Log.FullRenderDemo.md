@@ -7,7 +7,11 @@ project:       Classic Composer
 component:     demo
 language:      en
 status:        Draft
-created:       2026-06-05
+created:       Implemented
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:          claude-opus-5-5
   original-assistant: claude-opus-4-6
@@ -104,7 +108,7 @@ emits it.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D1 — Asset surface uses Lexis passthrough
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** How should the composer surface stylesheet and script
 references for the HTML renderer to emit as `<link>` and `<script>`
 tags?
@@ -136,7 +140,7 @@ labeled for HTML. A PDF or terminal renderer would simply omit them.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D2 — Asset list binds to a slot via splice
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Where does the asset list get inserted into the page?
 
 **Decision:** Bind the asset list to a slot named `theme.assets` and
@@ -161,7 +165,7 @@ produces cleaner HTML.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D3 — Default `compose-aggregate` walks `classic-container` entities
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** When no theme provides an `:aggregate` tier-template,
 what should the default `compose-aggregate` do?
 
@@ -187,7 +191,7 @@ specialize, but the common case is now covered.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D4 — Lens preference: `:summary` then `:label`
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Which lens purpose should the default container walk
 use to render entries?
 
@@ -203,7 +207,7 @@ with bare titles.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D5 — `compose-feature` no longer adds a title attribute to the wrapper
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Should the section wrapping the lens output carry a
 `:title` attribute derived from the entity?
 
@@ -227,7 +231,7 @@ feature.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D6 — Standard `page-title` binding from the entity
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Themes naturally want the page's `<title>` element to
 carry the entity's title. How should this flow without per-page
 boilerplate?
@@ -250,7 +254,7 @@ explicit overrides still win.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D7 — Body sections as a list, with passthrough rendering handling both
 
-**Status:** Proposed
+**Status:** Superseded
 **Context:** What shape should an article body have when stored as
 Lexis s-expressions?
 
@@ -268,7 +272,7 @@ work" without authors having to add a top-level wrapper.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D8 — Demo body data uses an alist with `:body` key
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** How should the demo data express bodies that have
 multiple sections?
 
@@ -285,7 +289,7 @@ sections" and keeps each post entry compact.
 
 ### CCOMPOSER-DRAFT-fullrenderdemo-D9 — Self-contained demo file, no fixtures
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Should the demo load fixture files for blog posts, the
 theme, and the stylesheet? Or contain everything inline?
 

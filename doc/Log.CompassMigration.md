@@ -344,7 +344,7 @@ committed after `3a95f57`, the commit the release tag `v0.2.0` marks:
 
 The second migration: the log of the theme resolution work, migrated
 whole as the Log
-[CCOMPOSER-DRAFT-themeresolution](Log.ThemeResolution.md).
+[CCOMPOSER-0003](Log.ThemeResolution.md).
 
 - **Original:** `doc/DevLog.ThemeResolution.md`, at `migrated-from`
   revision `3e9068e`, the only commit to touch it, which is also the
@@ -354,7 +354,7 @@ whole as the Log
   updated. This Log's own backlog list keeps the old path, as history,
   with the new path noted after it.
 - **Reshape** (`a44422f`), form only:
-  - front-matter as CCOMPOSER-DRAFT-themeresolution: genre `Log`, scope
+  - front-matter as CCOMPOSER-0003: genre `Log`, scope
     `component`, component `theme`, status `Draft`, `provenance` naming
     the original's assistant, claude-opus-4-6, and `relates-to`
     CCOMPOSER-0001, the document the original names as
@@ -363,11 +363,11 @@ whole as the Log
     their numbers and titles. Each original "Question" became the
     record's Context. Alternatives point to the Context where the
     question names the rejected option
-    (CCOMPOSER-DRAFT-themeresolution-D1,
-    CCOMPOSER-DRAFT-themeresolution-D3,
-    CCOMPOSER-DRAFT-themeresolution-D4 and
-    CCOMPOSER-DRAFT-themeresolution-D8), to the Decision where it does
-    (CCOMPOSER-DRAFT-themeresolution-D9), and read "Not recorded in
+    (CCOMPOSER-D7,
+    CCOMPOSER-D9,
+    CCOMPOSER-D10 and
+    CCOMPOSER-D14), to the Decision where it does
+    (CCOMPOSER-D15), and read "Not recorded in
     the original." for the other seven;
   - 27 symbols and 8 file headings in Implementation pinned to the
     work's commit, `3e9068e`; the Files table's paths left as history,
@@ -388,12 +388,12 @@ whole as the Log
   names, reappearing in their pins, and table cells, moved between
   columns.
 - **Notes on stale content,** for a revision:
-  - CCOMPOSER-DRAFT-themeresolution-D4, the theme's capabilities as the
+  - CCOMPOSER-D10, the theme's capabilities as the
     activation set for dispatch, was never built: no tier method calls
     `src/capability.lisp:dispatch-capability@a44422f`, as
     CCOMPOSER-0001 records in its open question on capability
     dispatch.
-  - CCOMPOSER-DRAFT-themeresolution-D8, the stubbed Markdown mode, was
+  - CCOMPOSER-D14, the stubbed Markdown mode, was
     replaced by the Lexis Markdown reader
     (`src/lens.lisp:render-markdown@a44422f`), as
     [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) records.
