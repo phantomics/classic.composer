@@ -5,7 +5,11 @@ genre:         Architecture
 scope:         project
 project:       Classic Composer
 language:      en
-status:        Draft
+status:        Accepted
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:          claude-opus-5-5
   original-assistant: claude-opus-4-6

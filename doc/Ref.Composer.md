@@ -5,7 +5,11 @@ genre:         Ref
 scope:         project
 project:       Classic Composer
 language:      en
-status:        Draft
+status:        Current
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 api-version:   "0.2.0"
 provenance:
   assistant:          claude-opus-5-5
