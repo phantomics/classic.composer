@@ -252,7 +252,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
 - **Five documents still unmarked**, to be migrated one at a time, each
   recorded in an `## Update` section:
   - `doc/DevLog.ThemeResolution.md` (now `doc/Log.ThemeResolution.md`)
-  - `doc/DevLog.FullRenderDemo.md`
+  - `doc/DevLog.FullRenderDemo.md` (now `doc/Log.FullRenderDemo.md`)
   - `doc/DevLog.ForumRenderDemo.md`
   - `doc/DevLog.WikiRenderDemo.md`
   - `doc/DevLog.ReadOnlyDemos.md`
@@ -413,6 +413,6 @@ whole as the Log
     ontology are mentioned without links; they are LEXIS-0001, and
     CLASSIC-0010 and CLASSIC-0011.
 
-Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md`,
-`doc/DevLog.ForumRenderDemo.md`, `doc/DevLog.WikiRenderDemo.md` and
+Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md` (now
+`doc/Log.FullRenderDemo.md`), `doc/DevLog.ForumRenderDemo.md`, `doc/DevLog.WikiRenderDemo.md` and
 `doc/DevLog.ReadOnlyDemos.md`.

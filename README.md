@@ -434,7 +434,7 @@ examples/
 doc/
   Arch.Composer.md        -- detailed architecture document
   Log.ThemeResolution.md    -- theme resolution development log
-  DevLog.FullRenderDemo.md  -- full render pipeline development log
+  Log.FullRenderDemo.md     -- full render pipeline development log
   DevLog.ForumRenderDemo.md -- forum demo development log
   DevLog.WikiRenderDemo.md  -- wiki demo development log
   Log.LexisMarkdown.md      -- Lexis Markdown reader integration log
