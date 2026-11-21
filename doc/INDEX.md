@@ -15,6 +15,7 @@ Table: Documents in the CCOMPOSER namespace.
 | [CCOMPOSER-0003](Log.ThemeResolution.md) | Theme Resolution Development Log | Log | component | Implemented | theme |
 | [CCOMPOSER-0004](Log.FullRenderDemo.md) | Full Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
+| [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md) | Forum Render Demo Development Log | Log | component | Draft | demo |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
@@ -52,6 +53,11 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-DRAFT-compass-migration-D2](Log.CompassMigration.md#ccomposer-draft-compass-migration-d2--a-document-replaced-by-a-native-one-is-deleted-not-migrated) | Decision | A document replaced by a native one is deleted, not migrated | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D3](Log.CompassMigration.md#ccomposer-draft-compass-migration-d3--the-architecture-document-becomes-an-architecture-now-and-a-ref-is-split-from-it-afterwards) | Decision | The architecture document becomes an Architecture now and a Ref is split from it afterwards | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D4](Log.CompassMigration.md#ccomposer-draft-compass-migration-d4--decision-records-are-not-extracted-from-prose-during-a-reshape) | Decision | Decision records are not extracted from prose during a reshape | Proposed | CCOMPOSER-DRAFT-compass-migration |
+| [CCOMPOSER-DRAFT-forumrenderdemo-D1](Log.ForumRenderDemo.md#ccomposer-draft-forumrenderdemo-d1--both-pages-are-aggregate-views) | Decision | Both pages are aggregate views | Proposed | CCOMPOSER-DRAFT-forumrenderdemo |
+| [CCOMPOSER-DRAFT-forumrenderdemo-D2](Log.ForumRenderDemo.md#ccomposer-draft-forumrenderdemo-d2--thread-ordering-uses-internal-api) | Decision | Thread ordering uses internal API | Proposed | CCOMPOSER-DRAFT-forumrenderdemo |
+| [CCOMPOSER-DRAFT-forumrenderdemo-D3](Log.ForumRenderDemo.md#ccomposer-draft-forumrenderdemo-d3--forum-thread-uses-created-at-not-date-created) | Decision | Forum-thread uses created-at not date-created | Proposed | CCOMPOSER-DRAFT-forumrenderdemo |
+| [CCOMPOSER-DRAFT-forumrenderdemo-D4](Log.ForumRenderDemo.md#ccomposer-draft-forumrenderdemo-d4--post-bodies-are-plain-strings-not-lexis-subtrees) | Decision | Post bodies are plain strings, not Lexis subtrees | Proposed | CCOMPOSER-DRAFT-forumrenderdemo |
+| [CCOMPOSER-DRAFT-forumrenderdemo-D5](Log.ForumRenderDemo.md#ccomposer-draft-forumrenderdemo-d5--stickers-render-as-a-plain-list) | Decision | Stickers render as a plain list | Proposed | CCOMPOSER-DRAFT-forumrenderdemo |
 | [CCOMPOSER-DRAFT-lexismarkdown-D1](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d1--the-composer-depends-on-lexismarkdown-directly) | Decision | The composer depends on lexis.markdown directly | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D2](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d2--reader-options-come-from-a-markdown-options-generic) | Decision | Reader options come from a markdown-options generic | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |

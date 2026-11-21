@@ -1,3 +1,24 @@
+---
+id:            CCOMPOSER-DRAFT-forumrenderdemo
+title:         Forum Render Demo Development Log
+genre:         Log
+scope:         component
+project:       Classic Composer
+component:     demo
+language:      en
+status:        Draft
+provenance:
+  assistant:          claude-opus-5-5
+  original-assistant: claude-opus-4-6
+  migrated-from:      doc/DevLog.ForumRenderDemo.md@ad3fe3c
+decisions:
+  - CCOMPOSER-DRAFT-forumrenderdemo-D1
+  - CCOMPOSER-DRAFT-forumrenderdemo-D2
+  - CCOMPOSER-DRAFT-forumrenderdemo-D3
+  - CCOMPOSER-DRAFT-forumrenderdemo-D4
+  - CCOMPOSER-DRAFT-forumrenderdemo-D5
+---
+
 # Forum Render Demo: Development Log
 
 This document chronicles the addition of a forum rendering demo to
@@ -50,15 +71,15 @@ of `write-post`, `imprint-strategy` instead of `blog-strategy`, etc.).
 
 ### New demo file
 
-`examples/forum-demo.lisp` (~220 lines) follows the same structure
+`examples/forum-demo.lisp@ad3fe3c` (~220 lines) follows the same structure
 as the blog demo:
 
-1. **Setup.** `setup-forum` creates a forum imprint with three
+1. **Setup.** `examples/forum-demo.lisp:setup-forum@ad3fe3c` creates a forum imprint with three
    members (admin, regular member, moderator), three threads (one
    discussion with replies/reactions/quotes, one pinned rules thread,
    and one shorter discussion), and sample moderation actions.
 
-2. **Theme.** `setup-theme` defines a single theme with:
+2. **Theme.** `examples/forum-demo.lisp:setup-theme@ad3fe3c` defines a single theme with:
    - A frame template with brand, content, aggregate, and footer slots
    - Slot-fills for the brand header and footer
    - An asset manifest pointing to `forum.css`
@@ -67,16 +88,16 @@ as the blog demo:
      `classic-person` `:label` (name)
 
 3. **Rendering.** Two page functions:
-   - `render-index-page`: entity = forum's main container,
+   - `examples/forum-demo.lisp:render-index-page@ad3fe3c`: entity = forum's main container,
      `compose-aggregate` walks threads
-   - `render-thread-page`: entity = a specific `forum-thread`,
+   - `examples/forum-demo.lisp:render-thread-page@ad3fe3c`: entity = a specific `forum-thread`,
      `compose-aggregate` walks posts
 
-4. **Output.** `run-demo` writes both pages to `doc/demos/`.
+4. **Output.** `examples/forum-demo.lisp:run-demo@ad3fe3c` writes both pages to `doc/demos/`.
 
 ### Reference stylesheet
 
-`examples/static/forum.css` (~85 lines) provides minimal styling
+`examples/static/forum.css@ad3fe3c` (~85 lines) provides minimal styling
 for the forum pages using the same CSS variable scheme as the blog
 stylesheet. Uses a sans-serif font stack (vs. the blog's serif) to
 visually distinguish the two content profiles.
@@ -84,9 +105,12 @@ visually distinguish the two content profiles.
 
 ## Design Decisions
 
-### 1. Both pages are aggregate views
+### CCOMPOSER-DRAFT-forumrenderdemo-D1 — Both pages are aggregate views
 
-In the five-tier model, a thread page showing all posts as peers is
+**Status:** Proposed
+**Context:** See [Problem](#problem).
+
+**Decision:** In the five-tier model, a thread page showing all posts as peers is
 an aggregate view -- it presents a collection of entities (posts)
 from a container (the thread). This matches the architectural
 discussion where forum posts were classified as feature-tier content
@@ -99,26 +123,41 @@ The same `compose-aggregate` default handles both:
 
 No forum-specific `defmethod` was needed.
 
-### 2. Thread ordering uses internal API
+**Alternatives:** Not recorded in the original.
 
-`ordered-threads` (which sorts pinned threads first) is not exported
-from `classic.models.common`. The demo accesses it via the double-
+### CCOMPOSER-DRAFT-forumrenderdemo-D2 — Thread ordering uses internal API
+
+**Status:** Proposed
+**Context:** `ordered-threads` (which sorts pinned threads first) is not exported
+from `classic.models.common`.
+
+**Decision:** The demo accesses it via the double-
 colon convention (`classic.models.common::ordered-threads`). This is
 acceptable for a demo; a production integration would either export
 the function or provide a higher-level routing API.
 
-### 3. Forum-thread uses `created-at` not `date-created`
+**Alternatives:** See the Decision.
 
-`forum-thread` extends `classic-container`, not `classic-creative-work`.
+### CCOMPOSER-DRAFT-forumrenderdemo-D3 — Forum-thread uses `created-at` not `date-created`
+
+**Status:** Proposed
+**Context:** `forum-thread` extends `classic-container`, not `classic-creative-work`.
 It has `created-at` (from `classic-resource`) but not `date-created`
-(from `creative-work`). The thread summary lens references
+(from `creative-work`).
+
+**Decision:** The thread summary lens references
 `created-at` accordingly. This surfaced a real schema distinction
 that the lens system handles correctly: the property just gets
 skipped if it doesn't exist on the class.
 
-### 4. Post bodies are plain strings, not Lexis subtrees
+**Alternatives:** Not recorded in the original.
 
-Unlike the blog demo (which stores Lexis subtrees and uses
+### CCOMPOSER-DRAFT-forumrenderdemo-D4 — Post bodies are plain strings, not Lexis subtrees
+
+**Status:** Proposed
+**Context:** Not recorded in the original.
+
+**Decision:** Unlike the blog demo (which stores Lexis subtrees and uses
 `:display :html`), forum post bodies are stored as plain strings
 (including markdown-formatted blockquotes for quoted posts). The
 lens omits `:display` on the body property, so the cascade hits
@@ -126,19 +165,34 @@ lens omits `:display` on the body property, so the cascade hits
 in a paragraph. This is correct for the demo -- forum posts are
 typically short prose, not structured documents.
 
-### 5. Stickers render as a plain list
+**Alternatives:** See the Decision.
 
-The post lens includes `post-stickers` with `:display :list`. The
+### CCOMPOSER-DRAFT-forumrenderdemo-D5 — Stickers render as a plain list
+
+**Status:** Proposed
+**Context:** Not recorded in the original.
+
+**Decision:** The post lens includes `post-stickers` with `:display :list`. The
 sticker strings ("heart", "star") render as bare list items. A
 production forum would map these to emoji or SVG glyphs via a
 capability extension -- the data is there, the rendering just needs
 a fancier handler.
+
+**Alternatives:** See the Decision.
+
+
+## Implementation
+
+See [What Was Required](#what-was-required) and
+[Blog Demo API Update](#blog-demo-api-update).
 
 
 ## Blog Demo API Update
 
 The blog demo's API references were updated to match the General
 Model refactor:
+
+Table: Old and new names of the blog demo's API references.
 
 | Old | New |
 |-----|-----|
@@ -178,15 +232,22 @@ The forum index page shows:
 
 ## Files
 
-| Action | File | Description |
+Table: Files created or modified by this work.
+
+| File | Action | Description |
 |---|---|---|
-| Created | `examples/forum-demo.lisp` | Self-contained forum demo (~250 lines) |
-| Created | `examples/static/forum.css` | Reference stylesheet (~85 lines) |
-| Created | `doc/demos/forum-thread-output.html` | Rendered thread page |
-| Created | `doc/demos/forum-index-output.html` | Rendered index page |
-| Modified | `examples/blog-demo.lisp` | Updated API references for General Model refactor |
-| Modified | `README.md` | Added demos table, forum demo references, updated structure |
-| Created | this file | |
+| `examples/forum-demo.lisp` | Created | Self-contained forum demo (~250 lines) |
+| `examples/static/forum.css` | Created | Reference stylesheet (~85 lines) |
+| `doc/demos/forum-thread-output.html` | Created | Rendered thread page |
+| `doc/demos/forum-index-output.html` | Created | Rendered index page |
+| `examples/blog-demo.lisp` | Modified | Updated API references for General Model refactor |
+| `README.md` | Modified | Added demos table, forum demo references, updated structure |
+| this file | Created | |
+
+
+## Outstanding Work
+
+Not recorded in the original.
 
 
 ## Addendum: Post Ordering and Index Stability
@@ -259,12 +320,14 @@ Each declares its intent via the generic; the composer respects it.
 
 ### Files changed in this addendum
 
-| Action | File | Description |
+Table: Files changed in this addendum.
+
+| File | Action | Description |
 |---|---|---|
-| Modified | `examples/forum-demo.lisp` | Reordered setup; added `container-reading-order` method for `forum-thread` |
-| Modified | `src/protocol.lisp` | Added `container-reading-order` generic with `:as-stored` default |
-| Modified | `src/defaults.lisp` | `compose-container-entries` uses `container-reading-order` |
-| Modified | `src/packages.lisp` | Exported `container-reading-order` |
+| `examples/forum-demo.lisp` | Modified | Reordered setup; added `container-reading-order` method for `forum-thread` |
+| `src/protocol.lisp` | Modified | Added `container-reading-order` generic with `:as-stored` default |
+| `src/defaults.lisp` | Modified | `compose-container-entries` uses `container-reading-order` |
+| `src/packages.lisp` | Modified | Exported `container-reading-order` |
 
 
 ### Bug C: Blockquote not separated from reply text
@@ -328,7 +391,9 @@ traversal.
 
 ### Files changed in this addendum
 
-| Action | File | Description |
+Table: Files changed in this addendum.
+
+| File | Action | Description |
 |---|---|---|
-| Modified | `src/lens.lisp` | Enhanced `render-markdown-stub` with paragraph splitting and blockquote detection (~75 new lines) |
-| Modified | `examples/forum-demo.lisp` | Author lens uses `:display :text`; added `resolve-authors-to-nicknames` helper |
+| `src/lens.lisp` | Modified | Enhanced `render-markdown-stub` with paragraph splitting and blockquote detection (~75 new lines) |
+| `examples/forum-demo.lisp` | Modified | Author lens uses `:display :text`; added `resolve-authors-to-nicknames` helper |
