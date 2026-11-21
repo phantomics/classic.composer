@@ -19,7 +19,6 @@ decisions:
   - CCOMPOSER-DRAFT-lexismarkdown-D2
   - CCOMPOSER-DRAFT-lexismarkdown-D3
   - CCOMPOSER-DRAFT-lexismarkdown-D4
-  - CCOMPOSER-DRAFT-lexismarkdown-D5
   - CCOMPOSER-DRAFT-lexismarkdown-D6
 ---
 
@@ -48,7 +47,9 @@ was a block quote, added for the forum demo's quoted posts. Headings,
 lists, code blocks and links were not recognised.
 
 Lexis now has a Markdown reader, planned in
-[LEXIS-0002](../../lexis/doc/Plan.RenderMarkdown.md) and described in
+[LEXIS-0002](../../lexis/doc/Plan.RenderMarkdown.md), built as
+recorded in [LEXIS-DRAFT-markdown](../../lexis/doc/Log.RenderMarkdown.md),
+and described in
 [LEXIS-DRAFT-markdownref](../../lexis/doc/Ref.Markdown.md). The last
 step of that plan's roadmap hands the reader over to the composer:
 replace the stub, and supply a wiki link resolver where wiki links
@@ -113,10 +114,11 @@ blocks into its own tree. `render-slot-via-display-mode` gained
 and `apply-lens` supplies them.
 **Alternatives:** Theme configuration was not adopted: a theme is not
 the place to switch on `:raw-html :passthrough`, which only trusted
-content may use. A dynamic variable was not adopted, since its value
-would hold for every entity on a page rather than for each content
-type. Options in the lens spec were not adopted for the same reason
-as theme configuration.
+content may use. A dynamic variable was not adopted: a generic
+dispatches on the content class, as the composer's other hooks do, so
+an application specializes it once for its content types, without
+binding anything around each composition. Options in the lens spec
+were not adopted for the same reason as theme configuration.
 
 ### CCOMPOSER-DRAFT-lexismarkdown-D3 — Multi-block bodies are spliced, not wrapped
 
@@ -151,26 +153,11 @@ in a single paragraph whatever its format.
 **Decision:** The fallback reads a string body as Markdown, with the
 same options, when the body slot is declared `:format :markdown`. A
 string body in any other format keeps the single paragraph.
-**Alternatives:** Leaving the fallback as it was would render
-Markdown bodies differently with and without a lens.
-
-### CCOMPOSER-DRAFT-lexismarkdown-D5 — Wiki link resolvers build their forms from LEXIS symbols
-
-**Status:** Proposed
-**Context:** The reader's passes run over the form a wiki link
-resolver returns. They recognise tags and the `@` attribute marker
-by `eq` against the `lexis` package's symbols
-(`LEXIS:mod/markdown/passes.lisp:form-parts@31dd926`,
-`LEXIS:mod/markdown/passes.lisp:filter-uris@31dd926`). A form built
-from another package's symbols would have its attribute list taken
-for a child.
-**Decision:** A resolver builds `lexis::web-link`, `lexis::@` and
-similar forms, as the reader's reference does in its example. The
-generic's documentation says so. The composer is unaffected by the
-mixture: it compares tags by symbol name.
-**Alternatives:** Having the composer re-intern the resolver's form
-in the `lexis` package was not adopted, since the reader's convention
-is already documented and a resolver can follow it.
+**Alternatives:** Reading every string body as Markdown, whatever its
+`:format`, was not adopted: a body declared in another format would
+be misread, its text taken for Markdown syntax. Leaving the fallback
+as it was would render Markdown bodies differently with and without a
+lens.
 
 ### CCOMPOSER-DRAFT-lexismarkdown-D6 — The wiki demo resolves wiki links during composition
 
@@ -189,7 +176,10 @@ composition context carries no wiki imprint, so the resolver finds
 pages through the demo's `*wiki*` global.
 **Alternatives:** Keeping the conversion would keep the write.
 Resolving wiki links in a pass of the composer's own would duplicate
-the reader's resolver option.
+the reader's resolver option. A resolver returning a `classic-link`
+to the page's URI, as LEXIS-D10 anticipates, was not adopted: the demo
+writes browsable HTML, and a `classic:` URI does not name a page a
+browser can open.
 
 
 ## Implementation
@@ -237,6 +227,17 @@ as its first argument and reads Markdown string bodies
 The body conversion is replaced by `resolve-wiki-link` and a
 `markdown-options` method on `wiki-page`
 (CCOMPOSER-DRAFT-lexismarkdown-D6).
+
+The resolver builds its forms from the `lexis` package's symbols
+(`lexis::web-link`, `lexis::@`), as the reader's reference does in its
+example. It must: the reader's passes run over the resolver's form,
+and they recognise tags and the `@` attribute marker by `eq` against
+those symbols (`LEXIS:mod/markdown/passes.lisp:form-parts@31dd926`,
+`LEXIS:mod/markdown/passes.lisp:filter-uris@31dd926`). A form built
+from another package's symbols would have its attribute list taken
+for a child. The documentation of `markdown-options` states the
+constraint. The composer is unaffected by the mixture of packages,
+since it compares tags by symbol name.
 
 ### Tests
 
