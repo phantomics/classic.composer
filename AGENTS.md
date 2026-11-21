@@ -27,7 +27,8 @@ Run `compass check` before finishing any change to the documentation, and fix
 the errors it reports in the files you changed. `compass help` lists the other
 commands (`show`, `outline`, `refs`, `index`, `next`, `rules`, and others).
 Numbers are assigned with `compass assign` only when a person asks for it; never
-edit the ledger, `doc/REGISTRY.sexp`, by hand.
+edit the ledger, `doc/REGISTRY.sexp`, by hand. After changing documents, run
+`compass index` to regenerate `doc/INDEX.md`; never edit it by hand.
 
 Project-specific facts the skills cannot infer:
 

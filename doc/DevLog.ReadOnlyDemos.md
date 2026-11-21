@@ -29,7 +29,7 @@ text, and the wiki's links pointed at `/wiki/<anchor>` paths that
 kept their spaces and named pages the demo never wrote. The composer
 had no notion of an entity's page.
 
-The Markdown reader work (`DevLog.MarkdownReader.md`) removed a fifth
+The Markdown reader work ([Log.LexisMarkdown.md](Log.LexisMarkdown.md)) removed a fifth
 write, the wiki demo's conversion of page bodies to Lexis, and listed
 these as outstanding.
 
@@ -266,5 +266,5 @@ Each demo carries its own `slugify`, keeping it self-contained.
   placeholders and lock notices are not yet shown. Computed
   properties now make each of these a method and a lens entry.
 - **Heading depth** (LEXIS-O3) and the **wiki infobox as Lexis**
-  remain as `DevLog.MarkdownReader.md` describes them. The infobox
+  remain as [Log.LexisMarkdown.md](Log.LexisMarkdown.md) describes them. The infobox
   stays a passthrough because the Lexis HTML renderer drops classes.

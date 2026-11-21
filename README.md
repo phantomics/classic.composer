@@ -437,7 +437,9 @@ doc/
   DevLog.FullRenderDemo.md  -- full render pipeline development log
   DevLog.ForumRenderDemo.md -- forum demo development log
   DevLog.WikiRenderDemo.md  -- wiki demo development log
-  DevLog.MarkdownReader.md  -- Markdown reader adoption log
+  Log.LexisMarkdown.md      -- Lexis Markdown reader integration log
+  INDEX.md                  -- Compass document index (generated)
+  REGISTRY.sexp             -- Compass allocation ledger
   DevLog.ReadOnlyDemos.md   -- extension generics and page links log
   demos/
     blog/    -- blog demo: index.html + a page per post
