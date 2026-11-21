@@ -10,6 +10,7 @@ Table: Documents in the CCOMPOSER namespace.
 
 | ID | Title | Genre | Scope | Status | Component |
 |---|---|---|---|---|---|
+| [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
 | [CCOMPOSER-DRAFT-composer](Arch.Composer.md) | The Classic Composer Architecture | Architecture | project | Draft | — |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
 
@@ -17,6 +18,10 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 
 | ID | Kind | Title | Status | Host |
 |---|---|---|---|---|
+| [CCOMPOSER-DRAFT-compass-migration-D1](Log.CompassMigration.md#ccomposer-draft-compass-migration-d1--this-log-is-the-migrations-record-with-no-plan-of-its-own) | Decision | This Log is the migration's record, with no Plan of its own | Proposed | CCOMPOSER-DRAFT-compass-migration |
+| [CCOMPOSER-DRAFT-compass-migration-D2](Log.CompassMigration.md#ccomposer-draft-compass-migration-d2--a-document-replaced-by-a-native-one-is-deleted-not-migrated) | Decision | A document replaced by a native one is deleted, not migrated | Proposed | CCOMPOSER-DRAFT-compass-migration |
+| [CCOMPOSER-DRAFT-compass-migration-D3](Log.CompassMigration.md#ccomposer-draft-compass-migration-d3--the-architecture-document-becomes-an-architecture-now-and-a-ref-is-split-from-it-afterwards) | Decision | The architecture document becomes an Architecture now and a Ref is split from it afterwards | Proposed | CCOMPOSER-DRAFT-compass-migration |
+| [CCOMPOSER-DRAFT-compass-migration-D4](Log.CompassMigration.md#ccomposer-draft-compass-migration-d4--decision-records-are-not-extracted-from-prose-during-a-reshape) | Decision | Decision records are not extracted from prose during a reshape | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-lexismarkdown-D1](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d1--the-composer-depends-on-lexismarkdown-directly) | Decision | The composer depends on lexis.markdown directly | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D2](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d2--reader-options-come-from-a-markdown-options-generic) | Decision | Reader options come from a markdown-options generic | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |

@@ -38,11 +38,12 @@ Project-specific facts the skills cannot infer:
   `~/src/lisp/compass`; otherwise `~/src/lisp/compass/bin/compass`
 - Federated repositories: CLASSIC (`../classic`) and LEXIS (`../lexis`), as
   listed in `compass.sexp`
-- Migration: the documents in `doc/` written before Compass
-  (`Arch.Composer.md`, formerly `Composer.md`, which is being migrated, and
-  the `DevLog.*.md` files) have no front-matter yet and remain as they are,
-  to be migrated one at a time with `compass-migrate`; until then, run
-  checks with `--skip-unmarked`. `README.md` is not a Compass document.
+- Migration: recorded in `doc/Log.CompassMigration.md`
+  (CCOMPOSER-DRAFT-compass-migration), which takes an `## Update` section
+  for each document migrated. The documents still without front-matter are
+  the five `DevLog.*.md` files in `doc/`; they remain as they are, to be
+  migrated one at a time with `compass-migrate`, and until then checks run
+  with `--skip-unmarked`. `README.md` is not a Compass document.
 
 Essentials (full rules in Compass.md): every document opens with a §7 YAML
 front-matter block; genre and status use the controlled vocabularies; decision
