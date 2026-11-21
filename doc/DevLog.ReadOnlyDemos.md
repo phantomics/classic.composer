@@ -18,7 +18,7 @@ composer offered no way to compute the values instead:
 
 | Demo | Write | Why |
 |---|---|---|
-| Forum | Replaced every post's `author` (a person URI) with the member's nickname, and persisted it | A lens could not follow the reverse relation from a person to the forum account that names it (Bug D of `DevLog.ForumRenderDemo.md`) |
+| Forum | Replaced every post's `author` (a person URI) with the member's nickname, and persisted it | A lens could not follow the reverse relation from a person to the forum account that names it (Bug D of `Log.ForumRenderDemo.md`) |
 | Forum | Reordered the forum container's `contains` list, pinned threads first, and persisted it | The container walk read `contains` as stored, and `container-reading-order` could only keep or reverse it |
 | Wiki | Replaced the anchors in typed slots (`computer-designer`, `computer-cpu`, `cpu-designer`) with page URIs, and persisted the pages | A sublens could only retrieve a URI, and the slots name pages by anchor |
 | Wiki | Sorted the wiki container's `contains` alphabetically, and persisted it | The same limit as the forum's order |

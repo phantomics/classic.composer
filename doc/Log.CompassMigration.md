@@ -253,7 +253,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
   recorded in an `## Update` section:
   - `doc/DevLog.ThemeResolution.md` (now `doc/Log.ThemeResolution.md`)
   - `doc/DevLog.FullRenderDemo.md` (now `doc/Log.FullRenderDemo.md`)
-  - `doc/DevLog.ForumRenderDemo.md`
+  - `doc/DevLog.ForumRenderDemo.md` (now `doc/Log.ForumRenderDemo.md`)
   - `doc/DevLog.WikiRenderDemo.md`
   - `doc/DevLog.ReadOnlyDemos.md`
 - **Acceptance and numbering.** Every document and record keeps its
@@ -310,7 +310,7 @@ edit, committed with this Update:
 - a Roadmap ordered by those questions;
 - the forum claim reconciled with the forum demo: a thread's posts are
   feature content, which a thread page presents as an aggregate, as
-  [DevLog.ForumRenderDemo.md](DevLog.ForumRenderDemo.md) records.
+  [DevLog.ForumRenderDemo.md](Log.ForumRenderDemo.md) records.
 
 `compass check --skip-unmarked --federation` reported 0 errors and 0
 warnings over the corpus, with every reference verified, and
@@ -414,8 +414,9 @@ whole as the Log
     CLASSIC-0010 and CLASSIC-0011.
 
 Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md` (now
-`doc/Log.FullRenderDemo.md`), `doc/DevLog.ForumRenderDemo.md`,
-`doc/DevLog.WikiRenderDemo.md` and `doc/DevLog.ReadOnlyDemos.md`.
+`doc/Log.FullRenderDemo.md`), `doc/DevLog.ForumRenderDemo.md` (now
+`doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` and
+`doc/DevLog.ReadOnlyDemos.md`.
 
 ## Update 2026-11-21 — doc/DevLog.FullRenderDemo.md
 
@@ -489,5 +490,6 @@ migrated whole as the Log
     `src/defaults.lisp:container-entries@3eba656`, since `7fa52ba`.
   - "Lexis spec Section 5.4" names LEXIS-0001 without a link.
 
-Three documents remain unmarked: `doc/DevLog.ForumRenderDemo.md`,
-`doc/DevLog.WikiRenderDemo.md` and `doc/DevLog.ReadOnlyDemos.md`.
+Three documents remain unmarked: `doc/DevLog.ForumRenderDemo.md` (now
+`doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` and
+`doc/DevLog.ReadOnlyDemos.md`.
