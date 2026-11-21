@@ -1,5 +1,5 @@
 ---
-id:            CCOMPOSER-DRAFT-composerref
+id:            CCOMPOSER-0002
 title:         Classic Composer Reference
 genre:         Ref
 scope:         project

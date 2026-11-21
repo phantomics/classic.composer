@@ -271,7 +271,7 @@ split into a Ref, and the Architecture was revised to link to it.
 
 ### The Ref (`46d0707`)
 
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md) was written with
+[CCOMPOSER-0002](Ref.Composer.md) was written with
 `compass-author`, with `api-version` "0.2.0" and
 `provenance.migrated-from` naming the same original as the
 Architecture, `doc/Composer.md@7fa52ba`. It carries the original's

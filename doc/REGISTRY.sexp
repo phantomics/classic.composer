@@ -14,3 +14,4 @@
 (:id "CCOMPOSER-O4" :kind :open-question :draft "CCOMPOSER-DRAFT-composer-O4" :host "CCOMPOSER-0001" :date "2026-11-21" :by "Andrew Sengul")
 (:id "CCOMPOSER-O5" :kind :open-question :draft "CCOMPOSER-DRAFT-composer-O5" :host "CCOMPOSER-0001" :date "2026-11-21" :by "Andrew Sengul")
 (:id "CCOMPOSER-O6" :kind :open-question :draft "CCOMPOSER-DRAFT-composer-O6" :host "CCOMPOSER-0001" :date "2026-11-21" :by "Andrew Sengul")
+(:id "CCOMPOSER-0002" :kind :document :draft "CCOMPOSER-DRAFT-composerref" :path "doc/Ref.Composer.md" :date "2026-11-21" :by "Andrew Sengul")

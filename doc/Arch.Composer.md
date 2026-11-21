@@ -15,7 +15,7 @@ provenance:
   original-assistant: claude-opus-4-6
   migrated-from:      doc/Composer.md@7fa52ba
 relates-to:
-  - CCOMPOSER-DRAFT-composerref
+  - CCOMPOSER-0002
   - CCOMPOSER-DRAFT-lexismarkdown
   - CCOMPOSER-DRAFT-compass-migration
   - CLASSIC-0010
@@ -56,7 +56,7 @@ composes pages with, the decisions that shape it, and the parts of
 the design not yet built: the capability extensions, complex
 templates, the operative tier and its hand-off to Seed, and
 distribution. The parts that run are described in
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md), which this record
+[CCOMPOSER-0002](Ref.Composer.md), which this record
 links to rather than repeats.
 
 ## Canonical Terms
@@ -317,7 +317,7 @@ Table: What each tier reads from and writes to Classic, and where its content co
 
 Each tier is a generic function with a default method; the defaults
 are described in
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#tier-generics).
+[CCOMPOSER-0002](Ref.Composer.md#tier-generics).
 
 
 ## Theme Integration
@@ -331,7 +331,7 @@ slot-fills, lenses and assets. A child theme extends its parent
 through slot-fills and lenses without replacing its templates. The
 resolution, the tier template cascade, slot-fills, configuration,
 assets and capability validation are described in
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#theme-integration), and
+[CCOMPOSER-0002](Ref.Composer.md#theme-integration), and
 the ontology in [CLASSIC-0011](../../classic/doc/theme/Ref.Theme.md).
 
 
@@ -346,7 +346,7 @@ choice, then the slot's declared format, then its persistence. Lenses
 are data in themes; what is not stored is computed through the
 extension generics below. The modes, Markdown bodies, sublenses,
 property options and aggregate lenses are described in
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#lens-evaluation).
+[CCOMPOSER-0002](Ref.Composer.md#lens-evaluation).
 
 Without lenses, the feature tier falls back to direct body extraction.
 
@@ -360,7 +360,7 @@ default that keeps the composer's base behavior. They supply computed
 properties for lenses, resolve references that are not URIs, give the
 URLs of entities' pages, order containers' entries, and set the
 Markdown reader's options. Each is described in
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#extension-generics).
+[CCOMPOSER-0002](Ref.Composer.md#extension-generics).
 
 An order that is a rule of the content type, such as a forum listing
 pinned threads first, is a method on the container class. An order
@@ -434,7 +434,7 @@ the collect phase gathers the metadata they need before any of them
 runs (CCOMPOSER-D6). Anchors keep query logic in CL
 where it belongs while keeping the template declarative. All three
 are described in
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#templates-anchors-and-collectors).
+[CCOMPOSER-0002](Ref.Composer.md#templates-anchors-and-collectors).
 
 ### Complex Templates
 
@@ -491,7 +491,7 @@ and distribution to a CDN, a file cache, a search index and
 notifications.
 
 The composer performs the stages through the composed Lexis tree, as
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#composition-pipeline)
+[CCOMPOSER-0002](Ref.Composer.md#composition-pipeline)
 describes. Renderers are separate systems, of which Lexis's HTML
 renderer exists; distribution is not built
 (CCOMPOSER-O4).
@@ -549,7 +549,7 @@ Schema references throughout the composer use the `classic.schema`
 package nickname (CCOMPOSER-D5). A future
 `classic.composer.dist.beta` would load the same composer source
 against a beta schema. The repository's files are listed in
-[CCOMPOSER-DRAFT-composerref](Ref.Composer.md#project-structure).
+[CCOMPOSER-0002](Ref.Composer.md#project-structure).
 
 
 ## Open Questions
