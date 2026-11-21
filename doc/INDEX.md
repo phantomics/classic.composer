@@ -10,6 +10,7 @@ Table: Documents in the CCOMPOSER namespace.
 
 | ID | Title | Genre | Scope | Status | Component |
 |---|---|---|---|---|---|
+| [CCOMPOSER-DRAFT-composer](Arch.Composer.md) | The Classic Composer Architecture | Architecture | project | Draft | — |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.

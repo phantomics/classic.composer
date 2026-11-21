@@ -1,6 +1,24 @@
-# Classic Composer Architecture
+---
+id:            CCOMPOSER-DRAFT-composer
+title:         The Classic Composer Architecture
+genre:         Architecture
+scope:         project
+project:       Classic Composer
+language:      en
+status:        Draft
+provenance:
+  assistant:          claude-opus-5-5
+  original-assistant: claude-opus-4-6
+  migrated-from:      doc/Composer.md@7fa52ba
+---
 
-## Overview
+# The Classic Composer Architecture
+
+## Canonical Terms
+
+See [The Five-Tier Content Model](#the-five-tier-content-model).
+
+## Thesis
 
 The Classic Composer is an accessory system to Classic's core. It
 assembles content for display by querying Classic's persistence layer,
@@ -23,6 +41,15 @@ The composer depends on the foundation (for protocol generics) and the
 schema (for entity classes and theme resolution). It uses the
 `classic.schema` package nickname so the same source works against any
 schema that declares the nickname.
+
+## Influences
+
+See [Lens-Driven Feature Composition](#lens-driven-feature-composition)
+and [Collect Phase](#collect-phase).
+
+## Settled Decisions
+
+Not recorded in the original.
 
 
 ## The Five-Tier Content Model
@@ -83,6 +110,8 @@ provides the interface through which user actions flow back into Classic's
 persistence and workflow protocols.
 
 ## Tier Relationships
+
+Table: What each tier reads from and writes to Classic, and where its content comes from.
 
 | Tier | Reads from Classic | Writes to Classic | Content Source |
 |------|-------------------|-------------------|----------------|
@@ -167,6 +196,8 @@ For each property in a lens:
 
 ### Display Modes
 
+Table: The display modes, what each produces, and its use case.
+
 | Mode | Produces | Use case |
 |------|----------|----------|
 | `:text` | Text node or `(paragraph ...)` | Plain string slots |
@@ -222,6 +253,8 @@ as the name of a missing wiki page, is shown as text.
 
 ### Property Options
 
+Table: The lens property options and their effects.
+
 | Option | Effect |
 |--------|--------|
 | `:link :self` | Link the rendered value to the page of the entity it belongs to (`entity-href`); for inline values such as titles |
@@ -252,6 +285,8 @@ generic functions on their content classes. The composer is
 read-only, so these are read paths: a method computes what a page
 shows and must not change the publication. Each default keeps the
 composer's base behavior.
+
+Table: The extension generics, what each returns, and its default.
 
 | Generic | Returns | Default |
 |---------|---------|---------|
@@ -318,6 +353,16 @@ classic.composer.adjunct.threaded         -- threaded comment display
 classic.composer.operative.forms          -- standard form controls
 classic.composer.operative.search         -- search dialog placement
 ```
+
+Description: A list of ASDF systems. First the base system,
+`classic.composer`, with the base protocols and defaults. Then seven
+capability extensions, each named for its tier: `frame.hero` for hero
+image and banner support, `frame.sidebar` for a configurable sidebar,
+`aggregate.tabular` for sortable and filterable tables,
+`aggregate.feed` for a timeline or feed-style listing,
+`adjunct.threaded` for threaded comment display, `operative.forms`
+for standard form controls, and `operative.search` for search dialog
+placement, each prefixed `classic.composer.`.
 
 Content that doesn't match any loaded capability passes through the
 base rendering unchanged.
@@ -402,6 +447,18 @@ Renderer(s): Lexis -> HTML, PDF, terminal, Markdown, JSON-LD
 Distribution: CDN, file cache, search index, notifications
 ```
 
+Description: A vertical flow of ten stages, each feeding the next:
+theme resolution (chain, capabilities, overrides, lenses,
+slot-fills); capability validation with config and slot-fill
+binding; composing the tiers (the frame from the theme template, the
+feature from a lens or the body); binding tier outputs to slot names;
+template slot resolution, a single O(n) pass; the collect phase, a
+single O(n) pass gathering metadata; anchor evaluation, a single O(n)
+pass in document order; the composed Lexis document tree; the
+renderers, from Lexis to HTML, PDF, terminal, Markdown and JSON-LD;
+and distribution to a CDN, a file cache, a search index and
+notifications.
+
 The composer and renderers are stateless services that scale
 independently from Classic's logic layer and persistence backend.
 
@@ -438,6 +495,24 @@ classic.composer.dist.alpha        -- distribution shim for end users
         +-- lexis.markdown         -- Markdown reader for :markdown mode
 ```
 
+Description: A dependency tree. `classic.composer.dist.alpha`, the
+distribution shim for end users, depends on `classic.dist.alpha`
+(foundation, schema and engine), `classic.models.common` (the blog,
+forum and wiki content types) and `classic.composer` (this system).
+`classic.composer` depends on `classic` (the foundation: protocols
+and MOP), `classic.schema.alpha` (the schema: classes and theme
+resolution), `closer-mop` (MOP access for the lens cascade) and
+`lexis.markdown` (the Markdown reader for the `:markdown` mode).
+
 Schema references throughout the composer use the `classic.schema`
 package nickname. A future `classic.composer.dist.beta` would load
 the same composer source against a beta schema.
+
+
+## Open Questions
+
+Not recorded in the original.
+
+## Roadmap
+
+Not recorded in the original.
