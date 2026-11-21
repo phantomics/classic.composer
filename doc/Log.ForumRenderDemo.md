@@ -1,5 +1,5 @@
 ---
-id:            CCOMPOSER-DRAFT-forumrenderdemo
+id:            CCOMPOSER-0005
 title:         Forum Render Demo Development Log
 genre:         Log
 scope:         component
@@ -16,11 +16,11 @@ provenance:
   original-assistant: claude-opus-4-6
   migrated-from:      doc/DevLog.ForumRenderDemo.md@ad3fe3c
 decisions:
-  - CCOMPOSER-DRAFT-forumrenderdemo-D1
-  - CCOMPOSER-DRAFT-forumrenderdemo-D2
-  - CCOMPOSER-DRAFT-forumrenderdemo-D3
-  - CCOMPOSER-DRAFT-forumrenderdemo-D4
-  - CCOMPOSER-DRAFT-forumrenderdemo-D5
+  - CCOMPOSER-D28
+  - CCOMPOSER-D29
+  - CCOMPOSER-D30
+  - CCOMPOSER-D31
+  - CCOMPOSER-D32
 ---
 
 # Forum Render Demo: Development Log
@@ -109,7 +109,7 @@ visually distinguish the two content profiles.
 
 ## Design Decisions
 
-### CCOMPOSER-DRAFT-forumrenderdemo-D1 — Both pages are aggregate views
+### CCOMPOSER-D28 — Both pages are aggregate views
 
 **Status:** Implemented
 **Context:** See [Problem](#problem).
@@ -129,7 +129,7 @@ No forum-specific `defmethod` was needed.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-forumrenderdemo-D2 — Thread ordering uses internal API
+### CCOMPOSER-D29 — Thread ordering uses internal API
 
 **Status:** Superseded
 **Context:** `ordered-threads` (which sorts pinned threads first) is not exported
@@ -142,7 +142,7 @@ the function or provide a higher-level routing API.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-forumrenderdemo-D3 — Forum-thread uses `created-at` not `date-created`
+### CCOMPOSER-D30 — Forum-thread uses `created-at` not `date-created`
 
 **Status:** Implemented
 **Context:** `forum-thread` extends `classic-container`, not `classic-creative-work`.
@@ -156,7 +156,7 @@ skipped if it doesn't exist on the class.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-forumrenderdemo-D4 — Post bodies are plain strings, not Lexis subtrees
+### CCOMPOSER-D31 — Post bodies are plain strings, not Lexis subtrees
 
 **Status:** Superseded
 **Context:** Not recorded in the original.
@@ -171,7 +171,7 @@ typically short prose, not structured documents.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-forumrenderdemo-D5 — Stickers render as a plain list
+### CCOMPOSER-D32 — Stickers render as a plain list
 
 **Status:** Implemented
 **Context:** Not recorded in the original.

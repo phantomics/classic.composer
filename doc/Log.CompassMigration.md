@@ -12,7 +12,7 @@ relates-to:
   - CCOMPOSER-0001
   - CCOMPOSER-0003
   - CCOMPOSER-0004
-  - CCOMPOSER-DRAFT-forumrenderdemo
+  - CCOMPOSER-0005
   - CCOMPOSER-DRAFT-lexismarkdown
   - CLASSIC-0034
   - CLASSIC-0036
@@ -313,7 +313,7 @@ edit, committed with this Update:
 - a Roadmap ordered by those questions;
 - the forum claim reconciled with the forum demo: a thread's posts are
   feature content, which a thread page presents as an aggregate, as
-  [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md) records.
+  [CCOMPOSER-0005](Log.ForumRenderDemo.md) records.
 
 `compass check --skip-unmarked --federation` reported 0 errors and 0
 warnings over the corpus, with every reference verified, and
@@ -500,7 +500,7 @@ Three documents remain unmarked: `doc/DevLog.ForumRenderDemo.md` (now
 ## Update 2026-11-21 — doc/DevLog.ForumRenderDemo.md
 
 The fourth migration: the log of the forum render demo, migrated whole
-as the Log [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md).
+as the Log [CCOMPOSER-0005](Log.ForumRenderDemo.md).
 
 - **Original:** `doc/DevLog.ForumRenderDemo.md`, at `migrated-from`
   revision `ad3fe3c`, the only commit to touch it, which is also the
@@ -515,7 +515,7 @@ as the Log [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md).
   unmigrated `doc/DevLog.ReadOnlyDemos.md` names it by file name, and
   that name was updated too.
 - **Reshape** (`4c8012a`), form only:
-  - front-matter as CCOMPOSER-DRAFT-forumrenderdemo: genre `Log`, scope
+  - front-matter as CCOMPOSER-0005: genre `Log`, scope
     `component`, component `demo`, status `Draft`, and `provenance`
     naming the original's assistant, claude-opus-4-6;
   - the five numbered decisions, written as prose without field
@@ -523,13 +523,13 @@ as the Log [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md).
     titles. Each record's sentences were divided among its fields in
     their original order: the opening sentences that state the
     situation became the Context, for
-    CCOMPOSER-DRAFT-forumrenderdemo-D2 and
-    CCOMPOSER-DRAFT-forumrenderdemo-D3; CCOMPOSER-DRAFT-forumrenderdemo-D1's
+    CCOMPOSER-D29 and
+    CCOMPOSER-D30; CCOMPOSER-D28's
     Context points to the Problem's question; and the Context of the
     other two reads "Not recorded in the original." The Alternatives of
-    CCOMPOSER-DRAFT-forumrenderdemo-D2,
-    CCOMPOSER-DRAFT-forumrenderdemo-D4 and
-    CCOMPOSER-DRAFT-forumrenderdemo-D5 point to the Decision, which
+    CCOMPOSER-D29,
+    CCOMPOSER-D31 and
+    CCOMPOSER-D32 point to the Decision, which
     names the other option; the other two read "Not recorded in the
     original.";
   - an Implementation section pointing to the original's "What Was
@@ -558,8 +558,8 @@ as the Log [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md).
     describes, by a method that orders the entries for display
     (`examples/forum-demo.lisp:container-entries@4c8012a`). The demo no
     longer uses `ordered-threads`, the subject of
-    CCOMPOSER-DRAFT-forumrenderdemo-D2.
-  - The Markdown stub of CCOMPOSER-DRAFT-forumrenderdemo-D4 and Bug C
+    CCOMPOSER-D29.
+  - The Markdown stub of CCOMPOSER-D31 and Bug C
     was replaced by the Lexis reader
     (`src/lens.lisp:render-markdown@4c8012a`) in `ac700d0`.
   - "No production code changes to the composer" describes the demo as
