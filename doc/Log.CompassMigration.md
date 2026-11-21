@@ -10,6 +10,9 @@ provenance:
   assistant:   claude-opus-5-5
 relates-to:
   - CCOMPOSER-0001
+  - CCOMPOSER-0003
+  - CCOMPOSER-0004
+  - CCOMPOSER-DRAFT-forumrenderdemo
   - CCOMPOSER-DRAFT-lexismarkdown
   - CLASSIC-0034
   - CLASSIC-0036
@@ -310,7 +313,7 @@ edit, committed with this Update:
 - a Roadmap ordered by those questions;
 - the forum claim reconciled with the forum demo: a thread's posts are
   feature content, which a thread page presents as an aggregate, as
-  [DevLog.ForumRenderDemo.md](Log.ForumRenderDemo.md) records.
+  [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md) records.
 
 `compass check --skip-unmarked --federation` reported 0 errors and 0
 warnings over the corpus, with every reference verified, and
@@ -492,4 +495,84 @@ migrated whole as the Log
 
 Three documents remain unmarked: `doc/DevLog.ForumRenderDemo.md` (now
 `doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` and
+`doc/DevLog.ReadOnlyDemos.md`.
+
+## Update 2026-11-21 — doc/DevLog.ForumRenderDemo.md
+
+The fourth migration: the log of the forum render demo, migrated whole
+as the Log [CCOMPOSER-DRAFT-forumrenderdemo](Log.ForumRenderDemo.md).
+
+- **Original:** `doc/DevLog.ForumRenderDemo.md`, at `migrated-from`
+  revision `ad3fe3c`, the only commit to touch it, which is also the
+  commit of the work it records, including the fixes its addendum
+  describes.
+- **Move** (`48eb93d`): `git mv` to `doc/Log.ForumRenderDemo.md`, with
+  the `README.md` structure listing and the `AGENTS.md` migration line
+  updated. The link to it in this Log's Update on the Architecture's
+  revision was pointed at the new path, and after the reshape given
+  the document's identifier as its text; the three mentions in this
+  Log that record history were given the new path after them. The
+  unmigrated `doc/DevLog.ReadOnlyDemos.md` names it by file name, and
+  that name was updated too.
+- **Reshape** (`4c8012a`), form only:
+  - front-matter as CCOMPOSER-DRAFT-forumrenderdemo: genre `Log`, scope
+    `component`, component `demo`, status `Draft`, and `provenance`
+    naming the original's assistant, claude-opus-4-6;
+  - the five numbered decisions, written as prose without field
+    labels, as records `-D1` to `-D5`, keeping their numbers and
+    titles. Each record's sentences were divided among its fields in
+    their original order: the opening sentences that state the
+    situation became the Context, for
+    CCOMPOSER-DRAFT-forumrenderdemo-D2 and
+    CCOMPOSER-DRAFT-forumrenderdemo-D3; CCOMPOSER-DRAFT-forumrenderdemo-D1's
+    Context points to the Problem's question; and the Context of the
+    other two reads "Not recorded in the original." The Alternatives of
+    CCOMPOSER-DRAFT-forumrenderdemo-D2,
+    CCOMPOSER-DRAFT-forumrenderdemo-D4 and
+    CCOMPOSER-DRAFT-forumrenderdemo-D5 point to the Decision, which
+    names the other option; the other two read "Not recorded in the
+    original.";
+  - an Implementation section pointing to the original's "What Was
+    Required" and "Blog Demo API Update", which stay where they were,
+    the first as background before the decisions, and an Outstanding
+    Work section reading "Not recorded in the original.";
+  - the demo file and stylesheet paths, and the demo's five entry
+    points, pinned to the work's commit, `ad3fe3c`;
+  - `Table:` captions on the four tables, and the three Files tables'
+    columns put in the spine's order.
+
+  The original's "Addendum: Post Ordering and Index Stability" keeps
+  its heading as written, rather than the spine's dated `## Update`
+  form, since the addendum gives no date of its own. Its date line,
+  2026-06-21, matches Git's, so `created` is left to Git.
+- **Check:** `compass check --skip-unmarked --federation` reported 0
+  errors and 0 warnings over the corpus; a word diff against the
+  original removed only the decision numbers, kept in the identifiers,
+  bare names, reappearing in their pins, and table cells, moved between
+  columns.
+- **Notes on stale content,** for a revision:
+  - The addendum's workarounds were replaced by read-only composition
+    in `7fa52ba`: Bug D's rewriting of post authors to nicknames, by a
+    computed property (`examples/forum-demo.lisp:lens-property-value@4c8012a`),
+    and the reordering of the forum's container, which the body
+    describes, by a method that orders the entries for display
+    (`examples/forum-demo.lisp:container-entries@4c8012a`). The demo no
+    longer uses `ordered-threads`, the subject of
+    CCOMPOSER-DRAFT-forumrenderdemo-D2.
+  - The Markdown stub of CCOMPOSER-DRAFT-forumrenderdemo-D4 and Bug C
+    was replaced by the Lexis reader
+    (`src/lens.lisp:render-markdown@4c8012a`) in `ac700d0`.
+  - "No production code changes to the composer" describes the demo as
+    first built: the addendum's fixes, in the same commit, changed
+    `src/protocol.lisp`, `src/defaults.lisp`, `src/packages.lisp` and
+    `src/lens.lisp`.
+  - The addendum opens "Two bugs were found and fixed" and describes
+    four; the demo is "~220 lines" in one place and "~250 lines" in the
+    Files table, and had 301.
+  - The output paths it names were replaced by the pages in
+    `doc/demos/forum/` in `7fa52ba`.
+  - Classic's forum preset is described without links to its
+    documents, CLASSIC-0019 and CLASSIC-0020.
+
+Two documents remain unmarked: `doc/DevLog.WikiRenderDemo.md` and
 `doc/DevLog.ReadOnlyDemos.md`.

@@ -6,7 +6,11 @@ scope:         component
 project:       Classic Composer
 component:     demo
 language:      en
-status:        Draft
+status:        Implemented
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:          claude-opus-5-5
   original-assistant: claude-opus-4-6
@@ -107,7 +111,7 @@ visually distinguish the two content profiles.
 
 ### CCOMPOSER-DRAFT-forumrenderdemo-D1 — Both pages are aggregate views
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** See [Problem](#problem).
 
 **Decision:** In the five-tier model, a thread page showing all posts as peers is
@@ -127,7 +131,7 @@ No forum-specific `defmethod` was needed.
 
 ### CCOMPOSER-DRAFT-forumrenderdemo-D2 — Thread ordering uses internal API
 
-**Status:** Proposed
+**Status:** Superseded
 **Context:** `ordered-threads` (which sorts pinned threads first) is not exported
 from `classic.models.common`.
 
@@ -140,7 +144,7 @@ the function or provide a higher-level routing API.
 
 ### CCOMPOSER-DRAFT-forumrenderdemo-D3 — Forum-thread uses `created-at` not `date-created`
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** `forum-thread` extends `classic-container`, not `classic-creative-work`.
 It has `created-at` (from `classic-resource`) but not `date-created`
 (from `creative-work`).
@@ -154,7 +158,7 @@ skipped if it doesn't exist on the class.
 
 ### CCOMPOSER-DRAFT-forumrenderdemo-D4 — Post bodies are plain strings, not Lexis subtrees
 
-**Status:** Proposed
+**Status:** Superseded
 **Context:** Not recorded in the original.
 
 **Decision:** Unlike the blog demo (which stores Lexis subtrees and uses
@@ -169,7 +173,7 @@ typically short prose, not structured documents.
 
 ### CCOMPOSER-DRAFT-forumrenderdemo-D5 — Stickers render as a plain list
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Not recorded in the original.
 
 **Decision:** The post lens includes `post-stickers` with `:display :list`. The
