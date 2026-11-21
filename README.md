@@ -432,7 +432,7 @@ examples/
   static/forum.css  -- reference stylesheet for the forum demo
   static/wiki.css   -- reference stylesheet for the wiki demo
 doc/
-  Composer.md             -- detailed architecture document
+  Arch.Composer.md        -- detailed architecture document
   DevLog.ThemeResolution.md -- theme resolution development log
   DevLog.FullRenderDemo.md  -- full render pipeline development log
   DevLog.ForumRenderDemo.md -- forum demo development log
