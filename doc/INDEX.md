@@ -12,6 +12,7 @@ Table: Documents in the CCOMPOSER namespace.
 |---|---|---|---|---|---|
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
 | [CCOMPOSER-DRAFT-composer](Arch.Composer.md) | The Classic Composer Architecture | Architecture | project | Draft | — |
+| [CCOMPOSER-DRAFT-composerref](Ref.Composer.md) | Classic Composer Reference | Ref | project | Draft | — |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
