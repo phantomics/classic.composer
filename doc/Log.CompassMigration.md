@@ -15,7 +15,7 @@ relates-to:
   - CCOMPOSER-0005
   - CCOMPOSER-0006
   - CCOMPOSER-DRAFT-lexismarkdown
-  - CCOMPOSER-DRAFT-readonlydemos
+  - CCOMPOSER-0007
   - CLASSIC-0034
   - CLASSIC-0036
 decisions:
@@ -657,7 +657,7 @@ One document remains unmarked: `doc/DevLog.ReadOnlyDemos.md` (now
 
 The sixth and last migration: the log of the read-only demos and page
 links, migrated whole as the Log
-[CCOMPOSER-DRAFT-readonlydemos](Log.ReadOnlyDemos.md). With it, every
+[CCOMPOSER-0007](Log.ReadOnlyDemos.md). With it, every
 document in `doc/` is in Compass form, and the migration is complete.
 
 - **Original:** `doc/DevLog.ReadOnlyDemos.md`, at `migrated-from`
@@ -675,14 +675,14 @@ document in `doc/` is in Compass form, and the migration is complete.
   mentions of the old path in this Log that record history given the
   new path after them.
 - **Reshape** (`348b048`), form only:
-  - front-matter as CCOMPOSER-DRAFT-readonlydemos: genre `Log`, scope
+  - front-matter as CCOMPOSER-0007: genre `Log`, scope
     `component`, component `demo`, status `Draft`, `provenance` naming
     the original's assistant, claude-opus-5-5, which wrote it in the
     session that carried out this migration, and `relates-to` the three
     documents it names;
   - the six numbered decisions, written as prose, as records `-D1` to
     `-D6`, each record's sentences divided among its fields in their
-    original order. CCOMPOSER-DRAFT-readonlydemos-D1's paragraph
+    original order. CCOMPOSER-D41's paragraph
     naming the alternative it rejected became its Alternatives field,
     and its last paragraph stays after the fields, as explanatory text;
   - its links to documents of the corpus given their identifiers as
@@ -729,7 +729,7 @@ Table: The documents written before Compass, what each became, and the commits t
 | `doc/DevLog.FullRenderDemo.md` | [CCOMPOSER-0004](Log.FullRenderDemo.md) | `446f2ef` | `3eba656` | `created` written from its date line |
 | `doc/DevLog.ForumRenderDemo.md` | [CCOMPOSER-0005](Log.ForumRenderDemo.md) | `48eb93d` | `4c8012a` | Prose decisions split into fields |
 | `doc/DevLog.WikiRenderDemo.md` | [CCOMPOSER-0006](Log.WikiRenderDemo.md) | `35c6b84` | `3ab78a0` | Outstanding Work points to deferred records |
-| `doc/DevLog.ReadOnlyDemos.md` | [CCOMPOSER-DRAFT-readonlydemos](Log.ReadOnlyDemos.md) | `b79c32b` | `348b048` | Written in the migrating session |
+| `doc/DevLog.ReadOnlyDemos.md` | [CCOMPOSER-0007](Log.ReadOnlyDemos.md) | `b79c32b` | `348b048` | Written in the migrating session |
 
 Each migration changed only its document's form; the notes on stale
 content in each Update are for the revisions that follow. With no
@@ -738,7 +738,7 @@ a backlog, and checks run without `--skip-unmarked`.
 
 What remains is not migration:
 
-- **Acceptance and numbering** of CCOMPOSER-DRAFT-readonlydemos, of
+- **Acceptance and numbering** of CCOMPOSER-0007, of
   CCOMPOSER-DRAFT-lexismarkdown, and of this Log, which the steward
   accepts with the migration complete.
 - **Content revisions** that the Updates' notes call for, in the

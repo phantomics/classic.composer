@@ -18,7 +18,7 @@ relates-to:
   - CCOMPOSER-0002
   - CCOMPOSER-DRAFT-lexismarkdown
   - CCOMPOSER-DRAFT-compass-migration
-  - CCOMPOSER-DRAFT-readonlydemos
+  - CCOMPOSER-0007
   - CLASSIC-0010
   - CLASSIC-0011
   - LEXIS-0002
@@ -148,7 +148,7 @@ composer would need write access to the store, the read path of
 composition would become a write path, and a display choice would
 change the data for every other reader. The forum and wiki demos once wrote such values; they
 were rewritten to compute them, as
-[CCOMPOSER-DRAFT-readonlydemos](Log.ReadOnlyDemos.md) records.
+[CCOMPOSER-0007](Log.ReadOnlyDemos.md) records.
 
 ### CCOMPOSER-D2 — Tiers are defined by structural role, not application domain
 

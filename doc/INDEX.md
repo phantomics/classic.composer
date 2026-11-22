@@ -16,9 +16,9 @@ Table: Documents in the CCOMPOSER namespace.
 | [CCOMPOSER-0004](Log.FullRenderDemo.md) | Full Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-0005](Log.ForumRenderDemo.md) | Forum Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-0006](Log.WikiRenderDemo.md) | Wiki Render Demo Development Log | Log | component | Implemented | demo |
+| [CCOMPOSER-0007](Log.ReadOnlyDemos.md) | Read-Only Demos and Page Links Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
-| [CCOMPOSER-DRAFT-readonlydemos](Log.ReadOnlyDemos.md) | Read-Only Demos and Page Links Development Log | Log | component | Draft | demo |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 
@@ -64,6 +64,12 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-D38](Log.WikiRenderDemo.md#ccomposer-d38--metadata-as-adjunct-content) | Decision | Metadata as adjunct content | Implemented | CCOMPOSER-0006 |
 | [CCOMPOSER-D39](Log.WikiRenderDemo.md#ccomposer-d39--alphabetical-index-via-pre-sorted-container) | Decision | Alphabetical index via pre-sorted container | Superseded | CCOMPOSER-0006 |
 | [CCOMPOSER-D40](Log.WikiRenderDemo.md#ccomposer-d40--amiga-era-content) | Decision | Amiga-era content | Implemented | CCOMPOSER-0006 |
+| [CCOMPOSER-D41](Log.ReadOnlyDemos.md#ccomposer-d41--extension-generics-not-a-richer-lens-language) | Decision | Extension generics, not a richer lens language | Implemented | CCOMPOSER-0007 |
+| [CCOMPOSER-D42](Log.ReadOnlyDemos.md#ccomposer-d42--two-orders-content-type-rules-and-presentation-choices) | Decision | Two orders: content-type rules and presentation choices | Implemented | CCOMPOSER-0007 |
+| [CCOMPOSER-D43](Log.ReadOnlyDemos.md#ccomposer-d43--property-options-link-self-and-label) | Decision | Property options: :link :self and :label | Implemented | CCOMPOSER-0007 |
+| [CCOMPOSER-D44](Log.ReadOnlyDemos.md#ccomposer-d44--references-follow-resolve-reference-everywhere) | Decision | References follow resolve-reference everywhere | Implemented | CCOMPOSER-0007 |
+| [CCOMPOSER-D45](Log.ReadOnlyDemos.md#ccomposer-d45--render-lens-property-is-exported) | Decision | render-lens-property is exported | Implemented | CCOMPOSER-0007 |
+| [CCOMPOSER-D46](Log.ReadOnlyDemos.md#ccomposer-d46--each-demo-writes-a-linked-static-site) | Decision | Each demo writes a linked static site | Implemented | CCOMPOSER-0007 |
 | [CCOMPOSER-DRAFT-compass-migration-D1](Log.CompassMigration.md#ccomposer-draft-compass-migration-d1--this-log-is-the-migrations-record-with-no-plan-of-its-own) | Decision | This Log is the migration's record, with no Plan of its own | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D2](Log.CompassMigration.md#ccomposer-draft-compass-migration-d2--a-document-replaced-by-a-native-one-is-deleted-not-migrated) | Decision | A document replaced by a native one is deleted, not migrated | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D3](Log.CompassMigration.md#ccomposer-draft-compass-migration-d3--the-architecture-document-becomes-an-architecture-now-and-a-ref-is-split-from-it-afterwards) | Decision | The architecture document becomes an Architecture now and a Ref is split from it afterwards | Proposed | CCOMPOSER-DRAFT-compass-migration |
@@ -73,12 +79,6 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D4](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d4--the-body-fallback-reads-markdown-bodies) | Decision | The body fallback reads Markdown bodies | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D6](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d6--the-wiki-demo-resolves-wiki-links-during-composition) | Decision | The wiki demo resolves wiki links during composition | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
-| [CCOMPOSER-DRAFT-readonlydemos-D1](Log.ReadOnlyDemos.md#ccomposer-draft-readonlydemos-d1--extension-generics-not-a-richer-lens-language) | Decision | Extension generics, not a richer lens language | Proposed | CCOMPOSER-DRAFT-readonlydemos |
-| [CCOMPOSER-DRAFT-readonlydemos-D2](Log.ReadOnlyDemos.md#ccomposer-draft-readonlydemos-d2--two-orders-content-type-rules-and-presentation-choices) | Decision | Two orders: content-type rules and presentation choices | Proposed | CCOMPOSER-DRAFT-readonlydemos |
-| [CCOMPOSER-DRAFT-readonlydemos-D3](Log.ReadOnlyDemos.md#ccomposer-draft-readonlydemos-d3--property-options-link-self-and-label) | Decision | Property options: :link :self and :label | Proposed | CCOMPOSER-DRAFT-readonlydemos |
-| [CCOMPOSER-DRAFT-readonlydemos-D4](Log.ReadOnlyDemos.md#ccomposer-draft-readonlydemos-d4--references-follow-resolve-reference-everywhere) | Decision | References follow resolve-reference everywhere | Proposed | CCOMPOSER-DRAFT-readonlydemos |
-| [CCOMPOSER-DRAFT-readonlydemos-D5](Log.ReadOnlyDemos.md#ccomposer-draft-readonlydemos-d5--render-lens-property-is-exported) | Decision | render-lens-property is exported | Proposed | CCOMPOSER-DRAFT-readonlydemos |
-| [CCOMPOSER-DRAFT-readonlydemos-D6](Log.ReadOnlyDemos.md#ccomposer-draft-readonlydemos-d6--each-demo-writes-a-linked-static-site) | Decision | Each demo writes a linked static site | Proposed | CCOMPOSER-DRAFT-readonlydemos |
 | [CCOMPOSER-O1](Arch.Composer.md#ccomposer-o1--how-do-capabilities-take-part-in-composition) | Open question | How do capabilities take part in composition? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O2](Arch.Composer.md#ccomposer-o2--how-is-a-complex-template-declared) | Open question | How is a complex template declared? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O3](Arch.Composer.md#ccomposer-o3--what-is-the-operative-spec-and-how-does-seed-receive-it) | Open question | What is the operative spec, and how does Seed receive it? | — | CCOMPOSER-0001 |

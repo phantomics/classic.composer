@@ -1,12 +1,16 @@
 ---
-id:            CCOMPOSER-DRAFT-readonlydemos
+id:            CCOMPOSER-0007
 title:         Read-Only Demos and Page Links Development Log
 genre:         Log
 scope:         component
 project:       Classic Composer
 component:     demo
 language:      en
-status:        Draft
+status:        Implemented
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:          claude-opus-5-5
   original-assistant: claude-opus-5-5
@@ -16,12 +20,12 @@ relates-to:
   - CCOMPOSER-0005
   - CCOMPOSER-DRAFT-lexismarkdown
 decisions:
-  - CCOMPOSER-DRAFT-readonlydemos-D1
-  - CCOMPOSER-DRAFT-readonlydemos-D2
-  - CCOMPOSER-DRAFT-readonlydemos-D3
-  - CCOMPOSER-DRAFT-readonlydemos-D4
-  - CCOMPOSER-DRAFT-readonlydemos-D5
-  - CCOMPOSER-DRAFT-readonlydemos-D6
+  - CCOMPOSER-D41
+  - CCOMPOSER-D42
+  - CCOMPOSER-D43
+  - CCOMPOSER-D44
+  - CCOMPOSER-D45
+  - CCOMPOSER-D46
 ---
 
 # Read-Only Demos and Page Links: Development Log
@@ -64,9 +68,9 @@ these as outstanding.
 
 ## Design Decisions
 
-### CCOMPOSER-DRAFT-readonlydemos-D1 — Extension generics, not a richer lens language
+### CCOMPOSER-D41 — Extension generics, not a richer lens language
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Each write stood in for a computation the composer could not ask the
 application for.
 
@@ -108,9 +112,9 @@ through the persistence protocol (`context-query`,
 of `sioc:account_of` rather than scanning the store, as the forum
 model's `resolve-member-nickname` does.
 
-### CCOMPOSER-DRAFT-readonlydemos-D2 — Two orders: content-type rules and presentation choices
+### CCOMPOSER-D42 — Two orders: content-type rules and presentation choices
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** The forum's pinned-first order and the wiki's alphabetical order look
 alike but differ in kind.
 
@@ -137,9 +141,9 @@ property options below needed a change to Classic's schema.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-readonlydemos-D3 — Property options: `:link :self` and `:label`
+### CCOMPOSER-D43 — Property options: `:link :self` and `:label`
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Not recorded in the original.
 
 **Decision:** `:link :self` on a lens property links its rendered value to the page
@@ -157,9 +161,9 @@ Fresnel's property labels.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-readonlydemos-D4 — References follow `resolve-reference` everywhere
+### CCOMPOSER-D44 — References follow `resolve-reference` everywhere
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Not recorded in the original.
 
 **Decision:** Sublenses and the `:link` display mode both resolve their values
@@ -175,9 +179,9 @@ title.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-readonlydemos-D5 — `render-lens-property` is exported
+### CCOMPOSER-D45 — `render-lens-property` is exported
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Not recorded in the original.
 
 **Decision:** `apply-lens`'s per-property body is now `render-lens-property`,
@@ -188,9 +192,9 @@ rendering and relied on the rewritten slots.
 
 **Alternatives:** See the Decision.
 
-### CCOMPOSER-DRAFT-readonlydemos-D6 — Each demo writes a linked static site
+### CCOMPOSER-D46 — Each demo writes a linked static site
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** See [Problem](#problem).
 
 **Decision:** Each demo now renders every page its links reach, under its own
