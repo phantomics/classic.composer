@@ -16,7 +16,7 @@ provenance:
   migrated-from:      doc/Composer.md@7fa52ba
 relates-to:
   - CCOMPOSER-0002
-  - CCOMPOSER-DRAFT-lexismarkdown
+  - CCOMPOSER-0008
   - CCOMPOSER-DRAFT-compass-migration
   - CCOMPOSER-0007
   - CLASSIC-0010
@@ -602,7 +602,7 @@ every section when it computes heading depth, so a feature's Markdown
 `##` heading renders as `<h3>`. The composer's side of LEXIS-O3, in
 [LEXIS-0002](../../lexis/doc/Plan.RenderMarkdown.md), was settled by
 splicing bodies instead of wrapping them
-(CCOMPOSER-DRAFT-lexismarkdown-D3); the remaining level awaits a
+(CCOMPOSER-D49); the remaining level awaits a
 change in Lexis, such as not counting untitled sections, or a
 container tag that is not a section.
 

@@ -1,12 +1,16 @@
 ---
-id:            CCOMPOSER-DRAFT-lexismarkdown
+id:            CCOMPOSER-0008
 title:         Lexis Markdown Integration Development Log
 genre:         Log
 scope:         component
 project:       Classic Composer
 component:     lens
 language:      en
-status:        Draft
+status:        Implemented
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:   claude-opus-5-5
 relates-to:
@@ -16,11 +20,11 @@ relates-to:
   - CLASSIC-0011
   - CCOMPOSER-0007
 decisions:
-  - CCOMPOSER-DRAFT-lexismarkdown-D1
-  - CCOMPOSER-DRAFT-lexismarkdown-D2
-  - CCOMPOSER-DRAFT-lexismarkdown-D3
-  - CCOMPOSER-DRAFT-lexismarkdown-D4
-  - CCOMPOSER-DRAFT-lexismarkdown-D6
+  - CCOMPOSER-D47
+  - CCOMPOSER-D48
+  - CCOMPOSER-D49
+  - CCOMPOSER-D50
+  - CCOMPOSER-D51
 ---
 
 # Lexis Markdown Integration: Development Log
@@ -77,9 +81,9 @@ Two demos worked around the stub:
 
 ## Design Decisions
 
-### CCOMPOSER-DRAFT-lexismarkdown-D1 — The composer depends on lexis.markdown directly
+### CCOMPOSER-D47 — The composer depends on lexis.markdown directly
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** The reader is a Lexis module that brings in the Lexis
 core, `cl-ppcre`, and 3bmd with four of its extension systems.
 Markdown is Classic's default body format, so most content reaches
@@ -92,9 +96,9 @@ the capability-extension style of the architecture document, keeping
 3bmd out of the base composer. Not adopted: a composer without it
 would render most content badly, so nearly every user would load it.
 
-### CCOMPOSER-DRAFT-lexismarkdown-D2 — Reader options come from a markdown-options generic
+### CCOMPOSER-D48 — Reader options come from a markdown-options generic
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** The reader takes options: the raw HTML policy (LEXIS-D8),
 the allowed URI schemes (LEXIS-D9), and a wiki link resolver
 (LEXIS-D10). Only the application knows the right values. A wiki's
@@ -121,9 +125,9 @@ an application specializes it once for its content types, without
 binding anything around each composition. Options in the lens spec
 were not adopted for the same reason as theme configuration.
 
-### CCOMPOSER-DRAFT-lexismarkdown-D3 — Multi-block bodies are spliced, not wrapped
+### CCOMPOSER-D49 — Multi-block bodies are spliced, not wrapped
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** The reader returns a list of blocks. Wrapping a list in
 an untitled section pushes its headings one level deeper (LEXIS-O3),
 and the plan's current thinking is that the composer should stop
@@ -145,9 +149,9 @@ option, was not adopted: the depth would have to match whatever
 wrappers the composer and the theme add. Keeping the wrapper was not
 adopted: it was the cause.
 
-### CCOMPOSER-DRAFT-lexismarkdown-D4 — The body fallback reads Markdown bodies
+### CCOMPOSER-D50 — The body fallback reads Markdown bodies
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Without a lens, `compose-feature` falls back to
 extracting the entity's body, and that fallback wrapped a string body
 in a single paragraph whatever its format.
@@ -160,9 +164,9 @@ be misread, its text taken for Markdown syntax. Leaving the fallback
 as it was would render Markdown bodies differently with and without a
 lens.
 
-### CCOMPOSER-DRAFT-lexismarkdown-D6 — The wiki demo resolves wiki links during composition
+### CCOMPOSER-D51 — The wiki demo resolves wiki links during composition
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** The wiki demo's body conversion wrote Lexis forms over
 the stored Markdown, both to resolve `[[Anchor]]` links and to break
 paragraphs.
@@ -188,7 +192,7 @@ browser can open.
 ### `classic.composer.asd`
 
 The system's `:depends-on` names `lexis.markdown`
-(CCOMPOSER-DRAFT-lexismarkdown-D1).
+(CCOMPOSER-D47).
 
 ### `src/lens.lisp`
 
@@ -208,26 +212,26 @@ The system's `:depends-on` names `lexis.markdown`
   nodes unwrapped.
 - `src/lens.lisp:apply-lens@ac700d0` passes the context, entity and
   slot name to `src/lens.lisp:render-slot-via-display-mode@ac700d0`,
-  and splices block lists (CCOMPOSER-DRAFT-lexismarkdown-D3).
+  and splices block lists (CCOMPOSER-D49).
 
 ### `src/protocol.lisp` and `src/packages.lisp`
 
 `src/protocol.lisp:markdown-options@ac700d0` is the generic and its
-default method (CCOMPOSER-DRAFT-lexismarkdown-D2); the package
+default method (CCOMPOSER-D48); the package
 exports it.
 
 ### `src/defaults.lisp`
 
 `src/defaults.lisp:compose-feature-from-body@ac700d0` takes the context
 as its first argument and reads Markdown string bodies
-(CCOMPOSER-DRAFT-lexismarkdown-D4). It is internal, and
+(CCOMPOSER-D50). It is internal, and
 `compose-feature` is its only caller.
 
 ### `examples/wiki-demo.lisp`
 
 The body conversion is replaced by `resolve-wiki-link` and a
 `markdown-options` method on `wiki-page`
-(CCOMPOSER-DRAFT-lexismarkdown-D6).
+(CCOMPOSER-D51).
 
 The resolver builds its forms from the `lexis` package's symbols
 (`lexis::web-link`, `lexis::@`), as the reader's reference does in its
@@ -308,7 +312,7 @@ Table: Files added or changed in commit `ac700d0`.
 
 - **Heading depth.** The `feature` and `aggregate-entry` wrappers still
   push headings one level deeper
-  (CCOMPOSER-DRAFT-lexismarkdown-D3). This awaits a change in Lexis.
+  (CCOMPOSER-D49). This awaits a change in Lexis.
   LEXIS-O3's outcome is to be recorded in the Lexis repository with
   that change.
 - **Wiki infobox.** The wiki demo still builds its infobox as an HTML

@@ -18,7 +18,7 @@ provenance:
 relates-to:
   - CCOMPOSER-0001
   - CCOMPOSER-0005
-  - CCOMPOSER-DRAFT-lexismarkdown
+  - CCOMPOSER-0008
 decisions:
   - CCOMPOSER-D41
   - CCOMPOSER-D42
@@ -61,7 +61,7 @@ text, and the wiki's links pointed at `/wiki/<anchor>` paths that
 kept their spaces and named pages the demo never wrote. The composer
 had no notion of an entity's page.
 
-The Markdown reader work ([CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md)) removed a fifth
+The Markdown reader work ([CCOMPOSER-0008](Log.LexisMarkdown.md)) removed a fifth
 write, the wiki demo's conversion of page bodies to Lexis, and listed
 these as outstanding.
 
@@ -328,5 +328,5 @@ Table: Files created, modified or deleted by this work.
   placeholders and lock notices are not yet shown. Computed
   properties now make each of these a method and a lens entry.
 - **Heading depth** (LEXIS-O3) and the **wiki infobox as Lexis**
-  remain as [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) describes them. The infobox
+  remain as [CCOMPOSER-0008](Log.LexisMarkdown.md) describes them. The infobox
   stays a passthrough because the Lexis HTML renderer drops classes.

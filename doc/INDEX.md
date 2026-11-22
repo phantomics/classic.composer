@@ -17,8 +17,8 @@ Table: Documents in the CCOMPOSER namespace.
 | [CCOMPOSER-0005](Log.ForumRenderDemo.md) | Forum Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-0006](Log.WikiRenderDemo.md) | Wiki Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-0007](Log.ReadOnlyDemos.md) | Read-Only Demos and Page Links Development Log | Log | component | Implemented | demo |
+| [CCOMPOSER-0008](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Implemented | lens |
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
-| [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 
@@ -70,15 +70,15 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-D44](Log.ReadOnlyDemos.md#ccomposer-d44--references-follow-resolve-reference-everywhere) | Decision | References follow resolve-reference everywhere | Implemented | CCOMPOSER-0007 |
 | [CCOMPOSER-D45](Log.ReadOnlyDemos.md#ccomposer-d45--render-lens-property-is-exported) | Decision | render-lens-property is exported | Implemented | CCOMPOSER-0007 |
 | [CCOMPOSER-D46](Log.ReadOnlyDemos.md#ccomposer-d46--each-demo-writes-a-linked-static-site) | Decision | Each demo writes a linked static site | Implemented | CCOMPOSER-0007 |
+| [CCOMPOSER-D47](Log.LexisMarkdown.md#ccomposer-d47--the-composer-depends-on-lexismarkdown-directly) | Decision | The composer depends on lexis.markdown directly | Implemented | CCOMPOSER-0008 |
+| [CCOMPOSER-D48](Log.LexisMarkdown.md#ccomposer-d48--reader-options-come-from-a-markdown-options-generic) | Decision | Reader options come from a markdown-options generic | Implemented | CCOMPOSER-0008 |
+| [CCOMPOSER-D49](Log.LexisMarkdown.md#ccomposer-d49--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Implemented | CCOMPOSER-0008 |
+| [CCOMPOSER-D50](Log.LexisMarkdown.md#ccomposer-d50--the-body-fallback-reads-markdown-bodies) | Decision | The body fallback reads Markdown bodies | Implemented | CCOMPOSER-0008 |
+| [CCOMPOSER-D51](Log.LexisMarkdown.md#ccomposer-d51--the-wiki-demo-resolves-wiki-links-during-composition) | Decision | The wiki demo resolves wiki links during composition | Implemented | CCOMPOSER-0008 |
 | [CCOMPOSER-DRAFT-compass-migration-D1](Log.CompassMigration.md#ccomposer-draft-compass-migration-d1--this-log-is-the-migrations-record-with-no-plan-of-its-own) | Decision | This Log is the migration's record, with no Plan of its own | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D2](Log.CompassMigration.md#ccomposer-draft-compass-migration-d2--a-document-replaced-by-a-native-one-is-deleted-not-migrated) | Decision | A document replaced by a native one is deleted, not migrated | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D3](Log.CompassMigration.md#ccomposer-draft-compass-migration-d3--the-architecture-document-becomes-an-architecture-now-and-a-ref-is-split-from-it-afterwards) | Decision | The architecture document becomes an Architecture now and a Ref is split from it afterwards | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D4](Log.CompassMigration.md#ccomposer-draft-compass-migration-d4--decision-records-are-not-extracted-from-prose-during-a-reshape) | Decision | Decision records are not extracted from prose during a reshape | Proposed | CCOMPOSER-DRAFT-compass-migration |
-| [CCOMPOSER-DRAFT-lexismarkdown-D1](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d1--the-composer-depends-on-lexismarkdown-directly) | Decision | The composer depends on lexis.markdown directly | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
-| [CCOMPOSER-DRAFT-lexismarkdown-D2](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d2--reader-options-come-from-a-markdown-options-generic) | Decision | Reader options come from a markdown-options generic | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
-| [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
-| [CCOMPOSER-DRAFT-lexismarkdown-D4](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d4--the-body-fallback-reads-markdown-bodies) | Decision | The body fallback reads Markdown bodies | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
-| [CCOMPOSER-DRAFT-lexismarkdown-D6](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d6--the-wiki-demo-resolves-wiki-links-during-composition) | Decision | The wiki demo resolves wiki links during composition | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-O1](Arch.Composer.md#ccomposer-o1--how-do-capabilities-take-part-in-composition) | Open question | How do capabilities take part in composition? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O2](Arch.Composer.md#ccomposer-o2--how-is-a-complex-template-declared) | Open question | How is a complex template declared? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O3](Arch.Composer.md#ccomposer-o3--what-is-the-operative-spec-and-how-does-seed-receive-it) | Open question | What is the operative spec, and how does Seed receive it? | — | CCOMPOSER-0001 |

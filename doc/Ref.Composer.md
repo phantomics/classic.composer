@@ -17,7 +17,7 @@ provenance:
   migrated-from:      doc/Composer.md@7fa52ba
 relates-to:
   - CCOMPOSER-0001
-  - CCOMPOSER-DRAFT-lexismarkdown
+  - CCOMPOSER-0008
   - CCOMPOSER-DRAFT-compass-migration
   - CLASSIC-0011
   - LEXIS-DRAFT-markdownref
@@ -481,7 +481,7 @@ The test suite runs with the manifest's `:test` command,
 `(progn (ql:quickload "classic.composer/tests") (classic.composer-tests::run-all-tests))`.
 
 See also [CCOMPOSER-0001](Arch.Composer.md) for the design,
-[CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) for the
+[CCOMPOSER-0008](Log.LexisMarkdown.md) for the
 Markdown integration, and
 [CLASSIC-0011](../../classic/doc/theme/Ref.Theme.md) for the theme
 ontology.

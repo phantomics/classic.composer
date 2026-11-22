@@ -14,7 +14,7 @@ relates-to:
   - CCOMPOSER-0004
   - CCOMPOSER-0005
   - CCOMPOSER-0006
-  - CCOMPOSER-DRAFT-lexismarkdown
+  - CCOMPOSER-0008
   - CCOMPOSER-0007
   - CLASSIC-0034
   - CLASSIC-0036
@@ -86,7 +86,7 @@ Lexis Markdown reader, written in the same session as the work, a day
 before the adoption. Migrating it would have kept its unpinned prose
 and its numbered design decisions without alternatives.
 **Decision:** The work was recorded afresh in a native Log,
-[CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md), written with
+[CCOMPOSER-0008](Log.LexisMarkdown.md), written with
 `compass-author` from the DevLog's account and pinned to the work's
 commit, `ac700d0`. The DevLog was deleted, and the links to it were
 pointed at the new Log. The deletion is committed in `d226fc4`; the
@@ -160,7 +160,7 @@ The commit also deletes `DevLog.MarkdownReader.md`
 
 ### The native Lexis Markdown Log (`06ac6bb`, `7ccacd3`)
 
-[CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) was written with
+[CCOMPOSER-0008](Log.LexisMarkdown.md) was written with
 `compass-author` and reviewed with `compass-review`. The review's two
 warnings were fixed in `7ccacd3`: one decision diverged from LEXIS-D10
 without saying so, and another recorded a constraint rather than a
@@ -264,7 +264,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
 - **Acceptance and numbering.** Every document and record keeps its
   provisional identifier until the steward sets an accepted status and
   asks for `compass assign`.
-- **Mentions by description.** CCOMPOSER-DRAFT-lexismarkdown-D1 refers
+- **Mentions by description.** CCOMPOSER-D47 refers
   to "the architecture document" in prose, without a link; it may link
   to CCOMPOSER-0001 when that Log is next revised.
 
@@ -401,7 +401,7 @@ whole as the Log
   - CCOMPOSER-D14, the stubbed Markdown mode, was
     replaced by the Lexis Markdown reader
     (`src/lens.lisp:render-markdown@a44422f`), as
-    [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) records.
+    [CCOMPOSER-0008](Log.LexisMarkdown.md) records.
   - Design Properties Preserved says sublens recursion is bounded by
     the depth of the relationship graph, but
     `src/lens.lisp:apply-sublens@a44422f` follows lenses that refer to
@@ -476,7 +476,7 @@ migrated whole as the Log
   - CCOMPOSER-D25, wrapping a list of body sections
     in an untitled section, was replaced by splicing in `ac700d0`
     (`src/lens.lisp:render-html-passthrough@3eba656`), as
-    CCOMPOSER-DRAFT-lexismarkdown-D3 records.
+    CCOMPOSER-D49 records.
   - The Files table and Verification name
     `doc/demos/blog-post-output.html` and
     `doc/demos/blog-list-output.html` as created by the work, but
@@ -664,14 +664,14 @@ document in `doc/` is in Compass form, and the migration is complete.
   revision `06ac6bb`, the last commit to change it up to `7ccacd3`, the
   commit this migration began from. It was written in `7fa52ba`, the
   commit of the work it records; `06ac6bb` pointed two of its links at
-  [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) when that Log
+  [CCOMPOSER-0008](Log.LexisMarkdown.md) when that Log
   replaced `DevLog.MarkdownReader.md`. The later change of a file name
   in it, made by the forum Log's move (`48eb93d`), is a migration move
   and does not count.
 - **Move** (`b79c32b`): `git mv` to `doc/Log.ReadOnlyDemos.md`, with the
   `README.md` structure listing and the `AGENTS.md` migration line
   updated, the links to it in [CCOMPOSER-0001](Arch.Composer.md) and
-  CCOMPOSER-DRAFT-lexismarkdown pointed at the new path, and the six
+  CCOMPOSER-0008 pointed at the new path, and the six
   mentions of the old path in this Log that record history given the
   new path after them.
 - **Reshape** (`348b048`), form only:
@@ -698,7 +698,7 @@ document in `doc/` is in Compass form, and the migration is complete.
   Its date line, 2026-11-20, matches Git's, so `created` is left to
   Git.
 - **After the reshape:** the links to it in CCOMPOSER-0001 and
-  CCOMPOSER-DRAFT-lexismarkdown were given its identifier as their
+  CCOMPOSER-0008 were given its identifier as their
   text, and it was added to their `relates-to` and to this Log's. The
   Lexis Markdown Log's phrase "not yet migrated", true when it was
   written, was left as it was.
@@ -723,7 +723,7 @@ Table: The documents written before Compass, what each became, and the commits t
 
 | Original | Document | Move | Reshape | Note |
 |---|---|---|---|---|
-| `doc/DevLog.MarkdownReader.md` | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | — | — | Replaced by a native Log (`06ac6bb`) and deleted (`d226fc4`) |
+| `doc/DevLog.MarkdownReader.md` | [CCOMPOSER-0008](Log.LexisMarkdown.md) | — | — | Replaced by a native Log (`06ac6bb`) and deleted (`d226fc4`) |
 | `doc/Composer.md` | [CCOMPOSER-0001](Arch.Composer.md) | `3249062` | `139e180` | Split: [CCOMPOSER-0002](Ref.Composer.md) (`46d0707`), and the Architecture revised (`3a95f57`) |
 | `doc/DevLog.ThemeResolution.md` | [CCOMPOSER-0003](Log.ThemeResolution.md) | `5929753` | `a44422f` | |
 | `doc/DevLog.FullRenderDemo.md` | [CCOMPOSER-0004](Log.FullRenderDemo.md) | `446f2ef` | `3eba656` | `created` written from its date line |
@@ -739,7 +739,7 @@ a backlog, and checks run without `--skip-unmarked`.
 What remains is not migration:
 
 - **Acceptance and numbering** of CCOMPOSER-0007, of
-  CCOMPOSER-DRAFT-lexismarkdown, and of this Log, which the steward
+  CCOMPOSER-0008, and of this Log, which the steward
   accepts with the migration complete.
 - **Content revisions** that the Updates' notes call for, in the
   migrated Logs, such as links to LEXIS-0001 and to Classic's theme,
