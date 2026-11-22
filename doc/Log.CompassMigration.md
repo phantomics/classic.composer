@@ -257,7 +257,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
   - `doc/DevLog.ThemeResolution.md` (now `doc/Log.ThemeResolution.md`)
   - `doc/DevLog.FullRenderDemo.md` (now `doc/Log.FullRenderDemo.md`)
   - `doc/DevLog.ForumRenderDemo.md` (now `doc/Log.ForumRenderDemo.md`)
-  - `doc/DevLog.WikiRenderDemo.md`
+  - `doc/DevLog.WikiRenderDemo.md` (now `doc/Log.WikiRenderDemo.md`)
   - `doc/DevLog.ReadOnlyDemos.md`
 - **Acceptance and numbering.** Every document and record keeps its
   provisional identifier until the steward sets an accepted status and
@@ -418,8 +418,8 @@ whole as the Log
 
 Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md` (now
 `doc/Log.FullRenderDemo.md`), `doc/DevLog.ForumRenderDemo.md` (now
-`doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` and
-`doc/DevLog.ReadOnlyDemos.md`.
+`doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` (now
+`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md`.
 
 ## Update 2026-11-21 — doc/DevLog.FullRenderDemo.md
 
@@ -494,8 +494,8 @@ migrated whole as the Log
   - "Lexis spec Section 5.4" names LEXIS-0001 without a link.
 
 Three documents remain unmarked: `doc/DevLog.ForumRenderDemo.md` (now
-`doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` and
-`doc/DevLog.ReadOnlyDemos.md`.
+`doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` (now
+`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md`.
 
 ## Update 2026-11-21 — doc/DevLog.ForumRenderDemo.md
 
@@ -574,5 +574,5 @@ as the Log [CCOMPOSER-0005](Log.ForumRenderDemo.md).
   - Classic's forum preset is described without links to its
     documents, CLASSIC-0019 and CLASSIC-0020.
 
-Two documents remain unmarked: `doc/DevLog.WikiRenderDemo.md` and
-`doc/DevLog.ReadOnlyDemos.md`.
+Two documents remain unmarked: `doc/DevLog.WikiRenderDemo.md` (now
+`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md`.
