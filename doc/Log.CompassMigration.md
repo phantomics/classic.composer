@@ -14,6 +14,7 @@ relates-to:
   - CCOMPOSER-0004
   - CCOMPOSER-0005
   - CCOMPOSER-DRAFT-lexismarkdown
+  - CCOMPOSER-DRAFT-wikirenderdemo
   - CLASSIC-0034
   - CLASSIC-0036
 decisions:
@@ -576,3 +577,72 @@ as the Log [CCOMPOSER-0005](Log.ForumRenderDemo.md).
 
 Two documents remain unmarked: `doc/DevLog.WikiRenderDemo.md` (now
 `doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md`.
+
+## Update 2026-11-21 — doc/DevLog.WikiRenderDemo.md
+
+The fifth migration: the log of the wiki render demo, migrated whole as
+the Log [CCOMPOSER-DRAFT-wikirenderdemo](Log.WikiRenderDemo.md).
+
+- **Original:** `doc/DevLog.WikiRenderDemo.md`, at `migrated-from`
+  revision `b9ad8c1`, the only commit to touch it, which is also the
+  commit of the work it records.
+- **Move** (`35c6b84`): `git mv` to `doc/Log.WikiRenderDemo.md`, with
+  the `README.md` structure listing and the `AGENTS.md` migration line
+  updated, and the four mentions of the old path in this Log, all
+  history, given the new path after them.
+- **Reshape** (`3ab78a0`), form only:
+  - front-matter as CCOMPOSER-DRAFT-wikirenderdemo: genre `Log`, scope
+    `component`, component `demo`, status `Draft`, and `provenance`
+    naming the original's assistant, claude-opus-4-6;
+  - the eight numbered decisions, written as prose, as records `-D1`
+    to `-D8`, keeping their numbers and titles, with each record's
+    sentences divided among its fields in their original order, as for
+    CCOMPOSER-0005. Three records whose motivation the Problem's list
+    gives point their Context to it: CCOMPOSER-DRAFT-wikirenderdemo-D1,
+    CCOMPOSER-DRAFT-wikirenderdemo-D2 and
+    CCOMPOSER-DRAFT-wikirenderdemo-D6. Four take their opening
+    sentences as Context. Two records end in a paragraph giving the
+    alternative, which became their Alternatives field unchanged:
+    CCOMPOSER-DRAFT-wikirenderdemo-D2 and
+    CCOMPOSER-DRAFT-wikirenderdemo-D3;
+  - the demo file and stylesheet paths, and the nine demo functions
+    Implementation names, pinned to the work's commit, `b9ad8c1`;
+  - `Table:` captions on the two tables, the Files table's columns put
+    in the spine's order;
+  - an Outstanding Work section, which the original lacked, reading
+    "Deferred; see CCOMPOSER-DRAFT-wikirenderdemo-D3 and
+    CCOMPOSER-DRAFT-wikirenderdemo-D5.", the two records that name
+    work deferred to a production wiki and to Lexis.
+
+  The original's "What This Exercises for the First Time" and
+  "Pitfall" sections stay where they were, between Implementation and
+  Verification. Its date line, 2026-06-22, matches Git's, so `created`
+  is left to Git.
+- **Check:** `compass check --skip-unmarked --federation` reported 0
+  errors and 0 warnings over the corpus; a word diff against the
+  original removed only the decision numbers, kept in the identifiers,
+  bare names, reappearing in their pins, table cells, moved between
+  columns, and the lines that a field label now opens.
+- **Notes on stale content,** for a revision:
+  - The demo's three writes to stored data were replaced:
+    CCOMPOSER-DRAFT-wikirenderdemo-D3's conversion of bodies to Lexis,
+    by the Markdown reader and a wiki link resolver
+    (`examples/wiki-demo.lisp:markdown-options@3ab78a0`), in `ac700d0`;
+    CCOMPOSER-DRAFT-wikirenderdemo-D4's rewriting of typed slots to
+    URIs, by anchor lookup while composing
+    (`examples/wiki-demo.lisp:resolve-reference@3ab78a0`), and
+    CCOMPOSER-DRAFT-wikirenderdemo-D7's sorting of the container, by
+    an aggregate lens in the theme
+    (`src/defaults.lisp:sort-entities@3ab78a0`), both in `7fa52ba`.
+  - CCOMPOSER-DRAFT-wikirenderdemo-D5 awaits a definition list in
+    Lexis's HTML renderer. Lexis now implements `definition-list`
+    (LEXIS-D11), but its renderer gives the element no class, which
+    the demo's stylesheet styles the infobox by, so the passthrough
+    remains (`examples/wiki-demo.lisp:render-infobox@3ab78a0`).
+  - The output paths it names were replaced by the pages in
+    `doc/demos/wiki/` in `7fa52ba`, and the demo now renders every
+    page, not the Amiga 1000 alone.
+  - "Lexis spec (Section 4.3)" names LEXIS-0001, and "Classic core's
+    REPL demo" the Wiki Preset Guide, CLASSIC-0021, without links.
+
+One document remains unmarked: `doc/DevLog.ReadOnlyDemos.md`.

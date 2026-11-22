@@ -6,7 +6,11 @@ scope:         component
 project:       Classic Composer
 component:     demo
 language:      en
-status:        Draft
+status:        Implemented
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:          claude-opus-5-5
   original-assistant: claude-opus-4-6
@@ -72,7 +76,7 @@ exercised the lens system's full capabilities:
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D1 — Child theme inheriting parent lenses
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** See [Problem](#problem).
 
 **Decision:** The wiki's built-in theme (from `make-wiki`) provides six lens specs:
@@ -91,7 +95,7 @@ first time the demo suite exercises this inheritance.
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D2 — Infobox as separate slot-fill, not part of the :default lens
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** See [Problem](#problem).
 
 **Decision:** The infobox (sidebar with typed fields) is rendered from the
@@ -107,7 +111,7 @@ need independent positioning in the frame.
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D3 — Pre-processing body wiki-links to Lexis nodes
 
-**Status:** Proposed
+**Status:** Superseded
 **Context:** Wiki bodies contain `[[Page Name]]` references that need to become
 HTML links.
 
@@ -123,7 +127,7 @@ demo pre-processes for consistency with the other demos.
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D4 — Typed-slot anchors resolved to URIs before composition
 
-**Status:** Proposed
+**Status:** Superseded
 **Context:** Wiki typed slots (`computer-designer`, `computer-cpu`) store anchor
 strings. The composer's `apply-sublens` retrieves entities by URI.
 
@@ -134,7 +138,7 @@ sublens chain works with the generic composer machinery.
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D5 — Definition-list via HTML passthrough
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** The Lexis spec defines `definition-list` and `definition` tags
 (Section 4.3) but they are not yet implemented in the Lexis HTML
 renderer.
@@ -148,7 +152,7 @@ with semantic Lexis nodes.
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D6 — Metadata as adjunct content
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** See [Problem](#problem).
 
 **Decision:** Backlinks ("what links here"), broken links, and influence lineage
@@ -161,7 +165,7 @@ annotating the feature.
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D7 — Alphabetical index via pre-sorted container
 
-**Status:** Proposed
+**Status:** Superseded
 **Context:** The wiki index page sorts alphabetically by page anchor.
 
 **Decision:** The demo
@@ -172,7 +176,7 @@ matching the approach used in the forum demo for pin ordering.
 
 ### CCOMPOSER-DRAFT-wikirenderdemo-D8 — Amiga-era content
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Not recorded in the original.
 
 **Decision:** Pages: Jay Miner (wiki-person), Motorola 68000 (wiki-cpu), Amiga
