@@ -1,3 +1,29 @@
+---
+id:            CCOMPOSER-DRAFT-readonlydemos
+title:         Read-Only Demos and Page Links Development Log
+genre:         Log
+scope:         component
+project:       Classic Composer
+component:     demo
+language:      en
+status:        Draft
+provenance:
+  assistant:          claude-opus-5-5
+  original-assistant: claude-opus-5-5
+  migrated-from:      doc/DevLog.ReadOnlyDemos.md@06ac6bb
+relates-to:
+  - CCOMPOSER-0001
+  - CCOMPOSER-0005
+  - CCOMPOSER-DRAFT-lexismarkdown
+decisions:
+  - CCOMPOSER-DRAFT-readonlydemos-D1
+  - CCOMPOSER-DRAFT-readonlydemos-D2
+  - CCOMPOSER-DRAFT-readonlydemos-D3
+  - CCOMPOSER-DRAFT-readonlydemos-D4
+  - CCOMPOSER-DRAFT-readonlydemos-D5
+  - CCOMPOSER-DRAFT-readonlydemos-D6
+---
+
 # Read-Only Demos and Page Links: Development Log
 
 This document records two changes to the Classic Composer. The first
@@ -16,9 +42,11 @@ forum and wiki demos were not. Each rewrote stored entities so that
 the composer's generic machinery would render them, because the
 composer offered no way to compute the values instead:
 
+Table: The demos' writes to stored data, and why each was made.
+
 | Demo | Write | Why |
 |---|---|---|
-| Forum | Replaced every post's `author` (a person URI) with the member's nickname, and persisted it | A lens could not follow the reverse relation from a person to the forum account that names it (Bug D of `Log.ForumRenderDemo.md`) |
+| Forum | Replaced every post's `author` (a person URI) with the member's nickname, and persisted it | A lens could not follow the reverse relation from a person to the forum account that names it (Bug D of [CCOMPOSER-0005](Log.ForumRenderDemo.md)) |
 | Forum | Reordered the forum container's `contains` list, pinned threads first, and persisted it | The container walk read `contains` as stored, and `container-reading-order` could only keep or reverse it |
 | Wiki | Replaced the anchors in typed slots (`computer-designer`, `computer-cpu`, `cpu-designer`) with page URIs, and persisted the pages | A sublens could only retrieve a URI, and the slots name pages by anchor |
 | Wiki | Sorted the wiki container's `contains` alphabetically, and persisted it | The same limit as the forum's order |
@@ -29,42 +57,45 @@ text, and the wiki's links pointed at `/wiki/<anchor>` paths that
 kept their spaces and named pages the demo never wrote. The composer
 had no notion of an entity's page.
 
-The Markdown reader work ([Log.LexisMarkdown.md](Log.LexisMarkdown.md)) removed a fifth
+The Markdown reader work ([CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md)) removed a fifth
 write, the wiki demo's conversion of page bodies to Lexis, and listed
 these as outstanding.
 
 
 ## Design Decisions
 
-### 1. Extension generics, not a richer lens language
+### CCOMPOSER-DRAFT-readonlydemos-D1 — Extension generics, not a richer lens language
 
-Each write stood in for a computation the composer could not ask the
-application for. The composer already had two hooks of the right
+**Status:** Proposed
+**Context:** Each write stood in for a computation the composer could not ask the
+application for.
+
+**Decision:** The composer already had two hooks of the right
 kind, `container-reading-order` and `markdown-options`: a generic
 function with a default that keeps the base behavior, which an
 application specializes on its content classes. Four more follow the
 same pattern, all in `src/protocol.lisp`:
 
-- `lens-property-value (context entity property)` gives the value a
+- `lens-property-value (context entity property)` (`src/protocol.lisp:lens-property-value@7fa52ba`) gives the value a
   lens reads. The default reads the slot. A method, usually with an
   `eql` specializer on the property, defines a *computed property*: a
   name the lens uses like a slot, whose value is derived. Its display
   mode is `:text` unless the lens says otherwise, since there is no
   slot definition to consult.
-- `resolve-reference (context entity property value)` gives the
+- `resolve-reference (context entity property value)` (`src/protocol.lisp:resolve-reference@7fa52ba`) gives the
   entity a reference names. The default retrieves a URI string and
   passes an entity through. It is specialized on the class of the
   *referring* entity, since what a reference means depends on who
   holds it.
-- `entity-href (context entity)` gives the URL of the entity's page.
+- `entity-href (context entity)` (`src/protocol.lisp:entity-href@7fa52ba`) gives the URL of the entity's page.
   The default is `nil`, so nothing links until a site says how its
   pages are addressed.
-- `container-entries (context container)` gives the entities an
+- `container-entries (context container)` (`src/protocol.lisp:container-entries@7fa52ba`) gives the entities an
   aggregate view lists, in order. The default is the old container
   walk: `contains` in `container-reading-order`, skipping URIs that
   do not resolve.
 
-A more declarative alternative, such as property paths in the lens
+**Alternatives:** A more declarative alternative, such as property paths in the lens
 spec (`author / ^sioc:account_of / member-nickname`), was considered
 and not adopted. It would add a small query language to lens specs
 and still not cover the wiki's anchors or the forum's pinning rule,
@@ -77,10 +108,13 @@ through the persistence protocol (`context-query`,
 of `sioc:account_of` rather than scanning the store, as the forum
 model's `resolve-member-nickname` does.
 
-### 2. Two orders: content-type rules and presentation choices
+### CCOMPOSER-DRAFT-readonlydemos-D2 — Two orders: content-type rules and presentation choices
 
-The forum's pinned-first order and the wiki's alphabetical order look
-alike but differ in kind. Pinning is a rule of forums: the forum
+**Status:** Proposed
+**Context:** The forum's pinned-first order and the wiki's alphabetical order look
+alike but differ in kind.
+
+**Decision:** Pinning is a rule of forums: the forum
 model's own `ordered-threads` applies it, and every view of the
 forum's threads should respect it. That rule is a `container-entries`
 method on `classic-forum`, the class of the forum's root container.
@@ -101,9 +135,14 @@ Lens specs carry extra keys through `classic.schema:lens-properties`
 and `find-lens` unchanged, so neither the aggregate lens nor the
 property options below needed a change to Classic's schema.
 
-### 3. Property options: `:link :self` and `:label`
+**Alternatives:** See the Decision.
 
-`:link :self` on a lens property links its rendered value to the page
+### CCOMPOSER-DRAFT-readonlydemos-D3 — Property options: `:link :self` and `:label`
+
+**Status:** Proposed
+**Context:** Not recorded in the original.
+
+**Decision:** `:link :self` on a lens property links its rendered value to the page
 of the entity it belongs to. This is how index entries link to their
 pages, and how a sublens on a member account links the nickname to
 the profile. Blocks, which a link cannot hold, are left unlinked, and
@@ -116,9 +155,14 @@ forum's profile pages, which without it were a run of unlabeled
 values ("cQ Moderator moderator 2026-11-20 2"). It corresponds to
 Fresnel's property labels.
 
-### 4. References follow `resolve-reference` everywhere
+**Alternatives:** Not recorded in the original.
 
-Sublenses and the `:link` display mode both resolve their values
+### CCOMPOSER-DRAFT-readonlydemos-D4 — References follow `resolve-reference` everywhere
+
+**Status:** Proposed
+**Context:** Not recorded in the original.
+
+**Decision:** Sublenses and the `:link` display mode both resolve their values
 through `resolve-reference`. A resolved target in the `:link` mode is
 linked to its page, or to the reference itself when that is a URI,
 and shown by its title. An unresolved reference that is a URI is
@@ -129,17 +173,27 @@ relation slot showed the *referring* entity's label, so an author
 link read as the article's title. A resolved target now shows its own
 title.
 
-### 5. `render-lens-property` is exported
+**Alternatives:** See the Decision.
 
-`apply-lens`'s per-property body is now `render-lens-property`,
+### CCOMPOSER-DRAFT-readonlydemos-D5 — `render-lens-property` is exported
+
+**Status:** Proposed
+**Context:** Not recorded in the original.
+
+**Decision:** `apply-lens`'s per-property body is now `render-lens-property`,
 exported for code that lays properties out itself. The wiki demo's
 infobox, which pairs each property with a caption in a definition
 list, is the first user. Before, it re-implemented sublens and link
 rendering and relied on the rewritten slots.
 
-### 6. Each demo writes a linked static site
+**Alternatives:** See the Decision.
 
-Each demo now renders every page its links reach, under its own
+### CCOMPOSER-DRAFT-readonlydemos-D6 — Each demo writes a linked static site
+
+**Status:** Proposed
+**Context:** See [Problem](#problem).
+
+**Decision:** Each demo now renders every page its links reach, under its own
 directory: `doc/demos/blog/`, `doc/demos/forum/` and
 `doc/demos/wiki/`, each starting at `index.html`. Its `entity-href`
 methods name pages from labels, nicknames or anchors (`thread-favorite-macro.html`,
@@ -151,40 +205,42 @@ is one directory deeper, `../../../examples/static/`.
 
 Each demo carries its own `slugify`, keeping it self-contained.
 
+**Alternatives:** See the Decision.
+
 
 ## Implementation
 
-- **`src/protocol.lisp`.** The four generics, with defaults for
-  `lens-property-value`, `resolve-reference` and `entity-href`.
-- **`src/lens.lisp`.**
-  - `apply-lens` delegates to `render-lens-property`, which reads
+- **`src/protocol.lisp@7fa52ba`.** The four generics, with defaults for
+  `src/protocol.lisp:lens-property-value@7fa52ba`, `src/protocol.lisp:resolve-reference@7fa52ba` and `src/protocol.lisp:entity-href@7fa52ba`.
+- **`src/lens.lisp@7fa52ba`.**
+  - `src/lens.lisp:apply-lens@7fa52ba` delegates to `src/lens.lisp:render-lens-property@7fa52ba`, which reads
     values with `lens-property-value` and applies `:link :self` and
     `:label`.
-  - `render-reference-link` renders the `:link` mode, and
-    `uri-like-p` decides whether a value is a URI.
-  - `apply-sublens` and `apply-sublens-single` take `:entity` and
+  - `src/lens.lisp:render-reference-link@7fa52ba` renders the `:link` mode, and
+    `src/lens.lisp:uri-like-p@7fa52ba` decides whether a value is a URI.
+  - `src/lens.lisp:apply-sublens@7fa52ba` and `src/lens.lisp:apply-sublens-single@7fa52ba` take `:entity` and
     `:property` and resolve through `resolve-reference`.
-  - `block-node-p` tells block nodes from inline ones.
-- **`src/defaults.lisp`.**
-  - The default `container-entries` and `sort-entities`.
-  - `compose-container-entries` lists what `container-entries`
-    gives, and `compose-container-entry` takes an entity.
+  - `src/lens.lisp:block-node-p@7fa52ba` tells block nodes from inline ones.
+- **`src/defaults.lisp@7fa52ba`.**
+  - The default `src/defaults.lisp:container-entries@7fa52ba` and `src/defaults.lisp:sort-entities@7fa52ba`.
+  - `src/defaults.lisp:compose-container-entries@7fa52ba` lists what `src/defaults.lisp:container-entries@7fa52ba`
+    gives, and `src/defaults.lisp:compose-container-entry@7fa52ba` takes an entity.
   - The label fallback for entries without a lens links to the
     entry's page.
-- **`examples/forum-demo.lisp`.**
-  - `container-entries` on `classic-forum` puts pinned threads first.
+- **`examples/forum-demo.lisp@7fa52ba`.**
+  - `examples/forum-demo.lisp:container-entries@7fa52ba` on `classic-forum` puts pinned threads first.
   - Two computed properties: `post-author-account` (the reverse
     relation) and `member-role`.
-  - `entity-href` for threads, accounts and the forum.
+  - `examples/forum-demo.lisp:entity-href@7fa52ba` for threads, accounts and the forum.
   - A `:label` lens on `forum-account` links nicknames, and a
     `:default` lens makes the profile page.
   - The pages are the index, every thread and every member's
     profile.
   - `resolve-authors-to-nicknames` and the container reordering are
     removed.
-- **`examples/wiki-demo.lisp`.**
-  - `resolve-reference` on `wiki-page` looks anchors up.
-  - `entity-href` names page files, and the Markdown link resolver
+- **`examples/wiki-demo.lisp@7fa52ba`.**
+  - `examples/wiki-demo.lisp:resolve-reference@7fa52ba` on `wiki-page` looks anchors up.
+  - `examples/wiki-demo.lisp:entity-href@7fa52ba` names page files, and the Markdown link resolver
     and the backlinks use it.
   - The child theme gets an aggregate lens.
   - The infobox renders its values with `render-lens-property`.
@@ -192,10 +248,10 @@ Each demo carries its own `slugify`, keeping it self-contained.
   - `resolve-typed-slots-to-uris`, `pre-process-all-pages`,
     `make-minimal-sublens-context` and the container sort are
     removed.
-- **`examples/blog-demo.lisp`.** `entity-href` for posts, a linked
+- **`examples/blog-demo.lisp@7fa52ba`.** `examples/blog-demo.lisp:entity-href@7fa52ba` for posts, a linked
   summary headline, and pages for the index and every post.
 - **Tests.**
-  - `test/helpers.lisp` gains `hooks-test-context`, a context
+  - `test/helpers.lisp@7fa52ba` gains `test/helpers.lisp:hooks-test-context@7fa52ba`, a context
     subclass whose methods for the four generics read its slots. A
     test drives the generics through the context, and no method
     leaks into other contexts.
@@ -234,22 +290,24 @@ Each demo carries its own `slugify`, keeping it self-contained.
 
 ## Files
 
-| Action | File | Description |
+Table: Files created, modified or deleted by this work.
+
+| File | Action | Description |
 |---|---|---|
-| Modified | `src/protocol.lisp` | `lens-property-value`, `resolve-reference`, `entity-href`, `container-entries` |
-| Modified | `src/lens.lisp` | `render-lens-property`, property options, reference links, sublens resolution |
-| Modified | `src/defaults.lisp` | Default `container-entries`, aggregate-lens sorting, entity-based container entries |
-| Modified | `src/packages.lisp` | Exported the generics and `render-lens-property` |
-| Modified | `test/helpers.lisp` | `make-test-container`, `hooks-test-context` |
-| Modified | `test/test-lens.lisp` | Property value, option, link-mode and reference tests |
-| Modified | `test/test-defaults.lisp` | Container entry order, sorting and linking tests |
-| Modified | `examples/blog-demo.lisp` | Page links; pages for the index and every post |
-| Modified | `examples/forum-demo.lisp` | Read-only composition rules; page links; thread and profile pages |
-| Modified | `examples/wiki-demo.lisp` | Read-only references and order; page links; a page per article |
-| Created | `doc/demos/blog/`, `doc/demos/forum/`, `doc/demos/wiki/` | The rendered sites |
-| Deleted | `doc/demos/*-output.html` | The six single-page outputs, superseded |
-| Modified | `README.md`, `doc/Composer.md` | Extension generics, property options, aggregate lenses, demo output |
-| Created | this file | |
+| `src/protocol.lisp` | Modified | `lens-property-value`, `resolve-reference`, `entity-href`, `container-entries` |
+| `src/lens.lisp` | Modified | `render-lens-property`, property options, reference links, sublens resolution |
+| `src/defaults.lisp` | Modified | Default `container-entries`, aggregate-lens sorting, entity-based container entries |
+| `src/packages.lisp` | Modified | Exported the generics and `render-lens-property` |
+| `test/helpers.lisp` | Modified | `make-test-container`, `hooks-test-context` |
+| `test/test-lens.lisp` | Modified | Property value, option, link-mode and reference tests |
+| `test/test-defaults.lisp` | Modified | Container entry order, sorting and linking tests |
+| `examples/blog-demo.lisp` | Modified | Page links; pages for the index and every post |
+| `examples/forum-demo.lisp` | Modified | Read-only composition rules; page links; thread and profile pages |
+| `examples/wiki-demo.lisp` | Modified | Read-only references and order; page links; a page per article |
+| `doc/demos/blog/`, `doc/demos/forum/`, `doc/demos/wiki/` | Created | The rendered sites |
+| `doc/demos/*-output.html` | Deleted | The six single-page outputs, superseded |
+| `README.md`, `doc/Composer.md` | Modified | Extension generics, property options, aggregate lenses, demo output |
+| this file | Created | |
 
 
 ## Outstanding Work
@@ -266,5 +324,5 @@ Each demo carries its own `slugify`, keeping it self-contained.
   placeholders and lock notices are not yet shown. Computed
   properties now make each of these a method and a lens entry.
 - **Heading depth** (LEXIS-O3) and the **wiki infobox as Lexis**
-  remain as [Log.LexisMarkdown.md](Log.LexisMarkdown.md) describes them. The infobox
+  remain as [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) describes them. The infobox
   stays a passthrough because the Lexis HTML renderer drops classes.
