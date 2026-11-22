@@ -15,9 +15,9 @@ Table: Documents in the CCOMPOSER namespace.
 | [CCOMPOSER-0003](Log.ThemeResolution.md) | Theme Resolution Development Log | Log | component | Implemented | theme |
 | [CCOMPOSER-0004](Log.FullRenderDemo.md) | Full Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-0005](Log.ForumRenderDemo.md) | Forum Render Demo Development Log | Log | component | Implemented | demo |
+| [CCOMPOSER-0006](Log.WikiRenderDemo.md) | Wiki Render Demo Development Log | Log | component | Implemented | demo |
 | [CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) | Compass Migration Development Log | Log | project | Draft | — |
 | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | Lexis Markdown Integration Development Log | Log | component | Draft | lens |
-| [CCOMPOSER-DRAFT-wikirenderdemo](Log.WikiRenderDemo.md) | Wiki Render Demo Development Log | Log | component | Draft | demo |
 
 Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 
@@ -55,6 +55,14 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-D30](Log.ForumRenderDemo.md#ccomposer-d30--forum-thread-uses-created-at-not-date-created) | Decision | Forum-thread uses created-at not date-created | Implemented | CCOMPOSER-0005 |
 | [CCOMPOSER-D31](Log.ForumRenderDemo.md#ccomposer-d31--post-bodies-are-plain-strings-not-lexis-subtrees) | Decision | Post bodies are plain strings, not Lexis subtrees | Superseded | CCOMPOSER-0005 |
 | [CCOMPOSER-D32](Log.ForumRenderDemo.md#ccomposer-d32--stickers-render-as-a-plain-list) | Decision | Stickers render as a plain list | Implemented | CCOMPOSER-0005 |
+| [CCOMPOSER-D33](Log.WikiRenderDemo.md#ccomposer-d33--child-theme-inheriting-parent-lenses) | Decision | Child theme inheriting parent lenses | Implemented | CCOMPOSER-0006 |
+| [CCOMPOSER-D34](Log.WikiRenderDemo.md#ccomposer-d34--infobox-as-separate-slot-fill-not-part-of-the-default-lens) | Decision | Infobox as separate slot-fill, not part of the :default lens | Implemented | CCOMPOSER-0006 |
+| [CCOMPOSER-D35](Log.WikiRenderDemo.md#ccomposer-d35--pre-processing-body-wiki-links-to-lexis-nodes) | Decision | Pre-processing body wiki-links to Lexis nodes | Superseded | CCOMPOSER-0006 |
+| [CCOMPOSER-D36](Log.WikiRenderDemo.md#ccomposer-d36--typed-slot-anchors-resolved-to-uris-before-composition) | Decision | Typed-slot anchors resolved to URIs before composition | Superseded | CCOMPOSER-0006 |
+| [CCOMPOSER-D37](Log.WikiRenderDemo.md#ccomposer-d37--definition-list-via-html-passthrough) | Decision | Definition-list via HTML passthrough | Implemented | CCOMPOSER-0006 |
+| [CCOMPOSER-D38](Log.WikiRenderDemo.md#ccomposer-d38--metadata-as-adjunct-content) | Decision | Metadata as adjunct content | Implemented | CCOMPOSER-0006 |
+| [CCOMPOSER-D39](Log.WikiRenderDemo.md#ccomposer-d39--alphabetical-index-via-pre-sorted-container) | Decision | Alphabetical index via pre-sorted container | Superseded | CCOMPOSER-0006 |
+| [CCOMPOSER-D40](Log.WikiRenderDemo.md#ccomposer-d40--amiga-era-content) | Decision | Amiga-era content | Implemented | CCOMPOSER-0006 |
 | [CCOMPOSER-DRAFT-compass-migration-D1](Log.CompassMigration.md#ccomposer-draft-compass-migration-d1--this-log-is-the-migrations-record-with-no-plan-of-its-own) | Decision | This Log is the migration's record, with no Plan of its own | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D2](Log.CompassMigration.md#ccomposer-draft-compass-migration-d2--a-document-replaced-by-a-native-one-is-deleted-not-migrated) | Decision | A document replaced by a native one is deleted, not migrated | Proposed | CCOMPOSER-DRAFT-compass-migration |
 | [CCOMPOSER-DRAFT-compass-migration-D3](Log.CompassMigration.md#ccomposer-draft-compass-migration-d3--the-architecture-document-becomes-an-architecture-now-and-a-ref-is-split-from-it-afterwards) | Decision | The architecture document becomes an Architecture now and a Ref is split from it afterwards | Proposed | CCOMPOSER-DRAFT-compass-migration |
@@ -64,14 +72,6 @@ Table: Decision, open-question, and memo records in the CCOMPOSER namespace.
 | [CCOMPOSER-DRAFT-lexismarkdown-D3](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d3--multi-block-bodies-are-spliced-not-wrapped) | Decision | Multi-block bodies are spliced, not wrapped | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D4](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d4--the-body-fallback-reads-markdown-bodies) | Decision | The body fallback reads Markdown bodies | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
 | [CCOMPOSER-DRAFT-lexismarkdown-D6](Log.LexisMarkdown.md#ccomposer-draft-lexismarkdown-d6--the-wiki-demo-resolves-wiki-links-during-composition) | Decision | The wiki demo resolves wiki links during composition | Proposed | CCOMPOSER-DRAFT-lexismarkdown |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D1](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d1--child-theme-inheriting-parent-lenses) | Decision | Child theme inheriting parent lenses | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D2](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d2--infobox-as-separate-slot-fill-not-part-of-the-default-lens) | Decision | Infobox as separate slot-fill, not part of the :default lens | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D3](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d3--pre-processing-body-wiki-links-to-lexis-nodes) | Decision | Pre-processing body wiki-links to Lexis nodes | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D4](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d4--typed-slot-anchors-resolved-to-uris-before-composition) | Decision | Typed-slot anchors resolved to URIs before composition | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D5](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d5--definition-list-via-html-passthrough) | Decision | Definition-list via HTML passthrough | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D6](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d6--metadata-as-adjunct-content) | Decision | Metadata as adjunct content | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D7](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d7--alphabetical-index-via-pre-sorted-container) | Decision | Alphabetical index via pre-sorted container | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
-| [CCOMPOSER-DRAFT-wikirenderdemo-D8](Log.WikiRenderDemo.md#ccomposer-draft-wikirenderdemo-d8--amiga-era-content) | Decision | Amiga-era content | Proposed | CCOMPOSER-DRAFT-wikirenderdemo |
 | [CCOMPOSER-O1](Arch.Composer.md#ccomposer-o1--how-do-capabilities-take-part-in-composition) | Open question | How do capabilities take part in composition? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O2](Arch.Composer.md#ccomposer-o2--how-is-a-complex-template-declared) | Open question | How is a complex template declared? | — | CCOMPOSER-0001 |
 | [CCOMPOSER-O3](Arch.Composer.md#ccomposer-o3--what-is-the-operative-spec-and-how-does-seed-receive-it) | Open question | What is the operative spec, and how does Seed receive it? | — | CCOMPOSER-0001 |

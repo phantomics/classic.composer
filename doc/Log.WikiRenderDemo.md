@@ -1,5 +1,5 @@
 ---
-id:            CCOMPOSER-DRAFT-wikirenderdemo
+id:            CCOMPOSER-0006
 title:         Wiki Render Demo Development Log
 genre:         Log
 scope:         component
@@ -16,14 +16,14 @@ provenance:
   original-assistant: claude-opus-4-6
   migrated-from:      doc/DevLog.WikiRenderDemo.md@b9ad8c1
 decisions:
-  - CCOMPOSER-DRAFT-wikirenderdemo-D1
-  - CCOMPOSER-DRAFT-wikirenderdemo-D2
-  - CCOMPOSER-DRAFT-wikirenderdemo-D3
-  - CCOMPOSER-DRAFT-wikirenderdemo-D4
-  - CCOMPOSER-DRAFT-wikirenderdemo-D5
-  - CCOMPOSER-DRAFT-wikirenderdemo-D6
-  - CCOMPOSER-DRAFT-wikirenderdemo-D7
-  - CCOMPOSER-DRAFT-wikirenderdemo-D8
+  - CCOMPOSER-D33
+  - CCOMPOSER-D34
+  - CCOMPOSER-D35
+  - CCOMPOSER-D36
+  - CCOMPOSER-D37
+  - CCOMPOSER-D38
+  - CCOMPOSER-D39
+  - CCOMPOSER-D40
 ---
 
 # Wiki Render Demo: Development Log
@@ -74,7 +74,7 @@ exercised the lens system's full capabilities:
 
 ## Design Decisions
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D1 — Child theme inheriting parent lenses
+### CCOMPOSER-D33 — Child theme inheriting parent lenses
 
 **Status:** Implemented
 **Context:** See [Problem](#problem).
@@ -93,7 +93,7 @@ first time the demo suite exercises this inheritance.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D2 — Infobox as separate slot-fill, not part of the :default lens
+### CCOMPOSER-D34 — Infobox as separate slot-fill, not part of the :default lens
 
 **Status:** Implemented
 **Context:** See [Problem](#problem).
@@ -109,7 +109,7 @@ body.
 and body properties) would conflate two distinct page regions that
 need independent positioning in the frame.
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D3 — Pre-processing body wiki-links to Lexis nodes
+### CCOMPOSER-D35 — Pre-processing body wiki-links to Lexis nodes
 
 **Status:** Superseded
 **Context:** Wiki bodies contain `[[Page Name]]` references that need to become
@@ -125,7 +125,7 @@ processed body is stored as a Lexis subtree and rendered via
 that intercepts the body property and performs link resolution. The
 demo pre-processes for consistency with the other demos.
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D4 — Typed-slot anchors resolved to URIs before composition
+### CCOMPOSER-D36 — Typed-slot anchors resolved to URIs before composition
 
 **Status:** Superseded
 **Context:** Wiki typed slots (`computer-designer`, `computer-cpu`) store anchor
@@ -136,7 +136,7 @@ sublens chain works with the generic composer machinery.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D5 — Definition-list via HTML passthrough
+### CCOMPOSER-D37 — Definition-list via HTML passthrough
 
 **Status:** Implemented
 **Context:** The Lexis spec defines `definition-list` and `definition` tags
@@ -150,7 +150,7 @@ with semantic Lexis nodes.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D6 — Metadata as adjunct content
+### CCOMPOSER-D38 — Metadata as adjunct content
 
 **Status:** Implemented
 **Context:** See [Problem](#problem).
@@ -163,7 +163,7 @@ annotating the feature.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D7 — Alphabetical index via pre-sorted container
+### CCOMPOSER-D39 — Alphabetical index via pre-sorted container
 
 **Status:** Superseded
 **Context:** The wiki index page sorts alphabetically by page anchor.
@@ -174,7 +174,7 @@ matching the approach used in the forum demo for pin ordering.
 
 **Alternatives:** Not recorded in the original.
 
-### CCOMPOSER-DRAFT-wikirenderdemo-D8 — Amiga-era content
+### CCOMPOSER-D40 — Amiga-era content
 
 **Status:** Implemented
 **Context:** Not recorded in the original.
@@ -314,4 +314,4 @@ Table: Files created or modified by this work.
 
 ## Outstanding Work
 
-Deferred; see CCOMPOSER-DRAFT-wikirenderdemo-D3 and CCOMPOSER-DRAFT-wikirenderdemo-D5.
+Deferred; see CCOMPOSER-D35 and CCOMPOSER-D37.
