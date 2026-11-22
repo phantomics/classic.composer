@@ -1,3 +1,27 @@
+---
+id:            CCOMPOSER-DRAFT-wikirenderdemo
+title:         Wiki Render Demo Development Log
+genre:         Log
+scope:         component
+project:       Classic Composer
+component:     demo
+language:      en
+status:        Draft
+provenance:
+  assistant:          claude-opus-5-5
+  original-assistant: claude-opus-4-6
+  migrated-from:      doc/DevLog.WikiRenderDemo.md@b9ad8c1
+decisions:
+  - CCOMPOSER-DRAFT-wikirenderdemo-D1
+  - CCOMPOSER-DRAFT-wikirenderdemo-D2
+  - CCOMPOSER-DRAFT-wikirenderdemo-D3
+  - CCOMPOSER-DRAFT-wikirenderdemo-D4
+  - CCOMPOSER-DRAFT-wikirenderdemo-D5
+  - CCOMPOSER-DRAFT-wikirenderdemo-D6
+  - CCOMPOSER-DRAFT-wikirenderdemo-D7
+  - CCOMPOSER-DRAFT-wikirenderdemo-D8
+---
+
 # Wiki Render Demo: Development Log
 
 This document chronicles the addition of a wiki rendering demo to
@@ -46,9 +70,12 @@ exercised the lens system's full capabilities:
 
 ## Design Decisions
 
-### 1. Child theme inheriting parent lenses
+### CCOMPOSER-DRAFT-wikirenderdemo-D1 — Child theme inheriting parent lenses
 
-The wiki's built-in theme (from `make-wiki`) provides six lens specs:
+**Status:** Proposed
+**Context:** See [Problem](#problem).
+
+**Decision:** The wiki's built-in theme (from `make-wiki`) provides six lens specs:
 `:infobox` and `:label` for `wiki-computer`, `wiki-cpu`, and
 `wiki-person`. The demo's child theme adds four more: `:default` and
 `:summary` for `wiki-page` (the common superclass). The composer
@@ -60,65 +87,95 @@ resolution walks the chain and preserves parent lenses for
 `(class, purpose)` pairs the child doesn't override. This is the
 first time the demo suite exercises this inheritance.
 
-### 2. Infobox as separate slot-fill, not part of the :default lens
+**Alternatives:** Not recorded in the original.
 
-The infobox (sidebar with typed fields) is rendered from the
+### CCOMPOSER-DRAFT-wikirenderdemo-D2 — Infobox as separate slot-fill, not part of the :default lens
+
+**Status:** Proposed
+**Context:** See [Problem](#problem).
+
+**Decision:** The infobox (sidebar with typed fields) is rendered from the
 `:infobox` lens and bound to the `"page.infobox"` template slot.
 The main article body is rendered from the `:default` lens and bound
 to `"main-content"`. This respects the tier model: the infobox is
 structurally positioned by the frame template, not embedded in the
 body.
 
-The alternative (a single `:default` lens containing both infobox
+**Alternatives:** The alternative (a single `:default` lens containing both infobox
 and body properties) would conflate two distinct page regions that
 need independent positioning in the frame.
 
-### 3. Pre-processing body wiki-links to Lexis nodes
+### CCOMPOSER-DRAFT-wikirenderdemo-D3 — Pre-processing body wiki-links to Lexis nodes
 
-Wiki bodies contain `[[Page Name]]` references that need to become
-HTML links. The demo pre-processes bodies during setup, converting
+**Status:** Proposed
+**Context:** Wiki bodies contain `[[Page Name]]` references that need to become
+HTML links.
+
+**Decision:** The demo pre-processes bodies during setup, converting
 `[[refs]]` to `(web-link ...)` nodes for resolved links and
 `(emphasis (@ :class "broken-link") "Name")` for broken links. The
 processed body is stored as a Lexis subtree and rendered via
 `:display :html` in the `:default` lens.
 
-A production wiki would handle this at render time via a capability
+**Alternatives:** A production wiki would handle this at render time via a capability
 that intercepts the body property and performs link resolution. The
 demo pre-processes for consistency with the other demos.
 
-### 4. Typed-slot anchors resolved to URIs before composition
+### CCOMPOSER-DRAFT-wikirenderdemo-D4 — Typed-slot anchors resolved to URIs before composition
 
-Wiki typed slots (`computer-designer`, `computer-cpu`) store anchor
+**Status:** Proposed
+**Context:** Wiki typed slots (`computer-designer`, `computer-cpu`) store anchor
 strings. The composer's `apply-sublens` retrieves entities by URI.
-The demo resolves anchors to URIs during pre-processing so the
+
+**Decision:** The demo resolves anchors to URIs during pre-processing so the
 sublens chain works with the generic composer machinery.
 
-### 5. Definition-list via HTML passthrough
+**Alternatives:** Not recorded in the original.
 
-The Lexis spec defines `definition-list` and `definition` tags
+### CCOMPOSER-DRAFT-wikirenderdemo-D5 — Definition-list via HTML passthrough
+
+**Status:** Proposed
+**Context:** The Lexis spec defines `definition-list` and `definition` tags
 (Section 4.3) but they are not yet implemented in the Lexis HTML
-renderer. The demo uses `(passthrough (@ :medium :html) (:dl ...))` 
+renderer.
+
+**Decision:** The demo uses `(passthrough (@ :medium :html) (:dl ...))` 
 to emit proper `<dl>/<dt>/<dd>` HTML directly. When Lexis adds
 native `definition-list` support, the passthrough can be replaced
 with semantic Lexis nodes.
 
-### 6. Metadata as adjunct content
+**Alternatives:** Not recorded in the original.
 
-Backlinks ("what links here"), broken links, and influence lineage
+### CCOMPOSER-DRAFT-wikirenderdemo-D6 — Metadata as adjunct content
+
+**Status:** Proposed
+**Context:** See [Problem](#problem).
+
+**Decision:** Backlinks ("what links here"), broken links, and influence lineage
 are assembled during pre-processing and bound to `"adjunct-content"`.
 The frame template positions this below the main content. This is
 the intended use of the adjunct tier: content subordinate to or
 annotating the feature.
 
-### 7. Alphabetical index via pre-sorted container
+**Alternatives:** Not recorded in the original.
 
-The wiki index page sorts alphabetically by page anchor. The demo
+### CCOMPOSER-DRAFT-wikirenderdemo-D7 — Alphabetical index via pre-sorted container
+
+**Status:** Proposed
+**Context:** The wiki index page sorts alphabetically by page anchor.
+
+**Decision:** The demo
 pre-sorts the container's `contains` list before composition,
 matching the approach used in the forum demo for pin ordering.
 
-### 8. Amiga-era content
+**Alternatives:** Not recorded in the original.
 
-Pages: Jay Miner (wiki-person), Motorola 68000 (wiki-cpu), Amiga
+### CCOMPOSER-DRAFT-wikirenderdemo-D8 — Amiga-era content
+
+**Status:** Proposed
+**Context:** Not recorded in the original.
+
+**Decision:** Pages: Jay Miner (wiki-person), Motorola 68000 (wiki-cpu), Amiga
 1000 (wiki-computer), AmigaOS (generic wiki-page with alist
 infobox). The Amiga 1000 references both Jay Miner (via
 `computer-designer` typed slot) and Motorola 68000 (via
@@ -126,16 +183,18 @@ infobox). The Amiga 1000 references both Jay Miner (via
 body. This exercises all three cross-reference mechanisms: typed
 slot `:link`, sublens chain, and body wiki-link.
 
+**Alternatives:** Not recorded in the original.
+
 
 ## Implementation
 
-### `examples/wiki-demo.lisp` (~500 lines)
+### `examples/wiki-demo.lisp@b9ad8c1` (~500 lines)
 
-**`setup-wiki`** creates the wiki with 4 pages in dependency order
+**`examples/wiki-demo.lisp:setup-wiki@b9ad8c1`** creates the wiki with 4 pages in dependency order
 (person first, then CPU, then computer, then generic OS page).
 Pages are published via the editorial workflow.
 
-**`setup-child-theme`** creates a child theme:
+**`examples/wiki-demo.lisp:setup-child-theme@b9ad8c1`** creates a child theme:
 - Parent: the wiki's built-in theme URI
 - Frame template with 8 slots (title, assets, brand, infobox,
   main-content, aggregate-content, adjunct-content, footer)
@@ -144,37 +203,39 @@ Pages are published via the editorial workflow.
 - `:default` lens for `wiki-page` (headline + body as `:html`)
 - `:summary` lens for `wiki-page` (headline + created-at as `:date`)
 
-**`pre-process-all-pages`** runs two passes over all pages:
-1. `resolve-typed-slots-to-uris` — converts anchor strings to URIs
+**`examples/wiki-demo.lisp:pre-process-all-pages@b9ad8c1`** runs two passes over all pages:
+1. `examples/wiki-demo.lisp:resolve-typed-slots-to-uris@b9ad8c1` — converts anchor strings to URIs
    for sublens resolution
-2. `convert-wiki-body-to-lexis` — parses `[[refs]]` and produces
+2. `examples/wiki-demo.lisp:convert-wiki-body-to-lexis@b9ad8c1` — parses `[[refs]]` and produces
    Lexis subtrees with `(web-link ...)` and broken-link markers
 
-**`render-infobox-to-lexis`** walks the `:infobox` lens for the
+**`examples/wiki-demo.lisp:render-infobox-to-lexis@b9ad8c1`** walks the `:infobox` lens for the
 page's class, renders each property (with display modes and sublens
 resolution), and assembles a `<dl>` via HTML passthrough. For
 generic pages, renders the alist infobox as `<dl>` entries.
 
-**`assemble-page-metadata`** builds adjunct content sections:
+**`examples/wiki-demo.lisp:assemble-page-metadata@b9ad8c1`** builds adjunct content sections:
 backlinks as a linked list, broken links as text, influence lineage.
 
-**`render-page-view`** composes the Amiga 1000 article:
+**`examples/wiki-demo.lisp:render-page-view@b9ad8c1`** composes the Amiga 1000 article:
 1. Creates composition context (theme resolves automatically)
 2. Renders infobox via `:infobox` lens and binds to `"page.infobox"`
 3. Assembles metadata and binds as `"adjunct-content"`
 4. Calls `compose-page` (which uses `:default` lens for the feature)
 
-**`render-index-page`** sets entity to the wiki container,
+**`examples/wiki-demo.lisp:render-index-page@b9ad8c1`** sets entity to the wiki container,
 pre-sorts alphabetically, and composes. `compose-aggregate`
 walks the container and applies `:summary` lenses to each entry.
 
-### `examples/static/wiki.css` (~120 lines)
+### `examples/static/wiki.css@b9ad8c1` (~120 lines)
 
 Styles for infobox (`<dl>` with gray background, uppercase labels),
 broken links (red), wiki header/footer, and aggregate entries.
 
 
 ## What This Exercises for the First Time
+
+Table: Features this demo exercised for the first time, and their status before it.
 
 | Feature | Status before this demo |
 |---|---|
@@ -235,11 +296,18 @@ AmigaOS, Jay Miner, Motorola 68000, each with a creation date.
 
 ## Files
 
-| Action | File | Description |
+Table: Files created or modified by this work.
+
+| File | Action | Description |
 |---|---|---|
-| Created | `examples/wiki-demo.lisp` | Self-contained demo (~500 lines) |
-| Created | `examples/static/wiki.css` | Reference stylesheet (~120 lines) |
-| Created | `doc/demos/wiki-page-output.html` | Rendered Amiga 1000 article page |
-| Created | `doc/demos/wiki-index-output.html` | Rendered alphabetical index |
-| Modified | `README.md` | Added wiki demo to demos table and structure |
-| Created | this file | |
+| `examples/wiki-demo.lisp` | Created | Self-contained demo (~500 lines) |
+| `examples/static/wiki.css` | Created | Reference stylesheet (~120 lines) |
+| `doc/demos/wiki-page-output.html` | Created | Rendered Amiga 1000 article page |
+| `doc/demos/wiki-index-output.html` | Created | Rendered alphabetical index |
+| `README.md` | Modified | Added wiki demo to demos table and structure |
+| this file | Created | |
+
+
+## Outstanding Work
+
+Deferred; see CCOMPOSER-DRAFT-wikirenderdemo-D3 and CCOMPOSER-DRAFT-wikirenderdemo-D5.
