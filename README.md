@@ -440,7 +440,7 @@ doc/
   Log.LexisMarkdown.md      -- Lexis Markdown reader integration log
   INDEX.md                  -- Compass document index (generated)
   REGISTRY.sexp             -- Compass allocation ledger
-  DevLog.ReadOnlyDemos.md   -- extension generics and page links log
+  Log.ReadOnlyDemos.md      -- extension generics and page links log
   demos/
     blog/    -- blog demo: index.html + a page per post
     forum/   -- forum demo: index.html + thread-*.html + member-*.html

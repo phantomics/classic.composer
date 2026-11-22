@@ -319,5 +319,5 @@ Table: Files added or changed in commit `ac700d0`.
   writes to stored data outstanding. Commit `7fa52ba` resolved both:
   the composer's extension generics replaced the writes, and each demo
   became a site of linked pages. That work is recorded in
-  [DevLog.ReadOnlyDemos.md](DevLog.ReadOnlyDemos.md), not yet
+  [DevLog.ReadOnlyDemos.md](Log.ReadOnlyDemos.md), not yet
   migrated.

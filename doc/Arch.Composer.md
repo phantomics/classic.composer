@@ -147,7 +147,7 @@ composer would need write access to the store, the read path of
 composition would become a write path, and a display choice would
 change the data for every other reader. The forum and wiki demos once wrote such values; they
 were rewritten to compute them, as
-[DevLog.ReadOnlyDemos.md](DevLog.ReadOnlyDemos.md) records.
+[DevLog.ReadOnlyDemos.md](Log.ReadOnlyDemos.md) records.
 
 ### CCOMPOSER-D2 — Tiers are defined by structural role, not application domain
 

@@ -41,9 +41,9 @@ Project-specific facts the skills cannot infer:
 - Migration: recorded in `doc/Log.CompassMigration.md`
   (CCOMPOSER-DRAFT-compass-migration), which takes an `## Update` section
   for each document migrated. The one document still without front-matter
-  is `DevLog.ReadOnlyDemos.md` in `doc/`; it remains as it is, to be
-  migrated with `compass-migrate`, and until then checks run with
-  `--skip-unmarked`. `README.md` is not a Compass document.
+  is `Log.ReadOnlyDemos.md` in `doc/` (formerly `DevLog.ReadOnlyDemos.md`),
+  which is being migrated with `compass-migrate`; until it is, checks run
+  with `--skip-unmarked`. `README.md` is not a Compass document.
 
 Essentials (full rules in Compass.md): every document opens with a §7 YAML
 front-matter block; genre and status use the controlled vocabularies; decision

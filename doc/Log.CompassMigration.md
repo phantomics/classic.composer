@@ -259,7 +259,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
   - `doc/DevLog.FullRenderDemo.md` (now `doc/Log.FullRenderDemo.md`)
   - `doc/DevLog.ForumRenderDemo.md` (now `doc/Log.ForumRenderDemo.md`)
   - `doc/DevLog.WikiRenderDemo.md` (now `doc/Log.WikiRenderDemo.md`)
-  - `doc/DevLog.ReadOnlyDemos.md`
+  - `doc/DevLog.ReadOnlyDemos.md` (now `doc/Log.ReadOnlyDemos.md`)
 - **Acceptance and numbering.** Every document and record keeps its
   provisional identifier until the steward sets an accepted status and
   asks for `compass assign`.
@@ -420,7 +420,8 @@ whole as the Log
 Four documents remain unmarked: `doc/DevLog.FullRenderDemo.md` (now
 `doc/Log.FullRenderDemo.md`), `doc/DevLog.ForumRenderDemo.md` (now
 `doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` (now
-`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md`.
+`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md` (now
+`doc/Log.ReadOnlyDemos.md`).
 
 ## Update 2026-11-21 — doc/DevLog.FullRenderDemo.md
 
@@ -496,7 +497,8 @@ migrated whole as the Log
 
 Three documents remain unmarked: `doc/DevLog.ForumRenderDemo.md` (now
 `doc/Log.ForumRenderDemo.md`), `doc/DevLog.WikiRenderDemo.md` (now
-`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md`.
+`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md` (now
+`doc/Log.ReadOnlyDemos.md`).
 
 ## Update 2026-11-21 — doc/DevLog.ForumRenderDemo.md
 
@@ -513,7 +515,8 @@ as the Log [CCOMPOSER-0005](Log.ForumRenderDemo.md).
   revision was pointed at the new path, and after the reshape given
   the document's identifier as its text; the three mentions in this
   Log that record history were given the new path after them. The
-  unmigrated `doc/DevLog.ReadOnlyDemos.md` names it by file name, and
+  unmigrated `doc/DevLog.ReadOnlyDemos.md` (now `doc/Log.ReadOnlyDemos.md`)
+  names it by file name, and
   that name was updated too.
 - **Reshape** (`4c8012a`), form only:
   - front-matter as CCOMPOSER-0005: genre `Log`, scope
@@ -576,7 +579,8 @@ as the Log [CCOMPOSER-0005](Log.ForumRenderDemo.md).
     documents, CLASSIC-0019 and CLASSIC-0020.
 
 Two documents remain unmarked: `doc/DevLog.WikiRenderDemo.md` (now
-`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md`.
+`doc/Log.WikiRenderDemo.md`) and `doc/DevLog.ReadOnlyDemos.md` (now
+`doc/Log.ReadOnlyDemos.md`).
 
 ## Update 2026-11-21 — doc/DevLog.WikiRenderDemo.md
 
@@ -645,4 +649,5 @@ the Log [CCOMPOSER-0006](Log.WikiRenderDemo.md).
   - "Lexis spec (Section 4.3)" names LEXIS-0001, and "Classic core's
     REPL demo" the Wiki Preset Guide, CLASSIC-0021, without links.
 
-One document remains unmarked: `doc/DevLog.ReadOnlyDemos.md`.
+One document remains unmarked: `doc/DevLog.ReadOnlyDemos.md` (now
+`doc/Log.ReadOnlyDemos.md`).
