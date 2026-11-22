@@ -66,3 +66,8 @@
 (:id "CCOMPOSER-D49" :kind :decision :draft "CCOMPOSER-DRAFT-lexismarkdown-D3" :host "CCOMPOSER-0008" :date "2026-11-21" :by "Andrew Sengul")
 (:id "CCOMPOSER-D50" :kind :decision :draft "CCOMPOSER-DRAFT-lexismarkdown-D4" :host "CCOMPOSER-0008" :date "2026-11-21" :by "Andrew Sengul")
 (:id "CCOMPOSER-D51" :kind :decision :draft "CCOMPOSER-DRAFT-lexismarkdown-D6" :host "CCOMPOSER-0008" :date "2026-11-21" :by "Andrew Sengul")
+(:id "CCOMPOSER-0009" :kind :document :draft "CCOMPOSER-DRAFT-compass-migration" :path "doc/Log.CompassMigration.md" :date "2026-11-21" :by "Andrew Sengul")
+(:id "CCOMPOSER-D52" :kind :decision :draft "CCOMPOSER-DRAFT-compass-migration-D1" :host "CCOMPOSER-0009" :date "2026-11-21" :by "Andrew Sengul")
+(:id "CCOMPOSER-D53" :kind :decision :draft "CCOMPOSER-DRAFT-compass-migration-D2" :host "CCOMPOSER-0009" :date "2026-11-21" :by "Andrew Sengul")
+(:id "CCOMPOSER-D54" :kind :decision :draft "CCOMPOSER-DRAFT-compass-migration-D3" :host "CCOMPOSER-0009" :date "2026-11-21" :by "Andrew Sengul")
+(:id "CCOMPOSER-D55" :kind :decision :draft "CCOMPOSER-DRAFT-compass-migration-D4" :host "CCOMPOSER-0009" :date "2026-11-21" :by "Andrew Sengul")

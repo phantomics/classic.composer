@@ -1,11 +1,15 @@
 ---
-id:            CCOMPOSER-DRAFT-compass-migration
+id:            CCOMPOSER-0009
 title:         Compass Migration Development Log
 genre:         Log
 scope:         project
 project:       Classic Composer
 language:      en
-status:        Draft
+status:        Implemented
+authors:
+  - Andrew Sengul
+approved-by:   Andrew Sengul
+reviewed:      2026-11-21
 provenance:
   assistant:   claude-opus-5-5
 relates-to:
@@ -19,10 +23,10 @@ relates-to:
   - CLASSIC-0034
   - CLASSIC-0036
 decisions:
-  - CCOMPOSER-DRAFT-compass-migration-D1
-  - CCOMPOSER-DRAFT-compass-migration-D2
-  - CCOMPOSER-DRAFT-compass-migration-D3
-  - CCOMPOSER-DRAFT-compass-migration-D4
+  - CCOMPOSER-D52
+  - CCOMPOSER-D53
+  - CCOMPOSER-D54
+  - CCOMPOSER-D55
 ---
 
 # Compass Migration: Development Log
@@ -59,9 +63,9 @@ document per request, a form-only reshape, and the move and the
 reshape committed separately. The records below are the choices made
 for this repository.
 
-### CCOMPOSER-DRAFT-compass-migration-D1 — This Log is the migration's record, with no Plan of its own
+### CCOMPOSER-D52 — This Log is the migration's record, with no Plan of its own
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** Six documents were still unmarked when the first migration
 began, more than the three below which the standard lets the
 `AGENTS.md` migration line serve as the backlog record. Classic wrote
@@ -78,9 +82,9 @@ with six documents, migrated one at a time, the plan's decisions would
 repeat COMPASS-0016's. Keeping the `AGENTS.md` line as the only record
 would leave no account of each migration's commits and notes.
 
-### CCOMPOSER-DRAFT-compass-migration-D2 — A document replaced by a native one is deleted, not migrated
+### CCOMPOSER-D53 — A document replaced by a native one is deleted, not migrated
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** `DevLog.MarkdownReader.md` recorded the integration of the
 Lexis Markdown reader, written in the same session as the work, a day
 before the adoption. Migrating it would have kept its unpinned prose
@@ -96,9 +100,9 @@ by the new Log would have kept two accounts of one piece of work in
 the corpus. Migrating it alone, without a new Log, would have kept
 decisions whose alternatives were never recorded.
 
-### CCOMPOSER-DRAFT-compass-migration-D3 — The architecture document becomes an Architecture now and a Ref is split from it afterwards
+### CCOMPOSER-D54 — The architecture document becomes an Architecture now and a Ref is split from it afterwards
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** `Composer.md` mixes two genres. About half of it describes
 code that runs: theme integration, lens composition, the Markdown
 mode and the extension generics, which read as a `Ref`. The rest is
@@ -119,9 +123,9 @@ has, which a form-only migration forbids, or would hold the Ref's text
 twice until a later edit. Migrating it as a Ref was not adopted: its
 unbuilt design has no place in a Ref, which describes running code.
 
-### CCOMPOSER-DRAFT-compass-migration-D4 — Decision records are not extracted from prose during a reshape
+### CCOMPOSER-D55 — Decision records are not extracted from prose during a reshape
 
-**Status:** Proposed
+**Status:** Implemented
 **Context:** `Composer.md` has no decision records, but its prose states
 several decisions with their reasons: the composer is read-only; the
 tiers are defined by structural role rather than domain; capability
@@ -156,7 +160,7 @@ version 0.2.0:
   a migration line.
 
 The commit also deletes `DevLog.MarkdownReader.md`
-(CCOMPOSER-DRAFT-compass-migration-D2).
+(CCOMPOSER-D53).
 
 ### The native Lexis Markdown Log (`06ac6bb`, `7ccacd3`)
 
@@ -182,7 +186,7 @@ generated in `06ac6bb`.
   - the H1 in the Architecture form; "Overview" renamed `Thesis`;
   - Canonical Terms and Influences point to the sections that give
     them; Settled Decisions, Open Questions and Roadmap read "Not
-    recorded in the original." (CCOMPOSER-DRAFT-compass-migration-D4);
+    recorded in the original." (CCOMPOSER-D55);
   - `Table:` captions on four tables and `Description:` paragraphs
     after three diagrams.
 
@@ -205,9 +209,9 @@ generated in `06ac6bb`.
     contradicts the forum demo, which composes a thread page with the
     thread as a container, through the aggregate tier
     (`examples/forum-demo.lisp:render-thread-page@139e180`).
-  - The decision candidates of CCOMPOSER-DRAFT-compass-migration-D4.
+  - The decision candidates of CCOMPOSER-D55.
   - The mix of genres, to be resolved by the Ref split
-    (CCOMPOSER-DRAFT-compass-migration-D3).
+    (CCOMPOSER-D54).
 
 ## Verification
 
@@ -250,7 +254,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
 
 ## Outstanding Work
 
-- **The Ref split** (CCOMPOSER-DRAFT-compass-migration-D3): write
+- **The Ref split** (CCOMPOSER-D54): write
   `Ref.Composer.md`, and revise
   [CCOMPOSER-0001](Arch.Composer.md) to link to it, with the
   decision records, open questions and roadmap its notes call for.
@@ -271,7 +275,7 @@ Table: Files added, changed, moved or deleted by the migration, in commits `d226
 ## Update 2026-11-21 — The Ref split and the Architecture's revision
 
 This installment completes the migration of the architecture document
-(CCOMPOSER-DRAFT-compass-migration-D3): the running-code sections were
+(CCOMPOSER-D54): the running-code sections were
 split into a Ref, and the Architecture was revised to link to it.
 
 ### The Ref (`46d0707`)
@@ -305,7 +309,7 @@ edit, committed with this Update:
 - the Thesis cites CLASSIC-D29, which put the theme ontology in
   Classic and rendering in the composer;
 - six decision records: the five candidates the reshape listed
-  (CCOMPOSER-DRAFT-compass-migration-D4), and a sixth, composition as
+  (CCOMPOSER-D55), and a sixth, composition as
   a fixed sequence of single passes, from the original's workflow and
   the README's account of it, each with its alternatives;
 - the running-code sections reduced to summaries linking to the Ref;

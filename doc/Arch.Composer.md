@@ -17,7 +17,7 @@ provenance:
 relates-to:
   - CCOMPOSER-0002
   - CCOMPOSER-0008
-  - CCOMPOSER-DRAFT-compass-migration
+  - CCOMPOSER-0009
   - CCOMPOSER-0007
   - CLASSIC-0010
   - CLASSIC-0011

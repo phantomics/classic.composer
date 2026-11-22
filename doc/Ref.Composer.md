@@ -18,7 +18,7 @@ provenance:
 relates-to:
   - CCOMPOSER-0001
   - CCOMPOSER-0008
-  - CCOMPOSER-DRAFT-compass-migration
+  - CCOMPOSER-0009
   - CLASSIC-0011
   - LEXIS-DRAFT-markdownref
 ---
@@ -36,7 +36,7 @@ behind it, including the parts not yet built, is
 composer consumes is [CLASSIC-0011](../../classic/doc/theme/Ref.Theme.md).
 Code references are pinned to the release tag `v0.2.0`. This reference was
 split from the original architecture document, `doc/Composer.md`, as
-[CCOMPOSER-DRAFT-compass-migration](Log.CompassMigration.md) records.
+[CCOMPOSER-0009](Log.CompassMigration.md) records.
 
 
 ## Composition Pipeline
