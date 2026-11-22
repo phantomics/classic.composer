@@ -14,6 +14,7 @@ relates-to:
   - LEXIS-DRAFT-markdownref
   - LEXIS-DRAFT-markdown
   - CLASSIC-0011
+  - CCOMPOSER-DRAFT-readonlydemos
 decisions:
   - CCOMPOSER-DRAFT-lexismarkdown-D1
   - CCOMPOSER-DRAFT-lexismarkdown-D2
@@ -319,5 +320,5 @@ Table: Files added or changed in commit `ac700d0`.
   writes to stored data outstanding. Commit `7fa52ba` resolved both:
   the composer's extension generics replaced the writes, and each demo
   became a site of linked pages. That work is recorded in
-  [DevLog.ReadOnlyDemos.md](Log.ReadOnlyDemos.md), not yet
+  [CCOMPOSER-DRAFT-readonlydemos](Log.ReadOnlyDemos.md), not yet
   migrated.

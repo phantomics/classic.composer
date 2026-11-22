@@ -13,8 +13,9 @@ relates-to:
   - CCOMPOSER-0003
   - CCOMPOSER-0004
   - CCOMPOSER-0005
-  - CCOMPOSER-DRAFT-lexismarkdown
   - CCOMPOSER-0006
+  - CCOMPOSER-DRAFT-lexismarkdown
+  - CCOMPOSER-DRAFT-readonlydemos
   - CLASSIC-0034
   - CLASSIC-0036
 decisions:
@@ -651,3 +652,97 @@ the Log [CCOMPOSER-0006](Log.WikiRenderDemo.md).
 
 One document remains unmarked: `doc/DevLog.ReadOnlyDemos.md` (now
 `doc/Log.ReadOnlyDemos.md`).
+
+## Update 2026-11-21 — doc/DevLog.ReadOnlyDemos.md, and the migration's close
+
+The sixth and last migration: the log of the read-only demos and page
+links, migrated whole as the Log
+[CCOMPOSER-DRAFT-readonlydemos](Log.ReadOnlyDemos.md). With it, every
+document in `doc/` is in Compass form, and the migration is complete.
+
+- **Original:** `doc/DevLog.ReadOnlyDemos.md`, at `migrated-from`
+  revision `06ac6bb`, the last commit to change it up to `7ccacd3`, the
+  commit this migration began from. It was written in `7fa52ba`, the
+  commit of the work it records; `06ac6bb` pointed two of its links at
+  [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) when that Log
+  replaced `DevLog.MarkdownReader.md`. The later change of a file name
+  in it, made by the forum Log's move (`48eb93d`), is a migration move
+  and does not count.
+- **Move** (`b79c32b`): `git mv` to `doc/Log.ReadOnlyDemos.md`, with the
+  `README.md` structure listing and the `AGENTS.md` migration line
+  updated, the links to it in [CCOMPOSER-0001](Arch.Composer.md) and
+  CCOMPOSER-DRAFT-lexismarkdown pointed at the new path, and the six
+  mentions of the old path in this Log that record history given the
+  new path after them.
+- **Reshape** (`348b048`), form only:
+  - front-matter as CCOMPOSER-DRAFT-readonlydemos: genre `Log`, scope
+    `component`, component `demo`, status `Draft`, `provenance` naming
+    the original's assistant, claude-opus-5-5, which wrote it in the
+    session that carried out this migration, and `relates-to` the three
+    documents it names;
+  - the six numbered decisions, written as prose, as records `-D1` to
+    `-D6`, each record's sentences divided among its fields in their
+    original order. CCOMPOSER-DRAFT-readonlydemos-D1's paragraph
+    naming the alternative it rejected became its Alternatives field,
+    and its last paragraph stays after the fields, as explanatory text;
+  - its links to documents of the corpus given their identifiers as
+    their text, and the file name of the forum Log, in the Problem's
+    table, made a link with its identifier;
+  - the generics its first decision lists, and the file paths and
+    symbols its Implementation names, pinned to the work's commit,
+    `7fa52ba`;
+  - `Table:` captions on its two tables, the Files table's columns put
+    in the spine's order.
+
+  Its sections already followed the spine, so none was added or moved.
+  Its date line, 2026-11-20, matches Git's, so `created` is left to
+  Git.
+- **After the reshape:** the links to it in CCOMPOSER-0001 and
+  CCOMPOSER-DRAFT-lexismarkdown were given its identifier as their
+  text, and it was added to their `relates-to` and to this Log's. The
+  Lexis Markdown Log's phrase "not yet migrated", true when it was
+  written, was left as it was.
+- **Check:** `compass check --federation`, now without
+  `--skip-unmarked`, reported 0 errors and 0 warnings over 9 documents,
+  with none skipped; a word diff against the original removed only the
+  decision numbers, kept in the identifiers, bare names, reappearing in
+  their pins, table cells, moved between columns, link texts, now
+  identifiers, and the lines that a field label now opens.
+- **Notes on stale content:** none. The document is recent, and the
+  four items of its Outstanding Work all remain open: the blog demo's
+  setup still writes Lexis bodies after storing a placeholder
+  (`examples/blog-demo.lisp:setup-blog@348b048`), the wiki demo's
+  anchor lookups still go through a global
+  (`examples/wiki-demo.lisp:resolve-reference@348b048`), the forum
+  views it lists are not yet shown, and heading depth and the wiki
+  infobox wait on Lexis.
+
+### The migration in sum
+
+Table: The documents written before Compass, what each became, and the commits that moved and reshaped it.
+
+| Original | Document | Move | Reshape | Note |
+|---|---|---|---|---|
+| `doc/DevLog.MarkdownReader.md` | [CCOMPOSER-DRAFT-lexismarkdown](Log.LexisMarkdown.md) | — | — | Replaced by a native Log (`06ac6bb`) and deleted (`d226fc4`) |
+| `doc/Composer.md` | [CCOMPOSER-0001](Arch.Composer.md) | `3249062` | `139e180` | Split: [CCOMPOSER-0002](Ref.Composer.md) (`46d0707`), and the Architecture revised (`3a95f57`) |
+| `doc/DevLog.ThemeResolution.md` | [CCOMPOSER-0003](Log.ThemeResolution.md) | `5929753` | `a44422f` | |
+| `doc/DevLog.FullRenderDemo.md` | [CCOMPOSER-0004](Log.FullRenderDemo.md) | `446f2ef` | `3eba656` | `created` written from its date line |
+| `doc/DevLog.ForumRenderDemo.md` | [CCOMPOSER-0005](Log.ForumRenderDemo.md) | `48eb93d` | `4c8012a` | Prose decisions split into fields |
+| `doc/DevLog.WikiRenderDemo.md` | [CCOMPOSER-0006](Log.WikiRenderDemo.md) | `35c6b84` | `3ab78a0` | Outstanding Work points to deferred records |
+| `doc/DevLog.ReadOnlyDemos.md` | [CCOMPOSER-DRAFT-readonlydemos](Log.ReadOnlyDemos.md) | `b79c32b` | `348b048` | Written in the migrating session |
+
+Each migration changed only its document's form; the notes on stale
+content in each Update are for the revisions that follow. With no
+document left unmarked, the `AGENTS.md` migration line no longer lists
+a backlog, and checks run without `--skip-unmarked`.
+
+What remains is not migration:
+
+- **Acceptance and numbering** of CCOMPOSER-DRAFT-readonlydemos, of
+  CCOMPOSER-DRAFT-lexismarkdown, and of this Log, which the steward
+  accepts with the migration complete.
+- **Content revisions** that the Updates' notes call for, in the
+  migrated Logs, such as links to LEXIS-0001 and to Classic's theme,
+  forum and wiki documents where the originals name them only in
+  prose.
+- **Mentions by description,** as in the body's Outstanding Work.
